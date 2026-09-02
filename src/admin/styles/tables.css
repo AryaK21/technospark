@@ -1,0 +1,179 @@
+/* ============================================================================
+   ADMIN DATA TABLE STYLES
+   ============================================================================ */
+
+.admin-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border-subtle);
+  background-color: var(--admin-navy-surface);
+}
+
+.admin-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--admin-border-subtle);
+  flex-wrap: wrap;
+}
+
+.admin-table-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--admin-navy-card);
+  border: 1px solid var(--admin-border-subtle);
+  border-radius: var(--admin-radius-md);
+  padding: 0.45rem 0.85rem;
+  min-width: 260px;
+  transition: all var(--admin-transition-fast);
+}
+
+.admin-table-search:focus-within {
+  border-color: var(--admin-sky-blue);
+  box-shadow: 0 0 0 2px var(--admin-sky-glow);
+}
+
+.admin-table-search input {
+  background: transparent;
+  border: none;
+  color: var(--admin-text-title);
+  font-size: 0.85rem;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+}
+
+.admin-table-search input::placeholder {
+  color: var(--admin-text-faint);
+}
+
+.admin-table-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-select-filter {
+  background-color: var(--admin-navy-card);
+  border: 1px solid var(--admin-border-subtle);
+  border-radius: var(--admin-radius-md);
+  color: var(--admin-text-main);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.admin-select-filter:focus {
+  border-color: var(--admin-sky-blue);
+}
+
+/* Base Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.admin-table th {
+  padding: 0.9rem 1.25rem;
+  background-color: rgba(6, 18, 41, 0.6);
+  color: var(--admin-text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--admin-border-subtle);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--admin-border-subtle);
+  color: var(--admin-text-main);
+  vertical-align: middle;
+  transition: background-color var(--admin-transition-fast);
+}
+
+.admin-table tbody tr:hover td {
+  background-color: rgba(37, 99, 235, 0.04);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table Item Cell Layouts */
+.admin-table-title-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.admin-table-main-text {
+  font-weight: 600;
+  color: var(--admin-text-title);
+}
+
+.admin-table-sub-text {
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-table-avatar-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-table-avatar-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--admin-border-medium);
+}
+
+/* Action Buttons Cell */
+.admin-table-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Empty State */
+.admin-table-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--admin-text-muted);
+}
+
+.admin-table-empty-icon {
+  font-size: 2.5rem;
+  color: var(--admin-text-faint);
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .admin-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-table-search {
+    min-width: 100%;
+  }
+  .admin-table-filters {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .admin-select-filter {
+    flex: 1;
+  }
+}

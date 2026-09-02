@@ -29,11 +29,6 @@ export default function EventCard({ event, onSelect }) {
     >
       {/* Top Meta Header: Date badge + Category pill */}
       <div className="event-card-top">
-        <div className="event-date-badge">
-          <span className="event-date-day">{event.date}</span>
-          <span className="event-date-month">{event.month}</span>
-        </div>
-
         <div className="event-tags-row">
           <span className={`event-category-pill category-${event.category.toLowerCase()}`}>
             {event.category}

@@ -41,9 +41,7 @@ export default function EventModal({ event, onClose }) {
             <span className={`event-category-pill category-${event.category.toLowerCase()}`}>
               {event.category}
             </span>
-            <span className="modal-event-date">
-              {event.month} {event.date}, {event.year} • {event.time}
-            </span>
+
           </div>
 
           <button
@@ -65,13 +63,7 @@ export default function EventModal({ event, onClose }) {
             {event.title}
           </h2>
 
-          <div className="modal-location-tag">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-            <span>{event.location}</span>
-          </div>
+
 
           {/* Detailed Narrative */}
           <div className="modal-section">
@@ -82,32 +74,19 @@ export default function EventModal({ event, onClose }) {
           {/* Schedule / Timeline */}
           {event.schedule && event.schedule.length > 0 && (
             <div className="modal-section">
-              <h4 className="modal-section-title">SCHEDULE & TIMELINE</h4>
+              <h4 className="modal-section-title">WHEN AND VENUE</h4>
               <div className="modal-timeline">
-                {event.schedule.map((item, index) => (
-                  <div key={index} className="modal-timeline-item">
-                    <span className="timeline-time">{item.time}</span>
-                    <span className="timeline-label">{item.label}</span>
-                  </div>
-                ))}
+                <span className="modal-event-date">
+                  <span>{event.location}</span>
+                  <span> <br></br></span>
+                  {event.month} {event.date}, {event.year} • {event.time}
+                </span>
+
               </div>
             </div>
           )}
 
-          {/* Key Highlights */}
-          {event.highlights && event.highlights.length > 0 && (
-            <div className="modal-section">
-              <h4 className="modal-section-title">KEY HIGHLIGHTS</h4>
-              <ul className="modal-highlights-list">
-                {event.highlights.map((highlight, index) => (
-                  <li key={index} className="highlight-item">
-                    <span className="highlight-bullet" aria-hidden="true">✓</span>
-                    <span>{highlight}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+
         </div>
 
         {/* Modal Footer */}

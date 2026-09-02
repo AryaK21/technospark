@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { clubInfo } from '../data/clubInfo';
 
+
+
 // ============================================================================
 // NAVBAR COMPONENT
 // ============================================================================
@@ -69,7 +71,7 @@ export default function Navbar() {
   return (
     <header className={`navbar-header ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-container">
-        
+
         {/* Brand Logo & Name */}
         <a href="#hero" className="navbar-brand" aria-label="Technospark Home">
           <img
@@ -150,4 +152,6 @@ export default function Navbar() {
       </div>
     </header>
   );
+
+
 }

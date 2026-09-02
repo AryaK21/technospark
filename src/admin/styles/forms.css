@@ -1,0 +1,211 @@
+/* ============================================================================
+   ADMIN FORMS & INPUTS STYLES
+   ============================================================================ */
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.admin-form-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.admin-form-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--admin-text-title);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.admin-form-required {
+  color: #f87171;
+}
+
+.admin-form-input,
+.admin-form-select,
+.admin-form-textarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  background-color: var(--admin-navy-card);
+  border: 1px solid var(--admin-border-medium);
+  border-radius: var(--admin-radius-md);
+  color: var(--admin-text-title);
+  font-size: 0.88rem;
+  outline: none;
+  font-family: inherit;
+  transition: all var(--admin-transition-fast);
+  box-sizing: border-box;
+}
+
+.admin-form-input:focus,
+.admin-form-select:focus,
+.admin-form-textarea:focus {
+  border-color: var(--admin-sky-blue);
+  box-shadow: 0 0 0 3px var(--admin-sky-glow);
+  background-color: var(--admin-navy-elevated);
+}
+
+.admin-form-input::placeholder,
+.admin-form-textarea::placeholder {
+  color: var(--admin-text-faint);
+}
+
+.admin-form-textarea {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
+}
+
+.admin-form-hint {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+/* File Dropzone & Preview */
+.admin-dropzone {
+  border: 2px dashed var(--admin-border-medium);
+  border-radius: var(--admin-radius-lg);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background-color: rgba(6, 18, 41, 0.3);
+  cursor: pointer;
+  transition: all var(--admin-transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-dropzone:hover,
+.admin-dropzone.active {
+  border-color: var(--admin-sky-blue);
+  background-color: rgba(37, 99, 235, 0.06);
+}
+
+.admin-dropzone-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--admin-sky-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-dropzone-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--admin-text-title);
+}
+
+.admin-dropzone-sub {
+  font-size: 0.78rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-media-preview-container {
+  position: relative;
+  border-radius: var(--admin-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--admin-border-medium);
+  background-color: var(--admin-navy-dark);
+  max-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-media-preview-img {
+  width: 100%;
+  height: 100%;
+  max-height: 220px;
+  object-fit: contain;
+}
+
+.admin-media-preview-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(3, 10, 26, 0.8);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--admin-radius-sm);
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all var(--admin-transition-fast);
+}
+
+.admin-media-preview-remove:hover {
+  background-color: var(--admin-danger);
+  color: #ffffff;
+}
+
+/* Toggle Switch */
+.admin-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-toggle-switch {
+  width: 44px;
+  height: 24px;
+  background-color: var(--admin-navy-card);
+  border: 1px solid var(--admin-border-medium);
+  border-radius: var(--admin-radius-full);
+  position: relative;
+  transition: background-color var(--admin-transition-fast);
+}
+
+.admin-toggle-switch.checked {
+  background-color: var(--admin-blue-primary);
+  border-color: var(--admin-blue-primary);
+}
+
+.admin-toggle-knob {
+  width: 18px;
+  height: 18px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: transform var(--admin-transition-fast);
+}
+
+.admin-toggle-switch.checked .admin-toggle-knob {
+  transform: translateX(19px);
+}
+
+.admin-toggle-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--admin-text-main);
+}
+
+@media (max-width: 640px) {
+  .admin-form-row,
+  .admin-form-row-3 {
+    grid-template-columns: 1fr;
+  }
+}
