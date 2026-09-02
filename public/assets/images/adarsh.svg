@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg-adarsh" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#061A40" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+  </defs>
+  <circle cx="200" cy="200" r="200" fill="url(#bg-adarsh)" />
+  <!-- Stylized avatar figure -->
+  <circle cx="200" cy="150" r="60" fill="#E2E8F0" />
+  <path d="M100,340 C100,260 140,240 200,240 C260,240 300,260 300,340 Z" fill="#E2E8F0" opacity="0.9" />
+  <!-- Smile detail -->
+  <path d="M185,165 Q200,178 215,165" fill="none" stroke="#0F172A" stroke-width="4" stroke-linecap="round" />
+  <text x="200" y="380" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" opacity="0.8">ADARSH THAKARE</text>
+</svg>

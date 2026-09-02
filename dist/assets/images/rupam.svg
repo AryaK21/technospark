@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg-rupam" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B2447" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+  </defs>
+  <circle cx="200" cy="200" r="200" fill="url(#bg-rupam)" />
+  <!-- Stylized avatar figure -->
+  <circle cx="200" cy="150" r="60" fill="#E2E8F0" />
+  <path d="M100,340 C100,260 140,240 200,240 C260,240 300,260 300,340 Z" fill="#E2E8F0" opacity="0.9" />
+  <!-- Glasses / Accessory detail -->
+  <rect x="165" y="140" width="28" height="18" rx="4" fill="none" stroke="#0F172A" stroke-width="4" />
+  <rect x="207" y="140" width="28" height="18" rx="4" fill="none" stroke="#0F172A" stroke-width="4" />
+  <line x1="193" y1="149" x2="207" y2="149" stroke="#0F172A" stroke-width="4" />
+  <text x="200" y="380" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" opacity="0.8">RUPAM AGRAWAL</text>
+</svg>
