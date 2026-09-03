@@ -140,11 +140,6 @@ export default function Hero() {
         {/* Left Column: Typography & CTAs */}
         <div className="hero-content">
 
-          {/* Official Affiliation Badge */}
-          <div ref={badgeRef} className="hero-badge">
-            <span className="hero-badge-dot" aria-hidden="true" />
-            <span className="hero-badge-text">ITSA • OFFICIAL TECHNICAL CLUB</span>
-          </div>
 
           {/* Main Heading with 2 distinct lines */}
           <h1 className="hero-title">
@@ -180,7 +175,7 @@ export default function Hero() {
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
-              Pimpri Chinchwad College of Engineering And Reasearch , Ravet Pune
+              Pimpri Chinchwad College of Engineering And Research , Ravet Pune
             </span>
           </div>
         </div>

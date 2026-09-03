@@ -16,10 +16,10 @@ export default function Footer() {
   return (
     <footer className="footer-section" aria-label="Page Footer">
       <div className="footer-container">
-        
+
         {/* Main Footer Row */}
         <div className="footer-main-grid">
-          
+
           {/* Brand Col */}
           <div className="footer-brand-col">
             <a href="#hero" className="footer-logo-link" aria-label="Return to top">
@@ -34,7 +34,7 @@ export default function Footer() {
               </div>
             </a>
             <p className="footer-description">
-              The official technical club of Information Technology Students Association (ITSA) at PCCOE. Empowering student innovators through peer learning, workshops, and hackathons.
+              The official technical club of Information Technology Students Association (ITSA) at PCCOER. Empowering student innovators through peer learning, workshops, and hackathons.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export default function Footer() {
           <div className="footer-social-col">
             <h4 className="footer-col-heading">CONNECT WITH US</h4>
             <div className="footer-social-icons-row" role="list" aria-label="Social Media Links">
-              
+
               {/* Instagram */}
               <a
                 href="https://instagram.com"
@@ -127,7 +127,7 @@ export default function Footer() {
             © {clubInfo.currentYear} Technospark – ITSA Technical Club. All rights reserved.
           </p>
           <p className="footer-subtext">
-            Department of Information Technology • PCCOE Pune
+            Department of Information Technology • PCCOER Pune
           </p>
         </div>
 

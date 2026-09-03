@@ -5,7 +5,7 @@
 .admin-sidebar {
   width: var(--admin-sidebar-width);
   min-height: 100vh;
-  background-color: var(--admin-navy-surface);
+  background-color: var(--admin-navy-elevated);
   border-right: 1px solid var(--admin-border-subtle);
   display: flex;
   flex-direction: column;
@@ -23,6 +23,7 @@
   gap: 0.85rem;
   border-bottom: 1px solid var(--admin-border-subtle);
   text-decoration: none;
+  background-color: var(--admin-text-title);
 }
 
 .admin-sidebar-logo-img {
@@ -41,7 +42,7 @@
   font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: 0.05em;
-  color: #ffffff;
+  color: var(--admin-navy-surface);
   line-height: 1.1;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
