@@ -1,40 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { clubInfo } from '../data/clubInfo';
 
-
-
 // ============================================================================
-// NAVBAR COMPONENT
+// NAVBAR COMPONENT (Modern Subtle Glassmorphism)
 // ============================================================================
-// Desktop: Technospark Logo, Home, About, Events links.
-// Mobile: Clean hamburger button with animated mobile drawer.
-//
-// Behavior:
-// - At top: Subtly translucent.
-// - Scrolled down (> 20px): Darker navy background with backdrop-filter blur.
+// Translucent sticky navbar with subtle backdrop blur, official Technospark logo
+// on the left, and smooth section navigation links.
 // ============================================================================
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Handle scroll detection to toggle navbar background styling
+  const navItems = [
+    { label: 'HOME', href: '#hero' },
+    { label: 'ABOUT ME', href: '#about' },
+    { label: 'EVENTS', href: '#events' },
+    { label: 'LEADERSHIP', href: '#organizers' },
+    { label: 'GALLERY', href: '#gallery' }
+  ];
+
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 24);
+      setIsScrolled(window.scrollY > 20);
 
-      // Track active section for navigation highlight
       const sections = ['hero', 'about', 'events', 'organizers', 'gallery'];
-      const scrollPosition = window.scrollY + 180;
+      const scrollPos = window.scrollY + 180;
 
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
+      for (const id of sections) {
+        const el = document.getElementById(id);
         if (el) {
           const top = el.offsetTop;
           const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(sectionId);
+          if (scrollPos >= top && scrollPos < top + height) {
+            setActiveSection(id);
             break;
           }
         }
@@ -45,34 +45,19 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when clicking a link or pressing Escape
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && mobileMenuOpen) {
-        setMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mobileMenuOpen]);
-
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileMenuOpen]);
-
   return (
-    <header className={`navbar-header ${isScrolled ? 'navbar-scrolled' : ''}`}>
+    <header className={`navbar-header modern-glass comic-navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
+      {/* Top Left Spiderweb Corner Accent */}
+      <div className="navbar-spiderweb-corner">
+        <svg viewBox="0 0 100 100" width="45" height="45" fill="none" stroke="rgba(0, 240, 255, 0.7)">
+          <path d="M0,0 L100,100 M0,0 L100,40 M0,0 L40,100 M0,0 L100,0 M0,0 L0,100" strokeWidth="1" />
+          <path d="M20,0 Q20,20 0,20 M40,0 Q40,40 0,40 M70,0 Q70,70 0,70" strokeWidth="1.2" fill="none" />
+        </svg>
+      </div>
+
       <div className="navbar-container">
 
-        {/* Brand Logo & Name */}
+        {/* Left Brand Identity: Logo + Title */}
         <a href="#hero" className="navbar-brand" aria-label="Technospark Home">
           <img
             src={clubInfo.logos.whiteTransparent}
@@ -81,77 +66,60 @@ export default function Navbar() {
           />
           <div className="navbar-brand-text">
             <span className="navbar-brand-title">TECHNOSPARK</span>
-            <span className="navbar-brand-subtitle">ITSA Technical Club</span>
           </div>
         </a>
 
-        {/* Desktop Navigation Links (Home, About, Events) */}
-        <nav className="navbar-desktop-nav" aria-label="Main Navigation">
-          {clubInfo.navLinks.map((link) => {
-            const sectionId = link.href.replace('#', '');
+        {/* Center / Right Comic Badge Nav Items */}
+        <nav className="navbar-nav comic-nav-list" aria-label="Main Navigation">
+          {navItems.map((item, index) => {
+            const sectionId = item.href.replace('#', '');
             const isActive = activeSection === sectionId;
             return (
-              <a
-                key={link.label}
-                href={link.href}
-                className={`navbar-nav-link ${isActive ? 'active' : ''}`}
-              >
-                {link.label}
-                {isActive && <span className="active-dot" aria-hidden="true" />}
-              </a>
+              <React.Fragment key={item.label}>
+                {index > 0 && <span className="comic-nav-connector">---</span>}
+                <a
+                  href={item.href}
+                  className={`comic-nav-badge ${isActive ? 'active' : ''}`}
+                >
+                  {item.label}
+                </a>
+              </React.Fragment>
             );
           })}
         </nav>
 
-        {/* Mobile Hamburger Toggle Button */}
+        {/* Mobile Hamburger Button */}
         <button
           type="button"
-          className={`navbar-hamburger ${mobileMenuOpen ? 'open' : ''}`}
+          className="mobile-menu-btn"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
-          aria-expanded={mobileMenuOpen}
+          aria-label="Toggle Navigation"
         >
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {mobileMenuOpen ? (
+              <path d="M18 6L6 18M6 6l12 12" />
+            ) : (
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
         </button>
+
       </div>
 
-      {/* Mobile Drawer Menu */}
-      <div
-        className={`navbar-mobile-drawer ${mobileMenuOpen ? 'drawer-open' : ''}`}
-        aria-hidden={!mobileMenuOpen}
-      >
-        <div className="mobile-drawer-content">
-          <nav className="mobile-drawer-links" aria-label="Mobile Navigation">
-            {clubInfo.navLinks.map((link, idx) => {
-              const sectionId = link.href.replace('#', '');
-              const isActive = activeSection === sectionId;
-              return (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className={`mobile-drawer-link ${isActive ? 'active' : ''}`}
-                  style={{ animationDelay: `${(idx + 1) * 0.08}s` }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              );
-            })}
-          </nav>
-
-          {/* Mobile Footer Info */}
-          <div className="mobile-drawer-footer">
-            <p className="mobile-drawer-affiliation">
-              Information Technology Students Association
-            </p>
-            <p className="mobile-drawer-college">PCCOE, Pune</p>
-          </div>
-        </div>
+      {/* Mobile Drawer */}
+      <div className={`mobile-nav-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+        {navItems.map((item) => (
+          <a
+            key={item.label}
+            href={item.href}
+            className="comic-nav-badge"
+            style={{ fontSize: '1rem', padding: '10px 20px', textAlignment: 'center' }}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {item.label}
+          </a>
+        ))}
       </div>
     </header>
   );
-
-
 }

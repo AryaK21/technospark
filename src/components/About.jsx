@@ -1,51 +1,58 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { clubInfo } from '../data/clubInfo';
+import use3DTilt from '../hooks/use3DTilt';
+
+function StatCard({ number, line1, highlightText }) {
+  const cardRef = useRef(null);
+  use3DTilt(cardRef, { max: 14, scale: 1.05 });
+
+  return (
+    <div ref={cardRef} className="stat-card tilt-3d-card spiderverse-card">
+      <div className="stat-number">{number}</div>
+      <div className="stat-label">
+        {line1} <br />
+        <span className="comic-red-highlight">{highlightText}</span>
+      </div>
+    </div>
+  );
+}
 
 // ============================================================================
-// ABOUT COMPONENT
-// ============================================================================
-// Narrative and pillars of Technospark ITSA.
-//
-// Animations Local to this Component:
-// - ABOUT SCROLL REVEAL: Runs when the About section scrolls into viewport.
-//   Staggers the title, description paragraph, and the 3 pillar cards with
-//   a smooth blur-to-focus and gentle upward glide.
+// ABOUT COMPONENT (Spiderverse Comic Panel Overhaul)
 // ============================================================================
 
 export default function About() {
   const sectionRef = useRef(null);
   const titleColRef = useRef(null);
   const introColRef = useRef(null);
-  const pillarsRef = useRef(null);
+  const statsRef = useRef(null);
   const quoteRef = useRef(null);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // GSAP Reveal Animation Sequence
             const tl = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.7 } });
 
             tl.fromTo(
               titleColRef.current,
-              { opacity: 0, y: 35, filter: 'blur(4px)' },
+              { opacity: 0, y: 35, filter: 'blur(6px)' },
               { opacity: 1, y: 0, filter: 'blur(0px)' }
             )
               .fromTo(
                 introColRef.current,
-                { opacity: 0, y: 30, filter: 'blur(3px)' },
+                { opacity: 0, y: 30, filter: 'blur(4px)' },
                 { opacity: 1, y: 0, filter: 'blur(0px)' },
                 '-=0.45'
               )
               .fromTo(
-                pillarsRef.current?.children || [],
+                statsRef.current?.children || [],
                 { opacity: 0, y: 25 },
-                { opacity: 1, y: 0, stagger: 0.12, duration: 0.6 },
+                { opacity: 1, y: 0, stagger: 0.1, duration: 0.5 },
                 '-=0.3'
               )
               .fromTo(
@@ -55,19 +62,23 @@ export default function About() {
                 '-=0.2'
               );
 
-            observer.disconnect(); // Trigger only once
+            observer.disconnect();
           }
         });
       },
       { threshold: 0.15 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
+    if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
+
+  const stats = [
+    { number: '1,500+', line1: "BUILT SYSTEMS THAT DON'T JUST LOOK GOOD,", highlightText: 'THEY SCALE.' },
+    { number: '25+', line1: 'WORKED WITH MULTIVERSE TECH,', highlightText: 'A LOT OF TECH.' },
+    { number: '36 HRS', line1: 'TURNED MESSY IDEAS INTO', highlightText: 'SOMETHING USABLE.' },
+    { number: '100%', line1: 'AND YEAH... BROKE THINGS', highlightText: 'ALONG THE WAY TOO.' }
+  ];
 
   return (
     <section
@@ -78,36 +89,44 @@ export default function About() {
     >
       <div className="about-container">
 
-        {/* Header Grid: Eyebrow + Title + Intro Paragraphs */}
+        {/* Section Header Grid */}
         <div className="about-header-grid">
           <div ref={titleColRef} className="about-title-col">
+            <span className="section-eyebrow">[ // 01. MISSION MATRIX ]</span>
             <h2 className="section-title">
-              ABOUT <br />
-              <span className="text-highlight">TECHNOSPARK</span>
+              <span className="glitch-title" data-text="THE TECH PULSE">THE TECH PULSE</span> <br />
+              <span className="text-highlight">OF ITSA PCCOER</span>
             </h2>
             <div className="about-badge-pill">
-              <span className="about-badge-icon">🏛️</span>
-              <span>Information Technology Students Association (ITSA)</span>
+              <span>🏛️</span>
+              <span>INFORMATION TECHNOLOGY STUDENTS ASSOCIATION</span>
             </div>
           </div>
 
           <div ref={introColRef} className="about-intro-col">
             <p className="about-lead-text">
-              Technospark is the premier student-run technical organization of the Information Technology Department at PCCOE. We unite engineering students with a shared passion for software development, cutting-edge technology, and creative problem solving.
+              Technospark is the premier student engineering epicenter of the Information Technology Department at PCCOER. We cultivate software architects, hackathon champions, and open-source innovators.
             </p>
             <p className="about-body-text">
-              Rather than theoretical instruction, our focus is active collaboration. From beginner-friendly coding bootcamps to high-stakes 36-hour hackathons, Technospark empowers every student to turn theoretical knowledge into tangible, real-world projects.
+              From competitive coding marathons to AI masterclasses and full-stack software sprints, Technospark bridges academic theory with industry-grade software craftsmanship.
             </p>
           </div>
         </div>
 
-        {/* Bottom Callout Quote */}
-        <div ref={quoteRef} className="about-quote-box">
+        {/* Reference Image Style Comic Quote Cards */}
+        <div ref={statsRef} className="about-stats-grid">
+          {stats.map((stat, idx) => (
+            <StatCard key={idx} number={stat.number} line1={stat.line1} highlightText={stat.highlightText} />
+          ))}
+        </div>
+
+        {/* Core Team Quote Callout */}
+        <div ref={quoteRef} className="about-quote-box spiderverse-quote">
           <div className="quote-text">
-            "We believe true technical mastery comes from building together, breaking things, and collaborating across disciplines."
+            "ENGINEERING MASTERY ISN'T TAUGHT IN PASSIVE LECTURES... <span className="comic-red-highlight">IT'S FORGED BY SHIPPING CODE, BREAKING BOUNDARIES, AND SCALING TOGETHER.</span>"
           </div>
           <div className="quote-author">
-            — Technospark Core Team, ITSA
+            — TECHNOSPARK CORE LEADERSHIP, ITSA
           </div>
         </div>
 

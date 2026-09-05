@@ -24,152 +24,94 @@
 export const events = [
   {
     id: 'technova-hackathon-2026',
-    title: 'TECHNOVA HACKATHON 2026',
+    indexNum: '01',
+    headerCategory: 'FLAGSHIP HACKATHON',
+    headerColor: '#F59E0B',
+    title: 'TECHNOVA 2026',
     category: 'Hackathon',
-    date: '24',
-    month: 'OCT',
-    year: '2026',
+    date: '24 OCT 2026',
     time: '36 Hours (Continuous)',
-    location: 'PCCOE Campus Tech Hub',
-    status: 'upcoming',
-    badge: 'Flagship Event',
-    shortDesc: 'The annual 36-hour hackathon bringing student developers together to build innovative solutions for real-world challenges.',
-    fullDesc: 'TECHNOVA 2026 is Technospark’s flagship annual hackathon. Students collaborate in multidisciplinary teams across problem tracks including AI & Machine Learning, Web3, Cloud Systems, and Smart Campus IoT. Mentors from top tech industries will guide teams throughout the 36-hour sprint.',
-    schedule: [
-      { time: 'Day 1 • 09:00 AM', label: 'Opening Ceremony & Track Announcement' },
-      { time: 'Day 1 • 11:00 AM', label: 'Hacking Begins & Mentor Round 1' },
-      { time: 'Day 1 • 09:00 PM', label: 'Midnight Pitch Review & Snack Surge' },
-      { time: 'Day 2 • 02:00 PM', label: 'Final Evaluation, Demos & Award Ceremony' }
-    ],
+    location: 'PCCOE Tech Core • Lab 404',
+    shortDesc: 'The official 36-hour flagship hackathon bringing elite student developers together to build innovative solutions for AI, Web3, and Smart Systems.',
+    fullDesc: 'TECHNOVA 2026 is Technospark’s flagship annual hackathon. Student teams collide in multidisciplinary sprints across problem tracks including Neural AI Systems, Web3 Decentralized Architecture, Cloud Infrastructure, and IoT Hardware. Senior software architects from top tech firms will mentor teams throughout the 36-hour sprint.',
+    techStack: ['React', 'Web3', 'AI', 'Node.js'],
+    linkSubtext: 'LIVE SPRINT + HACKATHON ARENA',
+    buttonLabel: 'Infiltrate Sprint',
+    buttonColor: '#F59E0B',
+    image: '/assets/images/event_hackathon_banner.jpg',
     highlights: [
-      'Cash prizes and goodies worth over ₹50,000+',
-      'Direct 1-on-1 mentorship from industry software architects',
-      'Certificate of participation and merit for all finalists'
+      '⚡ ₹50,000+ Prize Pool & Exclusive Spiderverse Swag',
+      '⚡ 1-on-1 Mentorship from Principal Engineers',
+      '⚡ Verifiable On-Chain Certificates for All Finalists'
     ]
   },
   {
     id: 'ai-ml-practical-workshop',
-    title: 'Practical AI & Neural Networks Workshop',
+    indexNum: '02',
+    headerCategory: 'DEEP LEARNING LAB',
+    headerColor: '#A78BFA',
+    title: 'NEURAL MATRIX LAB',
     category: 'Workshop',
-    date: '12',
-    month: 'NOV',
-    year: '2026',
-    time: '02:00 PM – 06:00 PM',
+    date: '12 NOV 2026',
+    time: '14:00 – 18:00 IST',
     location: 'Computing Lab 3 • Hybrid',
-    status: 'upcoming',
-    badge: 'Hands-on Lab',
-    shortDesc: 'Hands-on session on implementing deep neural architectures and computer vision pipelines from scratch.',
-    fullDesc: 'Get hands-on experience building, training, and deploying neural networks using PyTorch and OpenCV. Participants will code practical models for image recognition and deploy a working endpoint on cloud hardware.',
-    schedule: [
-      { time: '02:00 PM', label: 'Neural Network Fundamentals & Math Intuition' },
-      { time: '03:15 PM', label: 'Hands-on Coding: Training with PyTorch' },
-      { time: '04:45 PM', label: 'Deploying Real-time Inference & Edge Optimization' },
-      { time: '05:30 PM', label: 'Q&A, Code Review & Take-home Projects' }
-    ],
+    shortDesc: 'Hands-on deep learning workshop on implementing neural network architectures, computer vision pipelines, and deploying model endpoints.',
+    fullDesc: 'Build, train, and deploy neural networks live using PyTorch and OpenCV. Participants will construct convolutional vision models, optimize inference speed, and launch a production model endpoint on cloud GPU clusters.',
+    techStack: ['PyTorch', 'Python', 'OpenCV', 'CUDA'],
+    linkSubtext: 'OPEN SOURCE LAB REPOSITORY',
+    buttonLabel: 'Access Lab',
+    buttonColor: '#A78BFA',
+    image: '/assets/images/project_ai_vision.jpg',
     highlights: [
-      'Interactive Jupyter notebooks provided to all attendees',
-      'Deploy your own real-time vision model live',
-      'Earn a verified Certificate of Completion'
+      '⚡ GPU Cloud Credit Allocation for All Attendees',
+      '⚡ Deploy Live Vision Models to Production',
+      '⚡ Certified AI Developer Badge'
     ]
   },
   {
     id: 'cybershield-ctf-2026',
-    title: 'CYBERSHIELD CTF 2026',
+    indexNum: '03',
+    headerCategory: 'SECURITY CTF',
+    headerColor: '#00F0FF',
+    title: 'CYBERSHIELD CTF',
     category: 'Competition',
-    date: '05',
-    month: 'DEC',
-    year: '2026',
-    time: '10:00 AM – 06:00 PM',
-    location: 'Online Platform + Lab Finals',
-    status: 'upcoming',
-    badge: 'Security Challenge',
-    shortDesc: 'Jeopardy-style capture-the-flag tournament testing web exploitation, cryptography, and digital forensics.',
-    fullDesc: 'An intense 8-hour Capture The Flag challenge crafted by the Technospark Security domain. Designed for both beginner security enthusiasts and seasoned CTF players, featuring tiered difficulty levels.',
-    schedule: [
-      { time: '10:00 AM', label: 'CTF Platform Access & Rules Briefing' },
-      { time: '10:30 AM', label: 'Round 1: Web Exploitation & Crypto Challenges' },
-      { time: '02:00 PM', label: 'Round 2: Reverse Engineering & Binary Analysis' },
-      { time: '05:30 PM', label: 'Leaderboard Freeze & Solution Walkthrough' }
-    ],
+    date: '05 DEC 2026',
+    time: '10:00 – 18:00 IST',
+    location: 'Cyber Operations Lab + Virtual Arena',
+    shortDesc: 'An intense 8-hour Capture The Flag challenge testing web exploitation, reverse engineering, cryptography, and digital forensics.',
+    fullDesc: 'An intense 8-hour Capture The Flag challenge crafted by Technospark Security Operations. Test your skills across Web Exploitation, Reverse Engineering, Cryptography, and Digital Forensics with real-time leaderboard dynamics.',
+    techStack: ['Security', 'Python', 'Reverse Eng', 'Crypto'],
+    linkSubtext: 'DEFCON ARENA REGISTRATION',
+    buttonLabel: 'Register Arena',
+    buttonColor: '#00F0FF',
+    image: '/assets/images/project_cyber_shield.jpg',
     highlights: [
-      '20+ custom crafted challenge scenarios',
-      'Live scoreboard with first-blood bonuses',
-      'Exclusive cybersecurity merchandise for top 3 teams'
-    ]
-  },
-  {
-    id: 'cloud-devops-bootcamp',
-    title: 'Cloud Architecture & Kubernetes Zero-to-One',
-    category: 'Workshop',
-    date: '18',
-    month: 'JAN',
-    year: '2026',
-    time: '10:00 AM – 03:00 PM',
-    location: 'Auditorium 2 & Virtual Stream',
-    status: 'past',
-    badge: 'Completed',
-    shortDesc: 'Comprehensive masterclass on containerizing microservices and managing cloud workloads with Docker & Kubernetes.',
-    fullDesc: 'Over 200 students learned how modern cloud-native systems operate. We walked through container fundamentals with Docker, multi-node orchestration with Kubernetes, and automated deployment pipelines with GitHub Actions.',
-    schedule: [
-      { time: '10:00 AM', label: 'Virtualization vs Containerization' },
-      { time: '11:30 AM', label: 'Kubernetes Pods, Services & Ingress Setup' },
-      { time: '01:30 PM', label: 'Live Deployment of Microservices Architecture' }
-    ],
-    highlights: [
-      '200+ active student participants',
-      'Hands-on GCP Cloud Shell environment access',
-      'Recorded sessions and repository code templates'
-    ]
-  },
-  {
-    id: 'tech-career-insights-seminar',
-    title: 'Industry Insights: Building Software at Scale',
-    category: 'Seminar',
-    date: '28',
-    month: 'FEB',
-    year: '2026',
-    time: '04:00 PM – 06:30 PM',
-    location: 'Main Auditorium',
-    status: 'past',
-    badge: 'Completed',
-    shortDesc: 'Alumni panel discussion and seminar on software engineering practices, system design, and open-source careers.',
-    fullDesc: 'Technospark hosted engineering leaders and distinguished alumni working at top tech firms to share insights on engineering best practices, career roadmaps, preparing for technical interviews, and contributing to high-impact open source projects.',
-    schedule: [
-      { time: '04:00 PM', label: 'Welcome Address & ITSA Overview' },
-      { time: '04:20 PM', label: 'Keynote: Scaling Systems from 1k to 1M Users' },
-      { time: '05:15 PM', label: 'Interactive Panel Discussion & Open Q&A' }
-    ],
-    highlights: [
-      'Keynote by Senior Cloud Architect alumni',
-      'Interactive Q&A with 150+ attendees',
-      'Direct resume review and career tips'
+      '⚡ 20+ Custom Exploitation Challenges',
+      '⚡ Live Scoreboard with First-Blood Bonuses',
+      '⚡ Cybersecurity Hardware Kits for Winners'
     ]
   }
 ];
 
-// ============================================================================
-// CATEGORY COLOR MAPPINGS
-// Maps each category to a distinct semantic accent color
-// ============================================================================
 export const categoryTheme = {
   Workshop: {
-    badgeBg: '#EAF2FF',
-    badgeText: '#2563EB',
-    borderColor: '#93C5FD'
+    badgeBg: 'rgba(0, 240, 255, 0.15)',
+    badgeText: '#00F0FF',
+    borderColor: 'rgba(0, 240, 255, 0.4)'
   },
   Hackathon: {
-    badgeBg: '#FEF3C7',
-    badgeText: '#D97706',
-    borderColor: '#FCD34D'
+    badgeBg: 'rgba(168, 85, 247, 0.18)',
+    badgeText: '#A855F7',
+    borderColor: 'rgba(168, 85, 247, 0.5)'
   },
   Seminar: {
-    badgeBg: '#E0F2FE',
-    badgeText: '#0284C7',
-    borderColor: '#7DD3FC'
+    badgeBg: 'rgba(217, 70, 239, 0.15)',
+    badgeText: '#D946EF',
+    borderColor: 'rgba(217, 70, 239, 0.4)'
   },
   Competition: {
-    badgeBg: '#EEF2F6',
-    badgeText: '#0B2447',
-    borderColor: '#CBD5E1'
+    badgeBg: 'rgba(59, 130, 246, 0.15)',
+    badgeText: '#3B82F6',
+    borderColor: 'rgba(59, 130, 246, 0.4)'
   }
 };

@@ -1,65 +1,101 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import use3DTilt from '../hooks/use3DTilt';
 
 // ============================================================================
-// ORGANIZER CARD COMPONENT
+// ORGANIZER CARD COMPONENT (Comic Reference Theme - No Images)
 // ============================================================================
-// Individual organizer profile card.
-//
-// Features:
-// - Circular portrait photo with subtle scale on hover
-// - Organizer Name & Role
-// - "View profile" link with interactive arrow
+// Uses the exact reference comic card theme with solid accent header,
+// italic titles, comic borders, social buttons, and index numbers!
 // ============================================================================
 
 export default function OrganizerCard({ organizer }) {
+  const cardRef = useRef(null);
+  use3DTilt(cardRef, { max: 12, perspective: 1000, scale: 1.03 });
+
+  const isTBD = organizer.name === "TO BE ANNOUNCED";
+
   return (
-    <div className="organizer-card">
-      {/* Circular Profile Image */}
-      <div className="organizer-avatar-wrapper">
-        <img
-          src={organizer.image}
-          alt={organizer.name}
-          className="organizer-avatar-img"
-          loading="lazy"
-          onError={(e) => {
-            // Fallback placeholder if image fails to load
-            e.currentTarget.src = '/assets/images/akshat.jpg';
-          }}
-        />
-        <div className="organizer-avatar-ring" aria-hidden="true" />
-      </div>
-
-      {/* Info: Name & Role */}
-      <div className="organizer-info">
-        <h3 className="organizer-name">{organizer.name}</h3>
-        <p className="organizer-role">{organizer.role}</p>
-      </div>
-
-      {/* View Profile Action Link */}
-      <a
-        href={organizer.profile}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="organizer-profile-link"
-        aria-label={`View ${organizer.name}'s profile`}
+    <article
+      ref={cardRef}
+      className="ref-comic-event-card tilt-3d-card"
+      tabIndex={0}
+      role="article"
+      aria-label={`Organizer Profile: ${organizer.name}`}
+    >
+      {/* 1. Top Header Block with Solid Accent Fill Color */}
+      <div
+        className="ref-card-header-block"
+        style={{ backgroundColor: organizer.headerColor || '#00F0FF' }}
       >
-        <span>View profile</span>
-        <svg
-          className="organizer-link-arrow"
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </a>
-    </div>
+        <span className="ref-header-eyebrow">
+          {organizer.headerCategory || 'CORE EXECUTIVE'}
+        </span>
+        <h3 className="ref-header-title">
+          {organizer.name}
+        </h3>
+      </div>
+
+      {/* 2. Middle Role Content Block (No Image) */}
+      <div className="ref-card-desc-block">
+        <span className="ref-header-eyebrow" style={{ color: '#00F0FF', marginBottom: '6px' }}>
+          DESIGNATION / ROLE
+        </span>
+        <p className="ref-card-desc-text" style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>
+          {organizer.role}
+        </p>
+      </div>
+
+      {/* 3. Bottom Footer Panel with Social Buttons & Index Number */}
+      <div className="ref-card-footer-panel">
+        <div className="ref-subtext-label">
+          <span>{isTBD ? 'RESERVED SLOT 🔒' : 'SOCIAL PROFILES ↗'}</span>
+        </div>
+
+        {!isTBD ? (
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+            {organizer.linkedin && (
+              <a
+                href={organizer.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ref-action-btn"
+                style={{ backgroundColor: organizer.buttonColor || '#00F0FF', textDecoration: 'none', padding: '6px 14px', fontSize: '0.78rem' }}
+              >
+                LinkedIn
+              </a>
+            )}
+            {organizer.github && (
+              <a
+                href={organizer.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ref-action-btn"
+                style={{ backgroundColor: '#FFFFFF', textDecoration: 'none', padding: '6px 14px', fontSize: '0.78rem' }}
+              >
+                GitHub
+              </a>
+            )}
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="ref-action-btn"
+            style={{ backgroundColor: organizer.buttonColor || '#F43F5E', cursor: 'not-allowed', opacity: 0.8 }}
+            disabled
+          >
+            TBA
+          </button>
+        )}
+
+        {/* Index Number */}
+        <span className="ref-card-index">
+          {organizer.indexNum || '01'}
+        </span>
+      </div>
+    </article>
   );
 }
+
+
+
+

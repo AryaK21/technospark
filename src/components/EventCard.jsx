@@ -1,21 +1,20 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import use3DTilt from '../hooks/use3DTilt';
 
 // ============================================================================
-// EVENT CARD COMPONENT
+// EVENT CARD COMPONENT (Spiderverse Overhaul)
 // ============================================================================
-// Displays an individual event in a clean, high-readability card.
-//
-// Props:
-// - event: Object containing id, title, category, date, month, location, etc.
-// - onSelect: Callback function invoked when user clicks "View Details"
+// 3D Tilt card with Spiderverse neon borders, category pills, and action arrow.
 // ============================================================================
 
 export default function EventCard({ event, onSelect }) {
-  const isPast = event.status === 'past';
+  const cardRef = useRef(null);
+  use3DTilt(cardRef, { max: 12, perspective: 1000, scale: 1.03 });
 
   return (
     <article
-      className={`event-card ${isPast ? 'event-card-past' : ''}`}
+      ref={cardRef}
+      className="ref-comic-event-card tilt-3d-card"
       onClick={() => onSelect(event)}
       tabIndex={0}
       role="button"
@@ -27,43 +26,76 @@ export default function EventCard({ event, onSelect }) {
         }
       }}
     >
-      {/* Top Meta Header: Date badge + Category pill */}
-      <div className="event-card-top">
-        <div className="event-tags-row">
-          <span className={`event-category-pill category-${event.category.toLowerCase()}`}>
-            {event.category}
-          </span>
-          {event.badge && (
-            <span className="event-status-badge">
-              {event.badge}
-            </span>
-          )}
-        </div>
+      {/* 1. Top Header Block with Solid Fill Color */}
+      <div
+        className="ref-card-header-block"
+        style={{ backgroundColor: event.headerColor || '#F59E0B' }}
+      >
+        <span className="ref-header-eyebrow">
+          {event.headerCategory || event.category?.toUpperCase() || 'EVENT SPRINT'}
+        </span>
+        <h3 className="ref-header-title">
+          {event.title}
+        </h3>
       </div>
 
-      {/* Main Body */}
-      <div className="event-card-body">
-        <h3 className="event-card-title">{event.title}</h3>
-        <p className="event-card-description">{event.shortDesc}</p>
+      {/* 2. Middle Media Preview Image Wrapper */}
+      <div className="ref-card-media-block">
+        <img
+          src={event.image || '/assets/images/event_hackathon_banner.jpg'}
+          alt={event.title}
+          className="ref-card-img"
+          loading="lazy"
+        />
+        <div className="ref-media-matrix-overlay" />
       </div>
 
-      {/* Footer Meta: Location & Action link */}
-      <div className="event-card-footer">
-        <div className="event-card-location">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
+      {/* 3. Description Block */}
+      <div className="ref-card-desc-block">
+        <p className="ref-card-desc-text">
+          {event.shortDesc}
+        </p>
+      </div>
+
+      {/* 4. Bottom Footer Block */}
+      <div className="ref-card-footer-panel">
+        {/* Tech Stack Pills Row */}
+        {event.techStack && event.techStack.length > 0 && (
+          <div className="ref-tech-pills-row">
+            {event.techStack.map((tech, idx) => (
+              <span key={idx} className="ref-tech-pill">
+                {tech}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Subtext Label */}
+        <div className="ref-subtext-label">
+          <span>{event.linkSubtext || 'LIVE + ON THE STORE'}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
           </svg>
-          <span>{event.location}</span>
         </div>
 
-        <div className="event-card-action">
-          <span>View Details</span>
-          <svg className="action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </div>
+        {/* Action Button */}
+        <button
+          type="button"
+          className="ref-action-btn"
+          style={{ backgroundColor: event.buttonColor || '#F59E0B' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(event);
+          }}
+        >
+          {event.buttonLabel || 'Infiltrate'}
+        </button>
+
+        {/* Bottom Right Card Index Number */}
+        <span className="ref-card-index">
+          {event.indexNum || '01'}
+        </span>
       </div>
     </article>
   );

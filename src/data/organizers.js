@@ -1,48 +1,54 @@
 // ============================================================================
-// ORGANIZER DATA
-// ============================================================================
-// Add, edit, or remove organizer profiles in this file.
-// The Organizers component automatically displays the profiles in a responsive grid.
-//
-// Properties:
-// - id: Unique string or number identifier
-// - name: Full name of the organizer
-// - role: Designation / department role (e.g. "GDGoC Organizer", "Core Team")
-// - image: Path to profile photograph (in public/assets/images/)
-// - profile: Link to LinkedIn, GitHub, or personal portfolio (or '#' for placeholder)
-//
-// How to customize:
-// - To change a photo: place the image in public/assets/images/ and update the 'image' path below.
-// - To change profile URL: update the 'profile' property with a full URL like "https://linkedin.com/in/username".
+// ORGANIZER DATA (Comic Theme - No Images)
 // ============================================================================
 
 export const organizers = [
   {
     id: 1,
-    name: "Akshat Shrivastava",
-    role: "GDGoC Organizer",
-    image: "/assets/images/akshat.jpg",
-    profile: "https://linkedin.com"
+    indexNum: "01",
+    headerCategory: "CORE EXECUTIVE",
+    headerColor: "#00F0FF",
+    buttonColor: "#00F0FF",
+    name: "PRABODH KULKARNI",
+    role: "[ ROLE PLACEHOLDER ]",
+    linkedin: "https://linkedin.com",
+    github: "https://github.com"
   },
   {
     id: 2,
-    name: "Prajyot Tayde",
-    role: "Core Team",
-    image: "/assets/images/prajyot.jpg",
-    profile: "https://linkedin.com"
+    indexNum: "02",
+    headerCategory: "CORE EXECUTIVE",
+    headerColor: "#A855F7",
+    buttonColor: "#A855F7",
+    name: "ARYA KUKKADWAL",
+    role: "[ ROLE PLACEHOLDER ]",
+    linkedin: "https://linkedin.com",
+    github: "https://github.com"
   },
   {
     id: 3,
-    name: "Rupam Agrawal",
-    role: "Execution",
-    image: "/assets/images/rupam.svg",
-    profile: "https://linkedin.com"
+    indexNum: "03",
+    headerCategory: "CORE EXECUTIVE",
+    headerColor: "#F59E0B",
+    buttonColor: "#F59E0B",
+    name: "RAHUL MACHHIRKE",
+    role: "[ ROLE PLACEHOLDER ]",
+    linkedin: "https://linkedin.com",
+    github: "https://github.com"
   },
   {
     id: 4,
-    name: "Adarsh Thakare",
-    role: "Web & App Facilitator",
-    image: "/assets/images/adarsh.svg",
-    profile: "https://linkedin.com"
+    indexNum: "04",
+    headerCategory: "UPCOMING SLOT",
+    headerColor: "#F43F5E",
+    buttonColor: "#F43F5E",
+    name: "TO BE ANNOUNCED",
+    role: "[ ROLE PLACEHOLDER ]",
+    linkedin: null,
+    github: null
   }
 ];
+
+
+
+

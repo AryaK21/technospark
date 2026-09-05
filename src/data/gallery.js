@@ -19,37 +19,37 @@
 export const galleryItems = [
   {
     id: 1,
-    title: "TECHNOVA Hackathon — 36hr Build Sprint",
-    category: "Hackathon",
+    title: "TECHNOVA HACKATHON — 36H BUILD MATRIX",
+    category: "[ HACKATHON // ARENA ]",
     image: "/assets/images/event_hackathon_banner.jpg",
-    caption: "Over 500 student developers collaborating on real-world engineering challenges."
+    caption: "Over 500 student developers collaborating continuous 36-hour coding sprints on AI and distributed cloud architectures."
   },
   {
     id: 2,
-    title: "Hands-on Deep Learning Vision Lab",
-    category: "Workshop",
+    title: "DEEP LEARNING & TENSOR VISION LAB",
+    category: "[ WORKSHOP // AI ]",
     image: "/assets/images/project_ai_vision.jpg",
-    caption: "Students implementing real-time convolutional neural networks with PyTorch."
+    caption: "Students constructing and deploying real-time convolutional neural networks using PyTorch on cloud GPU instances."
   },
   {
     id: 3,
-    title: "CYBERSHIELD CTF Tournament",
-    category: "Competition",
+    title: "CYBERSHIELD DEFCON CTF SHOWDOWN",
+    category: "[ COMPETITION // SEC ]",
     image: "/assets/images/project_cyber_shield.jpg",
-    caption: "Intense 8-hour capture the flag competition testing cyber defense and cryptography."
+    caption: "High-intensity 8-hour capture the flag tournament testing binary reverse engineering, cryptography, and zero-day defense."
   },
   {
     id: 4,
-    title: "Smart Campus & IoT Innovation Showcase",
-    category: "Exhibition",
+    title: "SMART CAMPUS IoT & HARDWARE INNOVATION",
+    category: "[ EXHIBITION // HARDWARE ]",
     image: "/assets/images/project_iot_smart_campus.jpg",
-    caption: "Prototyping connected embedded hardware systems for smart energy and campus automation."
+    caption: "Prototyping connected embedded hardware systems for smart energy grids, autonomous sensors, and campus automation."
   },
   {
     id: 5,
-    title: "Keynote & Tech Seminar at PCCOE",
-    category: "Keynote",
+    title: "EXECUTIVE TECH KEYNOTE AT PCCOE",
+    category: "[ KEYNOTE // LEADERSHIP ]",
     image: "/assets/images/akshat.jpg",
-    caption: "Annual technical club orientation and keynote presentation to first and second-year students."
+    caption: "Annual technical club orientation and keynote presentation on open-source software engineering roadmaps."
   }
 ];
