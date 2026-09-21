@@ -65,6 +65,17 @@ export default function AdminApp() {
   const [adminUsers, setAdminUsers] = useState(initialAdminUsers);
   const [toast, setToast] = useState(null);
 
+  // Visual Theme State (Light theme default as requested, persists in localStorage)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('technospark_admin_theme') || 'light';
+  });
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('technospark_admin_theme', newTheme);
+    showToast(`Switched to ${newTheme === 'dark' ? 'Dark' : 'Light'} theme!`, 'info');
+  };
+
   const showToast = (message, type = 'success') => {
     setToast({
       id: Date.now(),
@@ -138,7 +149,7 @@ export default function AdminApp() {
   return (
     <Routes>
       {/* Nested Admin Shell Layout */}
-      <Route element={<AdminLayout toast={toast} setToast={setToast} />}>
+      <Route element={<AdminLayout toast={toast} setToast={setToast} theme={theme} onThemeChange={handleThemeChange} />}>
         {/* /admin Dashboard */}
         <Route
           index
@@ -204,7 +215,11 @@ export default function AdminApp() {
         <Route
           path="settings"
           element={
-            <Settings onSaveSettings={handleSaveSettings} />
+            <Settings
+              onSaveSettings={handleSaveSettings}
+              theme={theme}
+              onThemeChange={handleThemeChange}
+            />
           }
         />
 

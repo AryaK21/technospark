@@ -150,7 +150,7 @@ export default function Gallery({
               <h3 className="admin-gallery-title" title={item.title}>
                 {item.title}
               </h3>
-              
+
               <div className="admin-gallery-event-tag">
                 <Layers size={13} />
                 <span>{item.associatedEvent || 'General Activity'}</span>
@@ -178,9 +178,9 @@ export default function Gallery({
       {/* Lightbox / Preview Modal */}
       {previewMedia && (
         <div className="admin-modal-backdrop" onClick={() => setPreviewMedia(null)}>
-          <div 
-            className="admin-modal-container" 
-            style={{ maxWidth: '820px' }} 
+          <div
+            className="admin-modal-container"
+            style={{ maxWidth: '820px' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="admin-modal-header">
@@ -194,7 +194,7 @@ export default function Gallery({
               </button>
             </div>
 
-            <div className="admin-modal-body" style={{ padding: '1rem', backgroundColor: '#000000' }}>
+            <div className="admin-modal-body" style={{ padding: '1rem', backgroundColor: '#0B2046', borderRadius: '8px' }}>
               {previewMedia.mediaType === 'video' ? (
                 <video
                   src={previewMedia.url}

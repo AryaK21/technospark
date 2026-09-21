@@ -56,16 +56,16 @@ export default function Events({
     }
   };
 
-  // Table Columns Definition
+  // Table Columns Definition (Aligned with PostgreSQL public.events schema)
   const columns = [
     {
-      key: 'title',
-      label: 'Event Info',
+      key: 'name',
+      label: 'Event Name',
       render: (row) => (
         <div className="admin-table-title-cell">
-          <span className="admin-table-main-text">{row.title}</span>
+          <span className="admin-table-main-text">{row.name || row.title}</span>
           <span className="admin-table-sub-text">
-            {row.badge || row.category}
+            ID: <code style={{ fontSize: '0.72rem', opacity: 0.8 }}>{String(row.id).slice(0, 8)}...</code>
           </span>
         </div>
       )
@@ -74,23 +74,23 @@ export default function Events({
       key: 'category',
       label: 'Category',
       render: (row) => (
-        <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--admin-sky-blue)' }}>
-          {row.category}
+        <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--admin-blue-primary)' }}>
+          {row.category || 'General'}
         </span>
       )
     },
     {
-      key: 'date',
-      label: 'Date & Timing',
+      key: 'event_date',
+      label: 'Date & Time',
       render: (row) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: '0.8rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--admin-text-main)' }}>
-            <Calendar size={13} color="var(--admin-sky-blue)" />
-            <span>{row.date}</span>
+            <Calendar size={13} color="var(--admin-blue-primary)" />
+            <span>{row.event_date || row.date || 'No Date'}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--admin-text-muted)' }}>
             <Clock size={13} />
-            <span>{row.startTime || 'TBD'} - {row.endTime || ''}</span>
+            <span>{row.start_time || row.startTime || 'TBD'} - {row.end_time || row.endTime || 'TBD'}</span>
           </div>
         </div>
       )
@@ -99,7 +99,7 @@ export default function Events({
       key: 'venue',
       label: 'Venue',
       render: (row) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', maxWidth: '180px', color: 'var(--admin-text-main)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', maxWidth: '200px', color: 'var(--admin-text-main)' }}>
           <MapPin size={13} color="var(--admin-text-faint)" />
           <span title={row.venue} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {row.venue}
@@ -108,29 +108,11 @@ export default function Events({
       )
     },
     {
-      key: 'status',
-      label: 'Status',
-      render: (row) => (
-        <Badge variant={row.status} label={row.status} />
-      )
-    },
-    {
       key: 'actions',
       label: 'Actions',
       align: 'right',
       render: (row) => (
         <div className="admin-table-actions-cell">
-          {row.registrationLink && (
-            <a
-              href={row.registrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="admin-btn-icon"
-              title="Open Registration Link"
-            >
-              <ExternalLink size={14} />
-            </a>
-          )}
           <button
             type="button"
             className="admin-btn-icon"
@@ -152,6 +134,7 @@ export default function Events({
       )
     }
   ];
+
 
   const filterOptions = [
     { value: 'Hackathon', label: 'Hackathons' },
@@ -185,11 +168,11 @@ export default function Events({
         columns={columns}
         data={events}
         searchKey={(item, query) =>
-          item.title.toLowerCase().includes(query) ||
-          item.venue.toLowerCase().includes(query) ||
-          item.category.toLowerCase().includes(query)
+          (item.name || item.title || '').toLowerCase().includes(query) ||
+          (item.venue || '').toLowerCase().includes(query) ||
+          (item.category || '').toLowerCase().includes(query)
         }
-        searchPlaceholder="Search events by title, venue, or category..."
+        searchPlaceholder="Search events by name, venue, or category..."
         filterOptions={filterOptions}
         filterKey="category"
         emptyMessage="No events found matching your filter criteria."
@@ -207,7 +190,7 @@ export default function Events({
       <ConfirmDialog
         isOpen={Boolean(deletingEvent)}
         title="Delete Event"
-        message={`Are you sure you want to delete "${deletingEvent?.title}"? This event will be removed from both the public schedule and CMS.`}
+        message={`Are you sure you want to delete "${deletingEvent?.name || deletingEvent?.title}"? This event will be permanently deleted from the records.`}
         confirmLabel="Delete Event"
         isDanger={true}
         onConfirm={confirmDelete}

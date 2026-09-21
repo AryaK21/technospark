@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { Menu, Sun, Moon } from 'lucide-react';
 import { currentAdminUser } from '../data/mockData';
 
 // ============================================================================
@@ -15,7 +15,7 @@ import { currentAdminUser } from '../data/mockData';
 // // =========================================================================
 // ============================================================================
 
-export default function AdminTopbar({ onOpenMobile }) {
+export default function AdminTopbar({ onOpenMobile, theme = 'light', onThemeChange }) {
   const location = useLocation();
 
   // Determine page title from current route
@@ -53,6 +53,17 @@ export default function AdminTopbar({ onOpenMobile }) {
       </div>
 
       <div className="admin-topbar-right">
+        {/* Quick Theme Toggle Button */}
+        <button
+          type="button"
+          className="admin-btn-icon"
+          onClick={() => onThemeChange && onThemeChange(theme === 'light' ? 'dark' : 'light')}
+          title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+          aria-label="Toggle theme mode"
+        >
+          {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+        </button>
+
         {/* System Status Indicator */}
         <div className="admin-system-status">
           <span className="admin-status-pulse" />

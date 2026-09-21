@@ -152,7 +152,7 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
                   <th>Event Name</th>
                   <th>Date</th>
                   <th>Venue</th>
-                  <th>Status</th>
+                  <th>Category</th>
                   <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
@@ -161,14 +161,14 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
                   <tr key={evt.id}>
                     <td>
                       <div className="admin-table-title-cell">
-                        <span className="admin-table-main-text">{evt.title}</span>
+                        <span className="admin-table-main-text">{evt.name || evt.title}</span>
                         <span className="admin-table-sub-text">{evt.category}</span>
                       </div>
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem' }}>
                         <Clock size={13} color="var(--admin-text-faint)" />
-                        <span>{evt.date}</span>
+                        <span>{evt.event_date || evt.date}</span>
                       </div>
                     </td>
                     <td>
@@ -178,7 +178,9 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
                       </div>
                     </td>
                     <td>
-                      <Badge variant={evt.status} label={evt.status} />
+                      <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--admin-blue-primary)' }}>
+                        {evt.category}
+                      </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <button
@@ -203,57 +205,6 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
           </div>
         </div>
 
-        {/* System & Activity Overview */}
-        <div className="admin-card" style={{ padding: '1.25rem' }}>
-          <div className="admin-dashboard-section-header">
-            <h2 className="admin-dashboard-section-title">
-              <Sparkles size={18} color="var(--admin-accent-orange)" />
-              <span>CMS Activity</span>
-            </h2>
-          </div>
-
-          <div className="admin-activity-list">
-            <div className="admin-activity-item">
-              <div className="admin-activity-dot" style={{ backgroundColor: 'var(--admin-sky-blue)' }} />
-              <div className="admin-activity-content">
-                <span className="admin-activity-text">
-                  <strong>TECHNOVA Hackathon</strong> registration link updated by Prabodh.
-                </span>
-                <span className="admin-activity-time">25 mins ago</span>
-              </div>
-            </div>
-
-            <div className="admin-activity-item">
-              <div className="admin-activity-dot" style={{ backgroundColor: 'var(--admin-accent-orange)' }} />
-              <div className="admin-activity-content">
-                <span className="admin-activity-text">
-                  <strong>2 new video highlights</strong> uploaded to Gallery media pool.
-                </span>
-                <span className="admin-activity-time">2 hours ago</span>
-              </div>
-            </div>
-
-            <div className="admin-activity-item">
-              <div className="admin-activity-dot" style={{ backgroundColor: 'var(--admin-success)' }} />
-              <div className="admin-activity-content">
-                <span className="admin-activity-text">
-                  <strong>Practical AI Lab</strong> venue set to Computing Lab 3.
-                </span>
-                <span className="admin-activity-time">Yesterday</span>
-              </div>
-            </div>
-
-            <div className="admin-activity-item">
-              <div className="admin-activity-dot" style={{ backgroundColor: 'var(--admin-blue-primary)' }} />
-              <div className="admin-activity-content">
-                <span className="admin-activity-text">
-                  New organizer <strong>Adarsh Thakare</strong> assigned to Web Facilitator role.
-                </span>
-                <span className="admin-activity-time">3 days ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

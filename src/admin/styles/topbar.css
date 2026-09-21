@@ -1,11 +1,10 @@
 /* ============================================================================
-   ADMIN TOPBAR STYLES
+   ADMIN TOPBAR STYLES — BLUE & WHITE THEME
    ============================================================================ */
 
 .admin-topbar {
   height: var(--admin-topbar-height);
-  background-color: rgba(11, 28, 61, 0.85);
-  backdrop-filter: blur(12px);
+  background-color: #FFFFFF;
   border-bottom: 1px solid var(--admin-border-subtle);
   display: flex;
   align-items: center;
@@ -14,6 +13,7 @@
   position: sticky;
   top: 0;
   z-index: 40;
+  box-shadow: 0 1px 3px rgba(15, 36, 71, 0.04);
 }
 
 .admin-topbar-left {
@@ -25,19 +25,21 @@
 /* Mobile Toggle Hamburger */
 .admin-mobile-toggle {
   display: none;
-  background: transparent;
+  background: #FFFFFF;
   border: 1px solid var(--admin-border-subtle);
   border-radius: var(--admin-radius-sm);
-  color: var(--admin-text-main);
+  color: var(--admin-text-title);
   padding: 0.5rem;
   cursor: pointer;
   align-items: center;
   justify-content: center;
+  transition: all var(--admin-transition-fast);
 }
 
 .admin-mobile-toggle:hover {
-  background-color: var(--admin-navy-elevated);
-  color: var(--admin-sky-blue);
+  background-color: var(--admin-blue-light);
+  color: var(--admin-blue-primary);
+  border-color: var(--admin-border-blue);
 }
 
 .admin-topbar-breadcrumb {
@@ -53,7 +55,7 @@
 }
 
 .admin-breadcrumb-separator {
-  color: var(--admin-text-faint);
+  color: var(--admin-border-medium);
   font-size: 0.75rem;
 }
 
@@ -77,9 +79,9 @@
   gap: 0.45rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #34d399;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--admin-blue-primary);
+  background: var(--admin-blue-light);
+  border: 1px solid var(--admin-border-blue);
   padding: 0.3rem 0.65rem;
   border-radius: var(--admin-radius-full);
 }
@@ -88,8 +90,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  background-color: var(--admin-blue-primary);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
 }
 
 /* User Profile Pill */
@@ -99,15 +101,15 @@
   gap: 0.75rem;
   padding: 0.35rem 0.75rem 0.35rem 0.4rem;
   border-radius: var(--admin-radius-full);
-  background-color: var(--admin-navy-card);
+  background-color: #F8FAFD;
   border: 1px solid var(--admin-border-subtle);
   transition: all var(--admin-transition-fast);
   cursor: default;
 }
 
 .admin-profile-pill:hover {
-  border-color: var(--admin-border-medium);
-  background-color: var(--admin-navy-elevated);
+  border-color: var(--admin-border-blue);
+  background-color: var(--admin-blue-light);
 }
 
 .admin-avatar-wrapper {
@@ -121,15 +123,15 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid var(--admin-sky-blue);
+  border: 1.5px solid var(--admin-blue-primary);
 }
 
 .admin-avatar-fallback {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--admin-blue-primary), var(--admin-sky-blue));
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--admin-blue-primary), #38BDF8);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,7 +154,7 @@
 .admin-user-role {
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--admin-sky-blue);
+  color: var(--admin-blue-primary);
 }
 
 /* Responsive */

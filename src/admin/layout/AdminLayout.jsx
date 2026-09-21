@@ -15,7 +15,7 @@ import Toast from '../components/Toast';
 // - Universal Toast notifications and Confirmation Dialogs
 // ============================================================================
 
-export default function AdminLayout({ toast, setToast }) {
+export default function AdminLayout({ toast, setToast, theme = 'light', onThemeChange }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ export default function AdminLayout({ toast, setToast }) {
   };
 
   return (
-    <div className="admin-root">
+    <div className="admin-root" data-theme={theme}>
       <div className="admin-layout-shell">
         {/* Responsive Sidebar */}
         <AdminSidebar
@@ -51,6 +51,8 @@ export default function AdminLayout({ toast, setToast }) {
           {/* Top Bar */}
           <AdminTopbar
             onOpenMobile={() => setIsMobileOpen(true)}
+            theme={theme}
+            onThemeChange={onThemeChange}
           />
 
           {/* Page Content Viewport */}

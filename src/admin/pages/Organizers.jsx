@@ -56,6 +56,7 @@ export default function Organizers({
     }
   };
 
+  // Table Columns Definition (Aligned with PostgreSQL public.organizers schema)
   const columns = [
     {
       key: 'name',
@@ -64,34 +65,54 @@ export default function Organizers({
         <div className="admin-table-avatar-cell">
           <img
             src={row.image || '/assets/images/akshat.jpg'}
-            alt={row.name}
+            alt={row.name || row.Name}
             className="admin-table-avatar-img"
+            onError={(e) => { e.target.src = '/assets/images/akshat.jpg'; }}
           />
           <div className="admin-table-title-cell">
-            <span className="admin-table-main-text">{row.name}</span>
-            <span className="admin-table-sub-text">{row.email || 'No email specified'}</span>
+            <span className="admin-table-main-text">{row.name || row.Name}</span>
+            <span className="admin-table-sub-text">ID: #{row.id}</span>
           </div>
         </div>
       )
     },
     {
       key: 'role',
-      label: 'Designation / Role',
+      label: 'Role / Designation',
       render: (row) => (
         <span style={{ fontWeight: 600, color: 'var(--admin-text-title)', fontSize: '0.85rem' }}>
-          {row.role}
+          {row.role || 'Club Lead'}
         </span>
       )
     },
     {
-      key: 'displayOrder',
-      label: 'Order',
-      render: (row) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.82rem', color: 'var(--admin-sky-blue)' }}>
-          <ArrowUpDown size={12} />
-          <span>#{row.displayOrder || 1}</span>
-        </div>
-      )
+      key: 'linkedin',
+      label: 'LinkedIn Profile',
+      render: (row) => {
+        const link = row.linkedin || row.profile;
+        if (!link) {
+          return <span style={{ color: 'var(--admin-text-faint)', fontSize: '0.8rem' }}>Not provided</span>;
+        }
+        return (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontSize: '0.8rem',
+              color: 'var(--admin-blue-primary)',
+              textDecoration: 'none',
+              fontWeight: 500
+            }}
+          >
+            <span>View Profile</span>
+            <ExternalLink size={12} />
+          </a>
+        );
+      }
     },
     {
       key: 'actions',
@@ -99,17 +120,6 @@ export default function Organizers({
       align: 'right',
       render: (row) => (
         <div className="admin-table-actions-cell">
-          {row.profile && row.profile !== '#' && (
-            <a
-              href={row.profile}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="admin-btn-icon"
-              title="View Profile Link"
-            >
-              <ExternalLink size={14} />
-            </a>
-          )}
           <button
             type="button"
             className="admin-btn-icon"
@@ -132,12 +142,13 @@ export default function Organizers({
     }
   ];
 
+
   return (
     <div className="admin-page-container">
       {/* Page Header */}
       <PageHeader
         title="Organizers & Leadership"
-        subtitle={`Manage club team profiles, student leads, and display order (${organizers.length} total organizers)`}
+        subtitle={`Manage club team profiles and coordinators (${organizers.length} total organizers)`}
       >
         <button
           type="button"
@@ -154,8 +165,8 @@ export default function Organizers({
         columns={columns}
         data={organizers}
         searchKey={(item, query) =>
-          item.name.toLowerCase().includes(query) ||
-          item.role.toLowerCase().includes(query)
+          (item.name || item.Name || '').toLowerCase().includes(query) ||
+          (item.role || '').toLowerCase().includes(query)
         }
         searchPlaceholder="Search organizers by name or role..."
         emptyMessage="No organizers found matching your search."
@@ -172,9 +183,9 @@ export default function Organizers({
       {/* Delete Confirmation Modal */}
       <ConfirmDialog
         isOpen={Boolean(deletingOrg)}
-        title="Delete Organizer Profile"
-        message={`Are you sure you want to remove "${deletingOrg?.name}" from the organizers directory?`}
-        confirmLabel="Delete Profile"
+        title="Delete Organizer"
+        message={`Are you sure you want to delete "${deletingOrg?.name || deletingOrg?.Name}"? This record will be permanently deleted.`}
+        confirmLabel="Delete Organizer"
         isDanger={true}
         onConfirm={confirmDelete}
         onCancel={() => setDeletingOrg(null)}

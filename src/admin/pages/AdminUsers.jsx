@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserPlus, Mail, KeyRound, CheckCircle, Clock, X, Trash2 } from 'lucide-react';
+import { ShieldCheck, UserPlus, Trash2, X, Clock, User } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import DataTable from '../components/DataTable';
 import Badge from '../components/Badge';
@@ -9,17 +9,22 @@ import { mockAdminUsers } from '../data/mockData';
 // ============================================================================
 // ADMIN USERS & ROLE PERMISSIONS PAGE (/admin/users)
 // ============================================================================
-// Manage access credentials, invitations, and administrative roles (Administrator, Editor, Viewer).
+// Aligned with PostgreSQL Table: public.admin_users
 //
-// NOTE FOR FUTURE SUPABASE AUTH & RBAC INTEGRATION:
+// Schema:
+// - id: bigint GENERATED ALWAYS AS IDENTITY NOT NULL
+// - name: character varying NOT NULL
+// - role: character varying NOT NULL
+// - last_active: timestamp without time zone
+//
+// NOTE FOR FUTURE SUPABASE INTEGRATION:
 // // =========================================================================
-// // This page will eventually fetch authenticated users
-// // and their roles from Supabase.
-// //
 // // 1. List Users:
-// //    const { data: users, error } = await supabase.from('admin_profiles').select('*');
-// // 2. Invite User via Supabase Auth:
-// //    const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, { data: { role } });
+// //    const { data: users, error } = await supabase.from('admin_users').select('*');
+// // 2. Add User:
+// //    const { data, error } = await supabase.from('admin_users').insert([{ name, role, last_active: new Date().toISOString() }]);
+// // 3. Delete User:
+// //    await supabase.from('admin_users').delete().eq('id', userToDelete.id);
 // // =========================================================================
 // ============================================================================
 
@@ -29,29 +34,26 @@ export default function AdminUsers({
   onRevokeUser
 }) {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteName, setInviteName] = useState('');
-  const [inviteRole, setInviteRole] = useState('Editor');
+  const [adminName, setAdminName] = useState('');
+  const [adminRole, setAdminRole] = useState('Editor');
   const [deletingUser, setDeletingUser] = useState(null);
 
-  const handleInviteSubmit = (e) => {
+  const handleAddSubmit = (e) => {
     e.preventDefault();
-    if (!inviteEmail.trim()) return;
+    if (!adminName.trim()) return;
 
-    onInviteUser({
-      id: `usr-${Date.now()}`,
-      name: inviteName.trim() || inviteEmail.split('@')[0],
-      email: inviteEmail.trim(),
-      role: inviteRole,
-      status: 'pending',
-      avatar: '',
-      createdDate: new Date().toISOString().split('T')[0],
-      lastActive: 'Invited just now',
-      permissions: inviteRole === 'Administrator' ? ['Full Access'] : ['Events & Gallery Management']
-    });
+    const newUserPayload = {
+      id: Date.now(),
+      name: adminName.trim(),
+      role: adminRole,
+      last_active: new Date().toLocaleString(),
+      // Legacy aliases
+      lastActive: 'Just now'
+    };
 
-    setInviteEmail('');
-    setInviteName('');
+    onInviteUser(newUserPayload);
+
+    setAdminName('');
     setIsInviteOpen(false);
   };
 
@@ -62,22 +64,34 @@ export default function AdminUsers({
     }
   };
 
+  // Table Columns Definition (Aligned with PostgreSQL public.admin_users schema)
   const columns = [
     {
       key: 'name',
       label: 'Admin User',
       render: (row) => (
         <div className="admin-table-avatar-cell">
-          {row.avatar ? (
-            <img src={row.avatar} alt={row.name} className="admin-table-avatar-img" />
-          ) : (
-            <div className="admin-avatar-fallback" style={{ width: '38px', height: '38px', fontSize: '0.9rem' }}>
-              {row.name.charAt(0)}
-            </div>
-          )}
+          <div
+            className="admin-avatar-fallback"
+            style={{
+              width: '36px',
+              height: '36px',
+              fontSize: '0.85rem',
+              borderRadius: '50%',
+              backgroundColor: 'var(--admin-blue-light)',
+              color: 'var(--admin-blue-primary)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              border: '1px solid var(--admin-border-subtle)'
+            }}
+          >
+            {row.name ? row.name.charAt(0).toUpperCase() : <User size={16} />}
+          </div>
           <div className="admin-table-title-cell">
             <span className="admin-table-main-text">{row.name}</span>
-            <span className="admin-table-sub-text">{row.email}</span>
+            <span className="admin-table-sub-text">User ID: #{row.id}</span>
           </div>
         </div>
       )
@@ -90,12 +104,13 @@ export default function AdminUsers({
       )
     },
     {
-      key: 'lastActive',
+      key: 'last_active',
       label: 'Last Active',
       render: (row) => (
-        <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)' }}>
-          {row.lastActive}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', color: 'var(--admin-text-muted)' }}>
+          <Clock size={13} color="var(--admin-text-faint)" />
+          <span>{row.last_active || row.lastActive || 'Recently'}</span>
+        </div>
       )
     },
     {
@@ -110,7 +125,7 @@ export default function AdminUsers({
             style={{ color: '#f87171' }}
             title="Revoke CMS Access"
             onClick={() => setDeletingUser(row)}
-            disabled={row.email === 'prabodh@technospark.org'}
+            disabled={row.name === 'Prabodh' || row.id === 'usr-001'}
           >
             <Trash2 size={14} />
           </button>
@@ -123,8 +138,8 @@ export default function AdminUsers({
     <div className="admin-page-container">
       {/* Page Header */}
       <PageHeader
-        title="Admin Users & Permissions"
-        subtitle="Manage credentialed administrators, content editors, and role-based permissions"
+        title="Admin Users & Access"
+        subtitle="Manage authenticated administrators and content editors"
       >
         <button
           type="button"
@@ -132,16 +147,16 @@ export default function AdminUsers({
           onClick={() => setIsInviteOpen(true)}
         >
           <UserPlus size={16} />
-          <span>Invite Admin</span>
+          <span>Add Admin User</span>
         </button>
       </PageHeader>
 
       {/* Role explanation banner */}
       <div className="admin-card" style={{ padding: '1rem 1.25rem', backgroundColor: 'rgba(37, 99, 235, 0.08)', borderColor: 'rgba(56, 189, 248, 0.2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <ShieldCheck size={20} color="var(--admin-sky-blue)" />
+          <ShieldCheck size={20} color="var(--admin-blue-primary)" />
           <div style={{ fontSize: '0.85rem', color: 'var(--admin-text-main)' }}>
-            <strong>Role-Based Access Control (RBAC):</strong> Administrators possess full destructive permissions, while Editors can publish events and media.
+            <strong>Role-Based Access Control:</strong> Administrators possess full management permissions, while Editors can publish events, media, and organizers.
           </div>
         </div>
       </div>
@@ -151,24 +166,23 @@ export default function AdminUsers({
         columns={columns}
         data={users}
         searchKey={(item, query) =>
-          item.name.toLowerCase().includes(query) ||
-          item.email.toLowerCase().includes(query) ||
-          item.role.toLowerCase().includes(query)
+          (item.name || '').toLowerCase().includes(query) ||
+          (item.role || '').toLowerCase().includes(query)
         }
-        searchPlaceholder="Search admin users by name or email..."
+        searchPlaceholder="Search admin users by name or role..."
         emptyMessage="No administrative users found."
       />
 
-      {/* Invite Admin Modal */}
+      {/* Add Admin User Modal Form */}
       {isInviteOpen && (
         <div className="admin-modal-backdrop" onClick={() => setIsInviteOpen(false)}>
           <div
             className="admin-modal-container"
-            style={{ maxWidth: '500px' }}
+            style={{ maxWidth: '480px' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="admin-modal-header">
-              <h3 className="admin-modal-title">Invite CMS User</h3>
+              <h3 className="admin-modal-title">Add Admin User</h3>
               <button
                 type="button"
                 className="admin-btn-icon"
@@ -178,7 +192,8 @@ export default function AdminUsers({
               </button>
             </div>
 
-            <form onSubmit={handleInviteSubmit} className="admin-modal-body">
+            <form onSubmit={handleAddSubmit} className="admin-modal-body">
+              {/* 1. name (character varying NOT NULL) */}
               <div className="admin-form-group">
                 <label className="admin-form-label">
                   Full Name <span className="admin-form-required">*</span>
@@ -186,35 +201,21 @@ export default function AdminUsers({
                 <input
                   type="text"
                   required
-                  value={inviteName}
-                  onChange={(e) => setInviteName(e.target.value)}
+                  value={adminName}
+                  onChange={(e) => setAdminName(e.target.value)}
                   placeholder="e.g. Tanvi Deshmukh"
                   className="admin-form-input"
                 />
               </div>
 
+              {/* 2. role (character varying NOT NULL) */}
               <div className="admin-form-group">
                 <label className="admin-form-label">
-                  Email Address <span className="admin-form-required">*</span>
+                  Assign Role <span className="admin-form-required">*</span>
                 </label>
-                <input
-                  type="email"
-                  required
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="colleague@technospark.org"
-                  className="admin-form-input"
-                />
-                <span className="admin-form-hint">
-                  Supabase Auth will dispatch a magic login invitation link to this email.
-                </span>
-              </div>
-
-              <div className="admin-form-group">
-                <label className="admin-form-label">Assign Role</label>
                 <select
-                  value={inviteRole}
-                  onChange={(e) => setInviteRole(e.target.value)}
+                  value={adminRole}
+                  onChange={(e) => setAdminRole(e.target.value)}
                   className="admin-form-select"
                 >
                   <option value="Administrator">Administrator (Full Access)</option>
@@ -235,8 +236,8 @@ export default function AdminUsers({
                   type="submit"
                   className="admin-btn admin-btn-primary"
                 >
-                  <Mail size={15} />
-                  <span>Send Invitation</span>
+                  <UserPlus size={15} />
+                  <span>Add User</span>
                 </button>
               </div>
             </form>
@@ -248,7 +249,7 @@ export default function AdminUsers({
       <ConfirmDialog
         isOpen={Boolean(deletingUser)}
         title="Revoke Admin Access"
-        message={`Are you sure you want to revoke CMS access for ${deletingUser?.name} (${deletingUser?.email})?`}
+        message={`Are you sure you want to remove administrator permissions for "${deletingUser?.name}"?`}
         confirmLabel="Revoke Access"
         isDanger={true}
         onConfirm={confirmRevoke}

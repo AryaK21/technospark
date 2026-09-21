@@ -35,186 +35,175 @@ export const mockDashboardStats = {
 };
 
 // ============================================================================
+// ============================================================================
 // 2. EVENTS MOCK DATA
 // ============================================================================
-// Future Supabase Table: `events`
-// Columns: id (uuid), title, category, date, time, venue, status, registration_url, cover_image, description, highlights
+// PostgreSQL Table: public.events
+// Columns: id (uuid), name, category, event_date, start_time, end_time, venue
 export const mockEvents = [
   {
-    id: 'evt-001',
+    id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    name: 'TECHNOVA HACKATHON 2026',
     title: 'TECHNOVA HACKATHON 2026',
     category: 'Hackathon',
+    event_date: '2026-10-24',
     date: '2026-10-24',
+    start_time: '09:00',
     startTime: '09:00 AM',
-    endTime: '09:00 PM (Next Day)',
+    end_time: '21:00',
+    endTime: '09:00 PM',
     venue: 'PCCOE Campus Tech Hub, Pune',
-    status: 'upcoming', // 'upcoming' | 'past' | 'draft'
+    status: 'upcoming',
     registrationLink: 'https://technospark.in/register/technova2026',
     coverImage: '/assets/images/event_hackathon_banner.jpg',
-    description: 'The annual 36-hour flagship hackathon bringing student developers together to solve real-world problems in AI, Web3, and IoT.',
-    badge: 'Flagship Event',
-    attendees: 520,
-    highlights: 'Cash prizes over ₹50,000+, 1-on-1 industry mentorship, direct recruiter networking'
+    description: 'The annual 36-hour flagship hackathon bringing student developers together to solve real-world problems in AI, Web3, and IoT.'
   },
   {
-    id: 'evt-002',
+    id: 'c9a646d3-9c61-4cd7-9f59-533c32b5f182',
+    name: 'Practical AI & Neural Networks Workshop',
     title: 'Practical AI & Neural Networks Workshop',
     category: 'Workshop',
+    event_date: '2026-11-12',
     date: '2026-11-12',
+    start_time: '14:00',
     startTime: '02:00 PM',
+    end_time: '18:00',
     endTime: '06:00 PM',
     venue: 'Computing Lab 3 • Hybrid',
     status: 'upcoming',
     registrationLink: 'https://technospark.in/register/ai-workshop',
     coverImage: '/assets/images/project_ai_vision.jpg',
-    description: 'Hands-on deep learning workshop where participants build, train, and deploy real-time computer vision models with PyTorch.',
-    badge: 'Hands-on Lab',
-    attendees: 180,
-    highlights: 'End-to-end model training, free GPU compute access, verified certificates'
+    description: 'Hands-on deep learning workshop where participants build, train, and deploy real-time computer vision models with PyTorch.'
   },
   {
-    id: 'evt-003',
+    id: 'd8e8fca2-1182-4e15-a71f-471355442e6d',
+    name: 'CYBERSHIELD CTF Tournament',
     title: 'CYBERSHIELD CTF Tournament',
     category: 'Competition',
+    event_date: '2026-12-05',
     date: '2026-12-05',
+    start_time: '10:00',
     startTime: '10:00 AM',
+    end_time: '18:00',
     endTime: '06:00 PM',
     venue: 'IT Department Seminar Hall',
     status: 'upcoming',
     registrationLink: 'https://technospark.in/register/cybershield',
     coverImage: '/assets/images/project_cyber_shield.jpg',
-    description: 'High-intensity cybersecurity challenge testing web exploitation, reverse engineering, network forensics, and cryptography.',
-    badge: 'Competitive',
-    attendees: 240,
-    highlights: 'Real-world CTF sandbox, vulnerability challenges, security toolkit swag'
+    description: 'High-intensity cybersecurity challenge testing web exploitation, reverse engineering, network forensics, and cryptography.'
   },
   {
-    id: 'evt-004',
+    id: '7b1129bc-696a-4d7a-8f56-91e847c13488',
+    name: 'Smart Campus & IoT Innovation Showcase',
     title: 'Smart Campus & IoT Innovation Showcase',
     category: 'Seminar',
+    event_date: '2026-08-15',
     date: '2026-08-15',
+    start_time: '11:00',
     startTime: '11:00 AM',
+    end_time: '16:00',
     endTime: '04:00 PM',
     venue: 'Auditorium A • PCCOE',
     status: 'past',
     registrationLink: 'https://technospark.in/events/iot-showcase',
     coverImage: '/assets/images/project_iot_smart_campus.jpg',
-    description: 'Exhibition of connected hardware systems, automated campus energy grids, and embedded sensor solutions.',
-    badge: 'Completed',
-    attendees: 310,
-    highlights: '15 student hardware prototypes exhibited, guest keynote from Smart Cities council'
+    description: 'Exhibition of connected hardware systems, automated campus energy grids, and embedded sensor solutions.'
   },
   {
-    id: 'evt-005',
+    id: '3c0e12d4-89f5-46c8-bc42-d9f7e8a91234',
+    name: 'Web3 & Decentralized Systems Masterclass',
     title: 'Web3 & Decentralized Systems Masterclass',
     category: 'Workshop',
+    event_date: '2026-07-20',
     date: '2026-07-20',
+    start_time: '15:00',
     startTime: '03:00 PM',
+    end_time: '19:00',
     endTime: '07:00 PM',
     venue: 'Online via Google Meet',
     status: 'past',
     registrationLink: 'https://technospark.in/events/web3-masterclass',
     coverImage: '/assets/images/project_ai_vision.jpg',
-    description: 'Architecting decentralized applications, Solidity smart contracts, and EVM gas optimization techniques.',
-    badge: 'Past Masterclass',
-    attendees: 195,
-    highlights: 'Solidity contracts deployment, IPFS storage integration, code auditing review'
+    description: 'Architecting decentralized applications, Solidity smart contracts, and EVM gas optimization techniques.'
   },
   {
-    id: 'evt-006',
+    id: '9a8b7c6d-5e4f-3a2b-1c0d-ef9876543210',
+    name: 'Cloud Architecture & Kubernetes Sprint',
     title: 'Cloud Architecture & Kubernetes Sprint',
     category: 'Workshop',
+    event_date: '2027-01-18',
     date: '2027-01-18',
+    start_time: '10:00',
     startTime: '10:00 AM',
+    end_time: '15:00',
     endTime: '03:00 PM',
     venue: 'Main Computer Center',
     status: 'draft',
     registrationLink: 'https://technospark.in/events/k8s-sprint',
     coverImage: '/assets/images/event_hackathon_banner.jpg',
-    description: 'Draft outline for microservice deployment, Helm charts, and CI/CD pipelines on GCP and AWS.',
-    badge: 'Draft Planning',
-    attendees: 0,
-    highlights: 'Production cluster configuration, load balancing setup, Prometheus monitoring'
+    description: 'Draft outline for microservice deployment, Helm charts, and CI/CD pipelines on GCP and AWS.'
   }
 ];
 
 // ============================================================================
 // 3. ORGANIZERS / TEAM MOCK DATA
 // ============================================================================
-// Future Supabase Table: `organizers`
-// Columns: id (uuid), name, role, bio, image_url, profile_url, display_order, is_active
+// PostgreSQL Table: public.organizers
+// Columns: id (bigint identity), Name, role, linkedin, image
 export const mockOrganizers = [
   {
-    id: 'org-001',
+    id: 1,
+    Name: 'Akshat Shrivastava',
     name: 'Akshat Shrivastava',
     role: 'GDGoC Organizer & Lead',
-    bio: 'Leads club strategy, technical partnerships, hackathons, and overall community growth at PCCOE.',
-    image: '/assets/images/akshat.jpg',
+    linkedin: 'https://linkedin.com/in/akshat-shrivastava',
     profile: 'https://linkedin.com/in/akshat-shrivastava',
-    displayOrder: 1,
-    status: 'active', // 'active' | 'inactive'
-    email: 'akshat@technospark.org',
-    eventsManaged: 8
+    image: '/assets/images/akshat.jpg'
   },
   {
-    id: 'org-002',
+    id: 2,
+    Name: 'Prajyot Tayde',
     name: 'Prajyot Tayde',
     role: 'Core Team & Technical Lead',
-    bio: 'Architects workshop curriculums, manages cloud infrastructure, and oversees hands-on coding bootcamps.',
-    image: '/assets/images/prajyot.jpg',
+    linkedin: 'https://linkedin.com/in/prajyot-tayde',
     profile: 'https://linkedin.com/in/prajyot-tayde',
-    displayOrder: 2,
-    status: 'active',
-    email: 'prajyot@technospark.org',
-    eventsManaged: 6
+    image: '/assets/images/prajyot.jpg'
   },
   {
-    id: 'org-003',
+    id: 3,
+    Name: 'Rupam Agrawal',
     name: 'Rupam Agrawal',
     role: 'Execution & Operations Lead',
-    bio: 'Coordinates on-ground logistics, venue booking, sponsorship deliverables, and team scheduling.',
-    image: '/assets/images/rupam.svg',
+    linkedin: 'https://linkedin.com/in/rupam-agrawal',
     profile: 'https://linkedin.com/in/rupam-agrawal',
-    displayOrder: 3,
-    status: 'active',
-    email: 'rupam@technospark.org',
-    eventsManaged: 5
+    image: '/assets/images/rupam.svg'
   },
   {
-    id: 'org-004',
+    id: 4,
+    Name: 'Adarsh Thakare',
     name: 'Adarsh Thakare',
     role: 'Web & App Facilitator',
-    bio: 'Oversees open source web repositories, portal integrations, and developer hackathon platforms.',
-    image: '/assets/images/adarsh.svg',
+    linkedin: 'https://linkedin.com/in/adarsh-thakare',
     profile: 'https://linkedin.com/in/adarsh-thakare',
-    displayOrder: 4,
-    status: 'active',
-    email: 'adarsh@technospark.org',
-    eventsManaged: 4
+    image: '/assets/images/adarsh.svg'
   },
   {
-    id: 'org-005',
+    id: 5,
+    Name: 'Tanvi Deshmukh',
     name: 'Tanvi Deshmukh',
     role: 'Design & Creative Lead',
-    bio: 'Designs brand visuals, social media promotional collateral, and event UI/UX interfaces.',
-    image: '/assets/images/akshat.jpg',
+    linkedin: 'https://linkedin.com/in/tanvi-deshmukh',
     profile: 'https://linkedin.com/in/tanvi-deshmukh',
-    displayOrder: 5,
-    status: 'active',
-    email: 'tanvi@technospark.org',
-    eventsManaged: 7
+    image: '/assets/images/akshat.jpg'
   },
   {
-    id: 'org-006',
+    id: 6,
+    Name: 'Siddharth Patil',
     name: 'Siddharth Patil',
     role: 'Alumni Advisor',
-    bio: 'Previous lead advisor providing industry guest connections and mentoring student projects.',
-    image: '/assets/images/prajyot.jpg',
+    linkedin: 'https://linkedin.com/in/siddharth-patil',
     profile: 'https://linkedin.com/in/siddharth-patil',
-    displayOrder: 6,
-    status: 'inactive',
-    email: 'siddharth.alumni@pccoepune.org',
-    eventsManaged: 12
+    image: '/assets/images/prajyot.jpg'
   }
 ];
 
@@ -303,63 +292,43 @@ export const mockGallery = [
 // ============================================================================
 // 5. ADMIN USERS & ACCESS MANAGEMENT MOCK DATA
 // ============================================================================
-// Future Supabase Auth: `auth.users` + custom `profiles` or `user_roles` table.
-// Columns: id (uuid), full_name, email, role, avatar_url, status, created_at, last_sign_in_at
+// PostgreSQL Table: public.admin_users
+// Columns: id (bigint identity), name, role, last_active
 export const mockAdminUsers = [
   {
-    id: 'usr-001',
+    id: 1,
     name: 'Prabodh',
-    email: 'prabodh@technospark.org',
     role: 'Administrator', // 'Administrator' | 'Editor' | 'Viewer'
-    status: 'active', // 'active' | 'pending' | 'suspended'
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    createdDate: '2026-01-10',
-    lastActive: 'Just now',
-    permissions: ['Full Access', 'Database Write', 'User Management', 'Publishing']
+    last_active: '2026-09-21 14:30:00',
+    lastActive: 'Just now'
   },
   {
-    id: 'usr-002',
+    id: 2,
     name: 'Akshat Shrivastava',
-    email: 'akshat@technospark.org',
     role: 'Administrator',
-    status: 'active',
-    avatar: '/assets/images/akshat.jpg',
-    createdDate: '2026-01-15',
-    lastActive: '2 hours ago',
-    permissions: ['Full Access', 'Database Write', 'User Management', 'Publishing']
+    last_active: '2026-09-21 12:15:00',
+    lastActive: '2 hours ago'
   },
   {
-    id: 'usr-003',
+    id: 3,
     name: 'Prajyot Tayde',
-    email: 'prajyot@technospark.org',
     role: 'Editor',
-    status: 'active',
-    avatar: '/assets/images/prajyot.jpg',
-    createdDate: '2026-02-01',
-    lastActive: 'Yesterday',
-    permissions: ['Events Management', 'Gallery Upload', 'Organizer Edit']
+    last_active: '2026-09-20 18:40:00',
+    lastActive: 'Yesterday'
   },
   {
-    id: 'usr-004',
+    id: 4,
     name: 'Rupam Agrawal',
-    email: 'rupam@technospark.org',
     role: 'Editor',
-    status: 'active',
-    avatar: '/assets/images/rupam.svg',
-    createdDate: '2026-02-14',
-    lastActive: '3 days ago',
-    permissions: ['Events Management', 'Gallery Upload']
+    last_active: '2026-09-18 10:20:00',
+    lastActive: '3 days ago'
   },
   {
-    id: 'usr-005',
+    id: 5,
     name: 'Kavita Joshi',
-    email: 'kavita.j@pccoepune.org',
     role: 'Viewer',
-    status: 'pending',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-    createdDate: '2026-08-25',
-    lastActive: 'Pending Invite',
-    permissions: ['Read Only View']
+    last_active: '2026-08-25 09:00:00',
+    lastActive: 'Pending Invite'
   }
 ];
 

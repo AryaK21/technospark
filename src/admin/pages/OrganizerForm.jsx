@@ -1,19 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, Briefcase, Link as LinkIcon, Image, Check } from 'lucide-react';
+import { X, User, Briefcase, Image as ImageIcon } from 'lucide-react';
 
 // ============================================================================
 // REUSABLE ADD / EDIT ORGANIZER FORM MODAL
 // ============================================================================
-// A single, unified form component for creating and editing club leads,
-// facilitators, and core team organizers.
+// Aligned with PostgreSQL Table: public.organizers
+//
+// Schema:
+// - id: bigint GENERATED ALWAYS AS IDENTITY NOT NULL
+// - Name: character varying NOT NULL
+// - role: character varying
+// - linkedin: text
+// - image: text
 //
 // NOTE FOR FUTURE SUPABASE INTEGRATION:
 // // =========================================================================
 // // In handleSubmit:
 // // if (isEditMode) {
-// //   await supabase.from('organizers').update(formData).eq('id', initialData.id);
+// //   await supabase.from('organizers').update({
+// //     Name: formData.name,
+// //     role: formData.role,
+// //     linkedin: formData.linkedin,
+// //     image: formData.image
+// //   }).eq('id', initialData.id);
 // // } else {
-// //   await supabase.from('organizers').insert([formData]);
+// //   await supabase.from('organizers').insert([{
+// //     Name: formData.name,
+// //     role: formData.role,
+// //     linkedin: formData.linkedin,
+// //     image: formData.image
+// //   }]);
 // // }
 // // =========================================================================
 // ============================================================================
@@ -28,13 +44,9 @@ export default function OrganizerForm({
 
   const defaultState = {
     name: '',
-    role: 'Core Team',
-    bio: '',
-    image: '/assets/images/akshat.jpg',
-    profile: 'https://linkedin.com',
-    displayOrder: 1,
-    status: 'active',
-    email: ''
+    role: '',
+    linkedin: '',
+    image: '/assets/images/akshat.jpg'
   };
 
   const [formData, setFormData] = useState(defaultState);
@@ -43,14 +55,10 @@ export default function OrganizerForm({
   useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name || '',
-        role: initialData.role || 'Core Team',
-        bio: initialData.bio || '',
-        image: initialData.image || '/assets/images/akshat.jpg',
-        profile: initialData.profile || 'https://linkedin.com',
-        displayOrder: initialData.displayOrder || 1,
-        status: initialData.status || 'active',
-        email: initialData.email || ''
+        name: initialData.name || initialData.Name || '',
+        role: initialData.role || '',
+        linkedin: initialData.linkedin || initialData.profile || '',
+        image: initialData.image || '/assets/images/akshat.jpg'
       });
     } else {
       setFormData(defaultState);
@@ -68,43 +76,37 @@ export default function OrganizerForm({
     }
   };
 
-  const toggleStatus = () => {
-    setFormData((prev) => ({
-      ...prev,
-      status: prev.status === 'active' ? 'inactive' : 'active'
-    }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Organizer name is required';
-    if (!formData.role.trim()) newErrors.role = 'Role / designation is required';
+    if (!formData.name.trim()) newErrors.name = 'Organizer Name is required (NOT NULL)';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    // =========================================================================
-    // FUTURE SUPABASE INTEGRATION POINT
-    // Replace with Supabase insert / update:
-    // supabase.from('organizers').upsert(...)
-    // =========================================================================
+    const organizerPayload = {
+      id: isEditMode ? initialData.id : Date.now(),
+      name: formData.name.trim(),
+      Name: formData.name.trim(),
+      role: formData.role.trim(),
+      linkedin: formData.linkedin.trim(),
+      image: formData.image.trim(),
+      // Backward compatibility aliases
+      profile: formData.linkedin.trim()
+    };
 
-    onSubmit({
-      ...formData,
-      id: isEditMode ? initialData.id : `org-${Date.now()}`
-    });
+    onSubmit(organizerPayload);
     onClose();
   };
 
   return (
     <div className="admin-modal-backdrop" onClick={onClose}>
-      <div 
-        className="admin-modal-container" 
-        style={{ maxWidth: '600px' }} 
+      <div
+        className="admin-modal-container"
+        style={{ maxWidth: '560px' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -124,124 +126,82 @@ export default function OrganizerForm({
 
         {/* Modal Form */}
         <form onSubmit={handleSubmit} className="admin-modal-body">
-          {/* Name & Role */}
-          <div className="admin-form-row">
-            <div className="admin-form-group">
-              <label className="admin-form-label">
-                Full Name <span className="admin-form-required">*</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="e.g. Akshat Shrivastava"
-                className="admin-form-input"
-              />
-              {errors.name && <span style={{ color: '#f87171', fontSize: '0.75rem' }}>{errors.name}</span>}
-            </div>
-
-            <div className="admin-form-group">
-              <label className="admin-form-label">
-                Role / Designation <span className="admin-form-required">*</span>
-              </label>
-              <input
-                type="text"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                placeholder="e.g. GDGoC Organizer, Lead"
-                className="admin-form-input"
-              />
-              {errors.role && <span style={{ color: '#f87171', fontSize: '0.75rem' }}>{errors.role}</span>}
-            </div>
-          </div>
-
-          {/* Email & Profile URL */}
-          <div className="admin-form-row">
-            <div className="admin-form-group">
-              <label className="admin-form-label">Contact Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="name@technospark.org"
-                className="admin-form-input"
-              />
-            </div>
-
-            <div className="admin-form-group">
-              <label className="admin-form-label">Profile / LinkedIn URL</label>
-              <input
-                type="url"
-                name="profile"
-                value={formData.profile}
-                onChange={handleChange}
-                placeholder="https://linkedin.com/in/..."
-                className="admin-form-input"
-              />
-            </div>
-          </div>
-
-          {/* Profile Image & Display Order */}
-          <div className="admin-form-row">
-            <div className="admin-form-group">
-              <label className="admin-form-label">Profile Image Path</label>
-              <input
-                type="text"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="/assets/images/akshat.jpg"
-                className="admin-form-input"
-              />
-              <span className="admin-form-hint">Path in public/assets/images/ or Supabase URL</span>
-            </div>
-
-            <div className="admin-form-group">
-              <label className="admin-form-label">Display Order</label>
-              <input
-                type="number"
-                name="displayOrder"
-                min="1"
-                max="99"
-                value={formData.displayOrder}
-                onChange={handleChange}
-                className="admin-form-input"
-              />
-              <span className="admin-form-hint">Order in which card appears on the site</span>
-            </div>
-          </div>
-
-          {/* Bio */}
+          {/* 1. Name (character varying NOT NULL) */}
           <div className="admin-form-group">
-            <label className="admin-form-label">Short Bio / Responsibilities</label>
-            <textarea
-              name="bio"
-              value={formData.bio}
+            <label className="admin-form-label">
+              Full Name <span className="admin-form-required">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              placeholder="Coordinates technical bootcamps, manages partnerships..."
-              className="admin-form-textarea"
-              rows={2}
+              placeholder="e.g. Akshat Shrivastava"
+              className="admin-form-input"
+            />
+            {errors.name && <span style={{ color: '#f87171', fontSize: '0.75rem' }}>{errors.name}</span>}
+          </div>
+
+          {/* 2. role (character varying) */}
+          <div className="admin-form-group">
+            <label className="admin-form-label">Role / Designation</label>
+            <input
+              type="text"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              placeholder="e.g. GDGoC Organizer & Lead"
+              className="admin-form-input"
             />
           </div>
 
-          {/* Active Status Toggle */}
+          {/* 3. linkedin (text) */}
           <div className="admin-form-group">
-            <label className="admin-form-label">Visibility Status</label>
-            <div 
-              className="admin-toggle-wrapper"
-              onClick={toggleStatus}
-            >
-              <div className={`admin-toggle-switch ${formData.status === 'active' ? 'checked' : ''}`}>
-                <div className="admin-toggle-knob" />
-              </div>
-              <span className="admin-toggle-label">
-                {formData.status === 'active' ? 'Active (Visible on public site)' : 'Inactive (Hidden)'}
-              </span>
-            </div>
+            <label className="admin-form-label">LinkedIn Profile URL</label>
+            <input
+              type="url"
+              name="linkedin"
+              value={formData.linkedin}
+              onChange={handleChange}
+              placeholder="https://linkedin.com/in/username"
+              className="admin-form-input"
+            />
+            <span className="admin-form-hint">Public LinkedIn profile link</span>
           </div>
+
+          {/* 4. image (text) */}
+          <div className="admin-form-group">
+            <label className="admin-form-label">Profile Image Path / URL</label>
+            <input
+              type="text"
+              name="image"
+              value={formData.image}
+              onChange={handleChange}
+              placeholder="/assets/images/akshat.jpg or URL"
+              className="admin-form-input"
+            />
+            <span className="admin-form-hint">Path in public assets or hosted image URL</span>
+          </div>
+
+          {/* Preview pill */}
+          {formData.image && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: 'var(--admin-radius-md)', backgroundColor: 'var(--admin-card-subtle)', border: '1px solid var(--admin-border-subtle)' }}>
+              <img
+                src={formData.image}
+                alt="Preview"
+                style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }}
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+              <div style={{ fontSize: '0.82rem' }}>
+                <div style={{ fontWeight: 600, color: 'var(--admin-text-title)' }}>
+                  {formData.name || 'Organizer Name'}
+                </div>
+                <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.75rem' }}>
+                  {formData.role || 'Designation'}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Modal Footer */}
           <div className="admin-modal-footer" style={{ margin: '1.25rem -1.5rem -1.5rem -1.5rem' }}>
@@ -256,7 +216,7 @@ export default function OrganizerForm({
               type="submit"
               className="admin-btn admin-btn-primary"
             >
-              {isEditMode ? 'Update Profile' : 'Add Organizer'}
+              {isEditMode ? 'Update Profile' : 'Save Organizer'}
             </button>
           </div>
         </form>

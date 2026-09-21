@@ -1,5 +1,5 @@
 /* ============================================================================
-   ADMIN GALLERY & MEDIA GRID STYLES
+   ADMIN GALLERY & MEDIA GRID STYLES — BLUE & WHITE THEME
    ============================================================================ */
 
 .admin-gallery-grid {
@@ -9,7 +9,7 @@
 }
 
 .admin-gallery-card {
-  background-color: var(--admin-navy-surface);
+  background-color: #FFFFFF;
   border: 1px solid var(--admin-border-subtle);
   border-radius: var(--admin-radius-lg);
   overflow: hidden;
@@ -17,11 +17,12 @@
   flex-direction: column;
   transition: all var(--admin-transition-fast);
   position: relative;
+  box-shadow: var(--admin-shadow-sm);
 }
 
 .admin-gallery-card:hover {
   transform: translateY(-3px);
-  border-color: var(--admin-border-medium);
+  border-color: var(--admin-border-blue);
   box-shadow: var(--admin-shadow-md);
 }
 
@@ -29,7 +30,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  background-color: var(--admin-navy-dark);
+  background-color: #F1F5F9;
   overflow: hidden;
 }
 
@@ -49,10 +50,10 @@
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  background: rgba(3, 10, 26, 0.75);
+  background: rgba(15, 36, 71, 0.85);
   backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
   padding: 0.25rem 0.6rem;
   border-radius: var(--admin-radius-sm);
   font-size: 0.72rem;
@@ -65,8 +66,8 @@
 }
 
 .admin-gallery-type-video {
-  color: var(--admin-accent-orange);
-  border-color: rgba(245, 158, 11, 0.4);
+  color: #38BDF8;
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .admin-gallery-play-icon {
@@ -77,10 +78,10 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(3, 10, 26, 0.7);
+  background: rgba(15, 36, 71, 0.75);
   backdrop-filter: blur(4px);
-  border: 1.5px solid var(--admin-sky-blue);
-  color: #ffffff;
+  border: 1.5px solid #38BDF8;
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,7 +98,7 @@
 .admin-gallery-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(6, 18, 41, 0.6);
+  background: rgba(15, 36, 71, 0.45);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
@@ -119,6 +120,7 @@
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
+  background-color: #FFFFFF;
 }
 
 .admin-gallery-title {
@@ -135,8 +137,8 @@
 
 .admin-gallery-event-tag {
   font-size: 0.78rem;
-  color: var(--admin-sky-blue);
-  font-weight: 500;
+  color: var(--admin-blue-primary);
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -145,7 +147,7 @@
 .admin-gallery-meta {
   margin-top: auto;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--admin-border-subtle);
+  border-top: 1px solid #F1F5F9;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -1,12 +1,12 @@
 /* ============================================================================
-   ADMIN SIDEBAR STYLES
+   ADMIN SIDEBAR STYLES — BLUE & WHITE THEME
    ============================================================================ */
 
 .admin-sidebar {
   width: var(--admin-sidebar-width);
   min-height: 100vh;
-  background-color: var(--admin-navy-elevated);
-  border-right: 1px solid var(--admin-border-subtle);
+  background: linear-gradient(180deg, #0B2046 0%, #081836 100%);
+  border-right: 1px solid rgba(226, 232, 240, 0.12);
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -21,9 +21,9 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  border-bottom: 1px solid var(--admin-border-subtle);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.1);
   text-decoration: none;
-  background-color: var(--admin-text-title);
+  background: transparent;
 }
 
 .admin-sidebar-logo-img {
@@ -42,7 +42,7 @@
   font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: 0.05em;
-  color: var(--admin-navy-surface);
+  color: #FFFFFF;
   line-height: 1.1;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
@@ -50,10 +50,10 @@
 .admin-sidebar-brand-badge {
   font-size: 0.68rem;
   font-weight: 700;
-  color: var(--admin-accent-orange);
+  color: #38BDF8;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 /* Navigation Section */
@@ -69,7 +69,7 @@
 .admin-nav-section-label {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--admin-text-faint);
+  color: #93C5FD;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.5rem 0.75rem 0.25rem 0.75rem;
@@ -81,26 +81,27 @@
   gap: 0.85rem;
   padding: 0.75rem 1rem;
   border-radius: var(--admin-radius-md);
-  color: var(--admin-text-muted);
+  color: #BFDBFE;
   font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none;
   transition: all var(--admin-transition-fast);
   position: relative;
+  border: 1px solid transparent;
 }
 
 .admin-nav-item:hover {
-  color: var(--admin-text-title);
-  background-color: rgba(255, 255, 255, 0.04);
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.07);
 }
 
 /* Active Link State */
 .admin-nav-item.active {
-  color: #ffffff;
-  background: linear-gradient(90deg, rgba(37, 99, 235, 0.25) 0%, rgba(37, 99, 235, 0.08) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #FFFFFF;
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.45) 0%, rgba(37, 99, 235, 0.18) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   font-weight: 600;
-  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 2px 10px rgba(11, 32, 70, 0.3);
 }
 
 .admin-nav-item.active::before {
@@ -110,9 +111,9 @@
   top: 15%;
   bottom: 15%;
   width: 3.5px;
-  background: linear-gradient(to bottom, var(--admin-sky-blue), var(--admin-blue-primary));
+  background: linear-gradient(to bottom, #38BDF8, #2563EB);
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 10px var(--admin-sky-blue);
+  box-shadow: 0 0 10px #38BDF8;
 }
 
 .admin-nav-icon {
@@ -124,7 +125,7 @@
 
 .admin-nav-item:hover .admin-nav-icon,
 .admin-nav-item.active .admin-nav-icon {
-  color: var(--admin-sky-blue);
+  color: #38BDF8;
 }
 
 .admin-nav-badge {
@@ -132,15 +133,15 @@
   font-size: 0.7rem;
   padding: 0.15rem 0.45rem;
   border-radius: var(--admin-radius-full);
-  background-color: var(--admin-navy-card);
-  color: var(--admin-text-muted);
-  border: 1px solid var(--admin-border-subtle);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #BFDBFE;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 /* Sidebar Footer / User & Logout */
 .admin-sidebar-footer {
   padding: 1.25rem 1rem;
-  border-top: 1px solid var(--admin-border-subtle);
+  border-top: 1px solid rgba(226, 232, 240, 0.1);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -152,9 +153,9 @@
   justify-content: space-between;
   padding: 0.6rem 0.85rem;
   border-radius: var(--admin-radius-md);
-  background-color: rgba(6, 18, 41, 0.5);
-  border: 1px dashed var(--admin-border-medium);
-  color: var(--admin-sky-blue);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(147, 197, 253, 0.35);
+  color: #93C5FD;
   font-size: 0.8rem;
   font-weight: 500;
   text-decoration: none;
@@ -162,9 +163,9 @@
 }
 
 .admin-sidebar-public-link:hover {
-  background-color: rgba(37, 99, 235, 0.1);
-  border-color: var(--admin-sky-blue);
-  color: #ffffff;
+  background-color: rgba(37, 99, 235, 0.2);
+  border-color: #38BDF8;
+  color: #FFFFFF;
 }
 
 .admin-sidebar-logout-btn {
@@ -176,7 +177,7 @@
   border-radius: var(--admin-radius-md);
   background: transparent;
   border: 1px solid transparent;
-  color: #f87171;
+  color: #FCA5A5;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -185,8 +186,9 @@
 }
 
 .admin-sidebar-logout-btn:hover {
-  background-color: rgba(239, 68, 68, 0.12);
+  background-color: rgba(239, 68, 68, 0.15);
   border-color: rgba(239, 68, 68, 0.3);
+  color: #FFFFFF;
 }
 
 /* Mobile Sidebar Backdrop */
@@ -202,7 +204,7 @@
     bottom: 0;
     left: 0;
     transform: translateX(-100%);
-    box-shadow: var(--admin-shadow-lg);
+    box-shadow: 0 10px 30px rgba(11, 32, 70, 0.3);
     z-index: 100;
   }
 
@@ -214,7 +216,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    background-color: rgba(3, 10, 26, 0.7);
+    background-color: rgba(11, 32, 70, 0.5);
     backdrop-filter: blur(4px);
     z-index: 95;
     animation: modalFadeIn 0.2s ease-out;
