@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, ExternalLink, Calendar, Clock, MapPin } from 'lucide-react';
+import { Plus, Edit2, Trash2, ExternalLink, Calendar, Clock, MapPin, RefreshCw } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import DataTable from '../components/DataTable';
 import Badge from '../components/Badge';
@@ -11,21 +11,15 @@ import { mockEvents } from '../data/mockData';
 // EVENTS ADMIN MANAGEMENT PAGE (/admin/events)
 // ============================================================================
 // Administrators can view, search, filter, create, edit, and delete events.
-//
-// NOTE FOR FUTURE SUPABASE INTEGRATION:
-// // =========================================================================
-// // 1. Replace the local `events` state with a Supabase query:
-// //    const { data: events, error } = await supabase.from('events').select('*').order('date', { ascending: true });
-// // 2. Replace handleDeleteEvent with:
-// //    await supabase.from('events').delete().eq('id', eventToDelete.id);
-// // =========================================================================
+// Synchronized with live Supabase table: public.events
 // ============================================================================
 
 export default function Events({
-  events = mockEvents,
+  events = [],
   onAddEvent,
   onUpdateEvent,
-  onDeleteEvent
+  onDeleteEvent,
+  onRefresh
 }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -153,14 +147,27 @@ export default function Events({
         title="Events Management"
         subtitle={`Manage club hackathons, workshops, and tech seminars (${events.length} total events)`}
       >
-        <button
-          type="button"
-          className="admin-btn admin-btn-primary"
-          onClick={handleOpenAdd}
-        >
-          <Plus size={16} />
-          <span>Add Event</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          {onRefresh && (
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary"
+              onClick={onRefresh}
+              title="Sync with Supabase"
+            >
+              <RefreshCw size={14} />
+              <span>Sync</span>
+            </button>
+          )}
+          <button
+            type="button"
+            className="admin-btn admin-btn-primary"
+            onClick={handleOpenAdd}
+          >
+            <Plus size={16} />
+            <span>Add Event</span>
+          </button>
+        </div>
       </PageHeader>
 
       {/* Events Data Table */}

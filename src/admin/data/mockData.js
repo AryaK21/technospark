@@ -143,7 +143,7 @@ export const mockEvents = [
     coverImage: '/assets/images/event_hackathon_banner.jpg',
     description: 'Draft outline for microservice deployment, Helm charts, and CI/CD pipelines on GCP and AWS.'
   }
-];
+].sort((a, b) => (b.event_date || '').localeCompare(a.event_date || ''));
 
 // ============================================================================
 // 3. ORGANIZERS / TEAM MOCK DATA
@@ -205,7 +205,7 @@ export const mockOrganizers = [
     profile: 'https://linkedin.com/in/siddharth-patil',
     image: '/assets/images/prajyot.jpg'
   }
-];
+].sort((a, b) => (b.id || 0) - (a.id || 0));
 
 // ============================================================================
 // 4. GALLERY / MEDIA MOCK DATA
@@ -287,7 +287,7 @@ export const mockGallery = [
     duration: '03:12',
     caption: 'Recap of project pitches, prize distributions, and winner speeches.'
   }
-];
+].sort((a, b) => new Date(b.uploadDate || 0) - new Date(a.uploadDate || 0));
 
 // ============================================================================
 // 5. ADMIN USERS & ACCESS MANAGEMENT MOCK DATA

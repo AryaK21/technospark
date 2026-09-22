@@ -101,7 +101,7 @@ export default function EventForm({
     }
 
     const eventPayload = {
-      id: isEditMode ? initialData.id : crypto.randomUUID ? crypto.randomUUID() : `evt-${Date.now()}`,
+      ...(isEditMode && initialData?.id ? { id: initialData.id } : {}),
       name: formData.name.trim(),
       category: formData.category,
       event_date: formData.event_date,

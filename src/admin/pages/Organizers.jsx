@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, ExternalLink, Users, Mail, ArrowUpDown } from 'lucide-react';
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  ExternalLink,
+  Users,
+  RefreshCw,
+  HardDrive
+} from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import DataTable from '../components/DataTable';
-import Badge from '../components/Badge';
 import ConfirmDialog from '../components/ConfirmDialog';
 import OrganizerForm from './OrganizerForm';
 import { mockOrganizers } from '../data/mockData';
@@ -10,26 +17,22 @@ import { mockOrganizers } from '../data/mockData';
 // ============================================================================
 // ORGANIZERS ADMIN MANAGEMENT PAGE (/admin/organizers)
 // ============================================================================
-// Administrators can view, create, edit, order, and toggle organizers.
-//
-// NOTE FOR FUTURE SUPABASE INTEGRATION:
-// // =========================================================================
-// // 1. Fetch organizers:
-// //    const { data: organizers, error } = await supabase.from('organizers').select('*').order('display_order');
-// // 2. Delete organizer:
-// //    await supabase.from('organizers').delete().eq('id', orgToDelete.id);
-// // =========================================================================
+// Administrators can view, create, edit, and delete organizers directly from
+// Supabase public.organizers table and organizers storage bucket.
 // ============================================================================
 
 export default function Organizers({
   organizers = mockOrganizers,
+  isLoading = false,
   onAddOrganizer,
   onUpdateOrganizer,
-  onDeleteOrganizer
+  onDeleteOrganizer,
+  onRefresh
 }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingOrg, setEditingOrg] = useState(null);
   const [deletingOrg, setDeletingOrg] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleOpenAdd = () => {
     setEditingOrg(null);
@@ -41,18 +44,26 @@ export default function Organizers({
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (formData) => {
+  const handleFormSubmit = async (formData) => {
     if (editingOrg) {
-      onUpdateOrganizer(formData);
+      return await onUpdateOrganizer(formData);
     } else {
-      onAddOrganizer(formData);
+      return await onAddOrganizer(formData);
     }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deletingOrg) {
-      onDeleteOrganizer(deletingOrg.id);
+      await onDeleteOrganizer(deletingOrg.id, deletingOrg.image);
       setDeletingOrg(null);
+    }
+  };
+
+  const handleRefreshClick = async () => {
+    if (onRefresh) {
+      setIsRefreshing(true);
+      await onRefresh();
+      setIsRefreshing(false);
     }
   };
 
@@ -67,11 +78,16 @@ export default function Organizers({
             src={row.image || '/assets/images/akshat.jpg'}
             alt={row.name || row.Name}
             className="admin-table-avatar-img"
-            onError={(e) => { e.target.src = '/assets/images/akshat.jpg'; }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/assets/images/akshat.jpg';
+            }}
           />
           <div className="admin-table-title-cell">
             <span className="admin-table-main-text">{row.name || row.Name}</span>
-            <span className="admin-table-sub-text">ID: #{row.id}</span>
+            <span className="admin-table-sub-text">
+              {row.id ? `ID: #${row.id}` : 'Pending Save'}
+            </span>
           </div>
         </div>
       )
@@ -142,23 +158,74 @@ export default function Organizers({
     }
   ];
 
-
   return (
     <div className="admin-page-container">
       {/* Page Header */}
       <PageHeader
         title="Organizers & Leadership"
-        subtitle={`Manage club team profiles and coordinators (${organizers.length} total organizers)`}
+        subtitle={`Manage club team profiles stored in Supabase public.organizers (${organizers.length} total organizers)`}
       >
-        <button
-          type="button"
-          className="admin-btn admin-btn-primary"
-          onClick={handleOpenAdd}
-        >
-          <Plus size={16} />
-          <span>Add Organizer</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          {onRefresh && (
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary"
+              onClick={handleRefreshClick}
+              disabled={isRefreshing || isLoading}
+              title="Refresh from Supabase"
+            >
+              <RefreshCw size={15} className={isRefreshing || isLoading ? 'admin-spinner' : ''} />
+              <span>Refresh</span>
+            </button>
+          )}
+          <button
+            type="button"
+            className="admin-btn admin-btn-primary"
+            onClick={handleOpenAdd}
+          >
+            <Plus size={16} />
+            <span>Add Organizer</span>
+          </button>
+        </div>
       </PageHeader>
+
+      {/* Database & Storage Status Badges */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          marginBottom: '1rem'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.8rem', color: 'var(--admin-text-muted)' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <Users size={14} color="var(--admin-blue-primary)" />
+            <span>Total Team: <strong>{organizers.length}</strong></span>
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              fontSize: '0.75rem',
+              color: 'var(--admin-text-muted)',
+              backgroundColor: 'var(--admin-bg-table-header)',
+              padding: '0.35rem 0.75rem',
+              borderRadius: '6px',
+              border: '1px solid var(--admin-border-subtle)'
+            }}
+          >
+            <HardDrive size={13} color="var(--admin-sky-blue)" />
+            <span>Storage: <strong>organizers</strong> bucket</span>
+          </div>
+        </div>
+      </div>
 
       {/* Organizers Data Table */}
       <DataTable
@@ -172,7 +239,7 @@ export default function Organizers({
         emptyMessage="No organizers found matching your search."
       />
 
-      {/* Reusable Add / Edit Modal Form */}
+      {/* Reusable Add / Edit Modal Form with Image Intake */}
       <OrganizerForm
         isOpen={isFormOpen}
         initialData={editingOrg}
@@ -183,8 +250,8 @@ export default function Organizers({
       {/* Delete Confirmation Modal */}
       <ConfirmDialog
         isOpen={Boolean(deletingOrg)}
-        title="Delete Organizer"
-        message={`Are you sure you want to delete "${deletingOrg?.name || deletingOrg?.Name}"? This record will be permanently deleted.`}
+        title="Delete Organizer Profile"
+        message={`Are you sure you want to remove "${deletingOrg?.name || deletingOrg?.Name}" from the team directory?`}
         confirmLabel="Delete Organizer"
         isDanger={true}
         onConfirm={confirmDelete}

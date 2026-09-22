@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 // Admin Layout
@@ -11,6 +11,25 @@ import Organizers from './pages/Organizers';
 import Gallery from './pages/Gallery';
 import AdminUsers from './pages/AdminUsers';
 import Settings from './pages/Settings';
+
+// Supabase Connection & Service
+import { supabase } from '../lib/supabaseClient';
+import {
+  getEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent
+} from '../services/eventsService';
+import {
+  fetchGalleryFromStorage,
+  deleteGalleryMediaFromStorage
+} from '../services/galleryService';
+import {
+  getOrganizers,
+  createOrganizer,
+  updateOrganizer,
+  deleteOrganizer
+} from '../services/organizersService';
 
 // Mock Data
 import {
@@ -57,11 +76,15 @@ import './styles/gallery.css';
 export default function AdminApp() {
   const navigate = useNavigate();
 
-  // Active state for events, organizers, gallery, and admin users
-  // Initialized with mockData.js so adding/editing/deleting reacts in real-time.
-  const [events, setEvents] = useState(initialEvents);
+  // Active state for events (Live Supabase)
+  const [events, setEvents] = useState([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+
+  // Active state for organizers, gallery, and admin users
   const [organizers, setOrganizers] = useState(initialOrganizers);
+  const [isLoadingOrganizers, setIsLoadingOrganizers] = useState(true);
   const [gallery, setGallery] = useState(initialGallery);
+  const [isLoadingGallery, setIsLoadingGallery] = useState(false);
   const [adminUsers, setAdminUsers] = useState(initialAdminUsers);
   const [toast, setToast] = useState(null);
 
@@ -84,49 +107,235 @@ export default function AdminApp() {
     });
   };
 
-  // Event Handlers
-  const handleAddEvent = (newEvent) => {
-    setEvents((prev) => [newEvent, ...prev]);
-    showToast(`Event "${newEvent.title}" published successfully!`);
+  // Fetch live events from Supabase
+  const loadEvents = async (silent = false) => {
+    if (!silent) setIsLoadingEvents(true);
+    const { data, error } = await getEvents();
+    setIsLoadingEvents(false);
+    if (error) {
+      console.warn('[AdminApp] Supabase fetch error, fallback to initial:', error);
+      setEvents(initialEvents);
+    } else {
+      console.log('[AdminApp] Loaded events from Supabase:', data);
+      setEvents(data || []);
+    }
   };
 
-  const handleUpdateEvent = (updatedEvent) => {
-    setEvents((prev) =>
-      prev.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
-    );
-    showToast(`Event "${updatedEvent.title}" updated successfully!`);
+  // Fetch live organizers from Supabase
+  const loadOrganizers = async (silent = false) => {
+    if (!silent) setIsLoadingOrganizers(true);
+    const { data, error } = await getOrganizers();
+    setIsLoadingOrganizers(false);
+    if (error) {
+      console.warn('[AdminApp] Supabase organizers fetch error, fallback to initial:', error);
+      setOrganizers((prev) => (prev.length > 0 ? prev : initialOrganizers));
+    } else if (data && data.length > 0) {
+      console.log('[AdminApp] Loaded organizers from Supabase:', data);
+      setOrganizers(data);
+    } else {
+      setOrganizers((prev) => (prev.length > 0 ? prev : initialOrganizers));
+    }
   };
 
-  const handleDeleteEvent = (eventId) => {
+  // Fetch media from Supabase Storage 'gallery' bucket
+  const loadGalleryMedia = async (silent = false) => {
+    if (!silent) setIsLoadingGallery(true);
+    const { data, error } = await fetchGalleryFromStorage();
+    setIsLoadingGallery(false);
+    if (error) {
+      console.warn('[AdminApp] Supabase storage list error, using initial:', error);
+      if (gallery.length === 0) setGallery(initialGallery);
+    } else if (data && data.length > 0) {
+      console.log('[AdminApp] Loaded gallery files from Supabase Storage:', data);
+      // Merge: show Supabase files first, followed by any initial demo files not duplicated
+      const supabasePaths = new Set(data.map((d) => d.storagePath || d.title));
+      const remainingInitial = initialGallery.filter((ig) => !supabasePaths.has(ig.title));
+      setGallery([...data, ...remainingInitial]);
+    } else {
+      // If bucket has no items yet, retain initial demo gallery
+      setGallery((prev) => (prev.length > 0 ? prev : initialGallery));
+    }
+  };
+
+  useEffect(() => {
+    loadEvents();
+    loadOrganizers();
+    loadGalleryMedia(true);
+
+    // 1. Auto-refresh when tab gains focus (e.g. returning from Supabase dashboard)
+    const handleFocus = () => {
+      loadEvents(true);
+      loadOrganizers(true);
+      loadGalleryMedia(true);
+    };
+    window.addEventListener('focus', handleFocus);
+
+    // 2. Realtime listener for Postgres changes on public.events
+    let channel;
+    try {
+      channel = supabase
+        .channel('public:events')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'events' },
+          (payload) => {
+            console.log('[AdminApp] Realtime event update detected:', payload);
+            loadEvents(true);
+          }
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('[AdminApp] Realtime subscription init:', e);
+    }
+
+    // 3. Realtime listener for Postgres changes on public.organizers
+    let orgChannel;
+    try {
+      orgChannel = supabase
+        .channel('public:organizers')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'organizers' },
+          (payload) => {
+            console.log('[AdminApp] Realtime organizer update detected:', payload);
+            loadOrganizers(true);
+          }
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('[AdminApp] Realtime organizers subscription init:', e);
+    }
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+      if (orgChannel) {
+        supabase.removeChannel(orgChannel);
+      }
+    };
+  }, []);
+
+  // Event Handlers connected to Supabase
+  const handleAddEvent = async (newEvent) => {
+    const { data, error } = await createEvent(newEvent);
+    if (error) {
+      showToast(`Failed to save event: ${error.message || 'Database error'}`, 'error');
+      return false;
+    }
+    if (data) {
+      setEvents((prev) => [data, ...prev]);
+      showToast(`Event "${data.name}" saved to Supabase!`, 'success');
+      return true;
+    }
+    return false;
+  };
+
+  const handleUpdateEvent = async (updatedEvent) => {
+    const { data, error } = await updateEvent(updatedEvent.id, updatedEvent);
+    if (error) {
+      showToast(`Failed to update event: ${error.message || 'Database error'}`, 'error');
+      return false;
+    }
+    if (data) {
+      setEvents((prev) =>
+        prev.map((e) => (e.id === data.id ? data : e))
+      );
+      showToast(`Event "${data.name}" updated in Supabase!`, 'success');
+      return true;
+    }
+    return false;
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    const { error } = await deleteEvent(eventId);
+    if (error) {
+      showToast(`Failed to delete event: ${error.message || 'Database error'}`, 'error');
+      return false;
+    }
     setEvents((prev) => prev.filter((e) => e.id !== eventId));
-    showToast('Event deleted from records.', 'info');
+    showToast('Event removed from Supabase.', 'info');
+    return true;
   };
 
-  // Organizer Handlers
-  const handleAddOrganizer = (newOrg) => {
-    setOrganizers((prev) => [...prev, newOrg]);
-    showToast(`Organizer "${newOrg.name}" added to directory!`);
+  const handleRefreshEvents = async () => {
+    await loadEvents();
+    showToast('Refreshed events from Supabase!', 'info');
   };
 
-  const handleUpdateOrganizer = (updatedOrg) => {
-    setOrganizers((prev) =>
-      prev.map((o) => (o.id === updatedOrg.id ? updatedOrg : o))
-    );
-    showToast(`Organizer "${updatedOrg.name}" profile updated!`);
+  // Organizer Handlers connected to Supabase
+  const handleAddOrganizer = async (newOrg) => {
+    const { data, error, isRlsError } = await createOrganizer(newOrg);
+    if (error) {
+      showToast(
+        isRlsError
+          ? 'RLS Error: Run "ALTER TABLE public.organizers DISABLE ROW LEVEL SECURITY;" in Supabase'
+          : `Failed to save organizer: ${error.message || 'Database error'}`,
+        'error'
+      );
+      return { success: false, error, isRlsError };
+    }
+    if (data) {
+      setOrganizers((prev) => [data, ...prev]);
+      showToast(`Organizer "${data.name}" saved to Supabase!`, 'success');
+      return { success: true, data };
+    }
+    return { success: false };
   };
 
-  const handleDeleteOrganizer = (orgId) => {
+  const handleUpdateOrganizer = async (updatedOrg) => {
+    const { data, error, isRlsError } = await updateOrganizer(updatedOrg.id, updatedOrg);
+    if (error) {
+      showToast(
+        isRlsError
+          ? 'RLS Error: Run "ALTER TABLE public.organizers DISABLE ROW LEVEL SECURITY;" in Supabase'
+          : `Failed to update organizer: ${error.message || 'Database error'}`,
+        'error'
+      );
+      return { success: false, error, isRlsError };
+    }
+    if (data) {
+      setOrganizers((prev) =>
+        prev.map((o) => (o.id === data.id ? data : o))
+      );
+      showToast(`Organizer "${data.name}" profile updated in Supabase!`, 'success');
+      return { success: true, data };
+    }
+    return { success: false };
+  };
+
+  const handleDeleteOrganizer = async (orgId, imagePath) => {
+    const { error } = await deleteOrganizer(orgId, imagePath);
+    if (error) {
+      showToast(`Failed to delete organizer: ${error.message || 'Database error'}`, 'error');
+      return false;
+    }
     setOrganizers((prev) => prev.filter((o) => o.id !== orgId));
-    showToast('Organizer removed from directory.', 'info');
+    showToast('Organizer removed from Supabase.', 'info');
+    return true;
+  };
+
+  const handleRefreshOrganizers = async () => {
+    await loadOrganizers();
+    showToast('Refreshed organizers from Supabase!', 'info');
   };
 
   // Gallery Handlers
   const handleAddMedia = (newMedia) => {
     setGallery((prev) => [newMedia, ...prev]);
-    showToast(`Media "${newMedia.title}" uploaded to gallery!`);
+    showToast(`Media "${newMedia.title}" uploaded to Supabase gallery!`);
   };
 
-  const handleDeleteMedia = (mediaId) => {
+  const handleDeleteMedia = async (mediaId) => {
+    const itemToDelete = gallery.find((m) => m.id === mediaId);
+    if (itemToDelete?.storagePath && itemToDelete?.fromSupabase) {
+      const { error } = await deleteGalleryMediaFromStorage(itemToDelete.storagePath);
+      if (error) {
+        showToast(`Storage deletion error: ${error.message || 'Could not delete file'}`, 'error');
+        return;
+      }
+    }
     setGallery((prev) => prev.filter((m) => m.id !== mediaId));
     showToast('Media file removed from gallery.', 'info');
   };
@@ -170,6 +379,7 @@ export default function AdminApp() {
               onAddEvent={handleAddEvent}
               onUpdateEvent={handleUpdateEvent}
               onDeleteEvent={handleDeleteEvent}
+              onRefresh={handleRefreshEvents}
             />
           }
         />
@@ -180,9 +390,11 @@ export default function AdminApp() {
           element={
             <Organizers
               organizers={organizers}
+              isLoading={isLoadingOrganizers}
               onAddOrganizer={handleAddOrganizer}
               onUpdateOrganizer={handleUpdateOrganizer}
               onDeleteOrganizer={handleDeleteOrganizer}
+              onRefresh={handleRefreshOrganizers}
             />
           }
         />
@@ -193,8 +405,10 @@ export default function AdminApp() {
           element={
             <Gallery
               mediaList={gallery}
+              isLoading={isLoadingGallery}
               onAddMedia={handleAddMedia}
               onDeleteMedia={handleDeleteMedia}
+              onRefresh={loadGalleryMedia}
             />
           }
         />
