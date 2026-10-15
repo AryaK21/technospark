@@ -8,63 +8,84 @@ import {
   ShieldCheck,
   Settings,
   LogOut,
-  ExternalLink
+  ExternalLink,
+  Lock
 } from 'lucide-react';
 import { clubInfo } from '../../data/clubInfo';
 
 // ============================================================================
-// ADMIN SIDEBAR NAVIGATION COMPONENT
+// ADMIN SIDEBAR NAVIGATION COMPONENT (ROLE-AWARE)
 // ============================================================================
-// Provides primary desktop and mobile navigation across all admin dashboard modules.
-//
-// Key Features:
-// - Brand identity (Technospark official logo + badge)
-// - Active route highlights with brand blue/sky accent indicators
-// - Direct link to preview the public website
-// - Logout action with confirmation trigger
+// - Administrator: Full access to all 6 modules.
+// - Editor: Allowed access to Events, Gallery, Admin Users, and Dashboard.
+//   Restricted modules (Organizers, Settings) are locked with an "Admin" badge.
 // ============================================================================
 
-export default function AdminSidebar({ isMobileOpen, onCloseMobile, onLogoutClick }) {
+export default function AdminSidebar({
+  currentUser,
+  isMobileOpen,
+  onCloseMobile,
+  onLogoutClick,
+  onRestrictedClick
+}) {
   const navigate = useNavigate();
+  const isAdministrator = currentUser?.role === 'Administrator';
 
   const navLinks = [
     {
       label: 'Dashboard',
       path: '/admin',
       end: true,
-      icon: LayoutDashboard
+      icon: LayoutDashboard,
+      adminOnly: false
     },
     {
       label: 'Events',
       path: '/admin/events',
-      icon: Calendar
+      icon: Calendar,
+      adminOnly: false
     },
     {
       label: 'Organizers',
       path: '/admin/organizers',
-      icon: Users
+      icon: Users,
+      adminOnly: true
     },
     {
       label: 'Gallery',
       path: '/admin/gallery',
-      icon: Image
+      icon: Image,
+      adminOnly: false
     },
     {
       label: 'Admin Users',
       path: '/admin/users',
-      icon: ShieldCheck
+      icon: ShieldCheck,
+      adminOnly: true // Only Administrator can view or access
     },
     {
       label: 'Settings',
       path: '/admin/settings',
-      icon: Settings
+      icon: Settings,
+      adminOnly: true
     }
   ];
+
+  const handleLinkClick = (e, item) => {
+    if (item.adminOnly && !isAdministrator) {
+      e.preventDefault();
+      if (onRestrictedClick) {
+        onRestrictedClick(item.label);
+      }
+      return;
+    }
+    if (onCloseMobile) onCloseMobile();
+  };
 
   return (
     <>
       {/* Mobile Drawer Backdrop */}
-      <div 
+      <div
         className={`admin-sidebar-backdrop ${isMobileOpen ? 'mobile-open' : ''}`}
         onClick={onCloseMobile}
         aria-hidden="true"
@@ -80,7 +101,9 @@ export default function AdminSidebar({ isMobileOpen, onCloseMobile, onLogoutClic
           />
           <div className="admin-sidebar-brand-text">
             <span className="admin-sidebar-brand-title">TECHNOSPARK</span>
-            <span className="admin-sidebar-brand-badge">ADMIN CMS</span>
+            <span className="admin-sidebar-brand-badge">
+              {isAdministrator ? 'ADMIN CMS' : 'EDITOR CMS'}
+            </span>
           </div>
         </Link>
 
@@ -89,6 +112,27 @@ export default function AdminSidebar({ isMobileOpen, onCloseMobile, onLogoutClic
           <div className="admin-nav-section-label">Management</div>
           {navLinks.map((item) => {
             const Icon = item.icon;
+            const isLocked = item.adminOnly && !isAdministrator;
+
+            if (isLocked) {
+              return (
+                <div
+                  key={item.path}
+                  className="admin-nav-item locked"
+                  onClick={(e) => handleLinkClick(e, item)}
+                  title={`${item.label} requires Administrator privileges`}
+                  style={{ cursor: 'not-allowed' }}
+                >
+                  <Icon className="admin-nav-icon" />
+                  <span>{item.label}</span>
+                  <span className="admin-lock-badge">
+                    <Lock size={10} style={{ marginRight: '2px' }} />
+                    Admin
+                  </span>
+                </div>
+              );
+            }
+
             return (
               <NavLink
                 key={item.path}
@@ -97,7 +141,7 @@ export default function AdminSidebar({ isMobileOpen, onCloseMobile, onLogoutClic
                 className={({ isActive }) =>
                   `admin-nav-item ${isActive ? 'active' : ''}`
                 }
-                onClick={onCloseMobile}
+                onClick={(e) => handleLinkClick(e, item)}
               >
                 <Icon className="admin-nav-icon" />
                 <span>{item.label}</span>
@@ -121,10 +165,6 @@ export default function AdminSidebar({ isMobileOpen, onCloseMobile, onLogoutClic
           </a>
 
           {/* Logout Action */}
-          {/* // ================================================= */}
-          {/* // FUTURE AUTHENTICATION LOGOUT                      */}
-          {/* // Later, clicking this will call supabase.auth.signOut() */}
-          {/* // ================================================= */}
           <button
             type="button"
             className="admin-sidebar-logout-btn"

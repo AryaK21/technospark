@@ -6,32 +6,34 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
 
 // ============================================================================
-// ADMIN MASTER LAYOUT SHELL
-// ============================================================================
-// Wraps all admin routes (/admin, /admin/events, etc.) in a consistent layout:
-// - Sticky Sidebar with responsive mobile drawer
-// - Contextual Topbar
-// - Viewport for subroute page content
-// - Universal Toast notifications and Confirmation Dialogs
+// ADMIN MASTER LAYOUT SHELL (ROLE & AUTH AWARE)
 // ============================================================================
 
-export default function AdminLayout({ toast, setToast, theme = 'light', onThemeChange }) {
+export default function AdminLayout({
+  currentUser,
+  onLogout,
+  toast,
+  setToast,
+  theme = 'light',
+  onThemeChange
+}) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowLogoutConfirm(false);
-    // =========================================================================
-    // FUTURE SUPABASE AUTH LOGOUT:
-    // await supabase.auth.signOut();
-    // navigate('/login');
-    // =========================================================================
+    if (onLogout) {
+      await onLogout();
+    }
+  };
+
+  const handleRestrictedClick = (sectionName) => {
     if (setToast) {
       setToast({
         id: Date.now(),
-        type: 'info',
-        message: 'Sign out simulated. In production, Supabase Auth session will terminate.'
+        type: 'error',
+        message: `Access Restricted: Only Administrators can view and edit ${sectionName}.`
       });
     }
   };
@@ -41,18 +43,22 @@ export default function AdminLayout({ toast, setToast, theme = 'light', onThemeC
       <div className="admin-layout-shell">
         {/* Responsive Sidebar */}
         <AdminSidebar
+          currentUser={currentUser}
           isMobileOpen={isMobileOpen}
           onCloseMobile={() => setIsMobileOpen(false)}
           onLogoutClick={() => setShowLogoutConfirm(true)}
+          onRestrictedClick={handleRestrictedClick}
         />
 
         {/* Main Content Column */}
         <div className="admin-main-wrapper">
           {/* Top Bar */}
           <AdminTopbar
+            currentUser={currentUser}
             onOpenMobile={() => setIsMobileOpen(true)}
             theme={theme}
             onThemeChange={onThemeChange}
+            onLogoutClick={() => setShowLogoutConfirm(true)}
           />
 
           {/* Page Content Viewport */}
@@ -65,10 +71,10 @@ export default function AdminLayout({ toast, setToast, theme = 'light', onThemeC
       {/* Logout Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showLogoutConfirm}
-        title="Sign Out of Admin Panel"
-        message="Are you sure you want to sign out of the Technospark CMS?"
+        title="Sign Out of Admin CMS"
+        message="Are you sure you want to sign out of your Google administrative session?"
         confirmLabel="Sign Out"
-        cancelLabel="Cancel"
+        cancelLabel="Stay Logged In"
         isDanger={false}
         onConfirm={handleLogout}
         onCancel={() => setShowLogoutConfirm(false)}

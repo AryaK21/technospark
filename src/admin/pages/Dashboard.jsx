@@ -19,21 +19,12 @@ import Badge from '../components/Badge';
 import { mockDashboardStats, mockEvents } from '../data/mockData';
 
 // ============================================================================
-// ADMIN DASHBOARD OVERVIEW PAGE (/admin)
-// ============================================================================
-// Main landing screen for authenticated club administrators.
-// Provides a high-level summary of website contents, quick creation actions,
-// and a feed of recent events.
-//
-// NOTE FOR FUTURE SUPABASE INTEGRATION:
-// // =========================================================================
-// // 1. Replace `mockDashboardStats` with Supabase aggregate RPC / count queries.
-// // 2. Replace `mockEvents` with `supabase.from('events').select('*').limit(5)`.
-// // =========================================================================
+// ADMIN DASHBOARD OVERVIEW PAGE (/admin) — ROLE-AWARE
 // ============================================================================
 
-export default function Dashboard({ events = mockEvents, onEditEvent }) {
+export default function Dashboard({ currentUser, events = mockEvents, onEditEvent }) {
   const navigate = useNavigate();
+  const isAdministrator = currentUser?.role === 'Administrator';
 
   // Pick the latest 4 events for the dashboard preview table
   const recentEvents = events.slice(0, 4);
@@ -42,8 +33,12 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
     <div className="admin-page-container">
       {/* Page Header */}
       <PageHeader
-        title="Admin Dashboard"
-        subtitle="Welcome back to Technospark CMS. Here is what is happening across your club portal."
+        title={isAdministrator ? "Admin Dashboard" : "Editor Dashboard"}
+        subtitle={
+          isAdministrator
+            ? "Welcome back to Technospark CMS. Full administrative oversight across all club modules."
+            : "Welcome back to Technospark CMS. You have Editor permissions to manage Events and Gallery media."
+        }
       >
         <button
           type="button"
@@ -56,24 +51,25 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
       </PageHeader>
 
       {/* 1. Primary Metrics / Stat Cards */}
-      {/* These values are centralized in mockData.js and will later come from Supabase queries */}
       <div className="admin-stats-grid">
         <StatCard
           title="TOTAL EVENTS"
-          value={mockDashboardStats.events}
+          value={events.length > 0 ? events.length : mockDashboardStats.events}
           icon={Calendar}
-          trend="+2 Upcoming"
+          trend="+ Live on Portal"
           trendType="up"
           subtitle="Flagships, workshops & labs"
         />
-        <StatCard
-          title="TOTAL ORGANIZERS"
-          value={mockDashboardStats.organizers}
-          icon={Users}
-          trend="Core Team"
-          trendType="neutral"
-          subtitle="Active leads & facilitators"
-        />
+        {isAdministrator && (
+          <StatCard
+            title="TOTAL ORGANIZERS"
+            value={mockDashboardStats.organizers}
+            icon={Users}
+            trend="Core Team"
+            trendType="neutral"
+            subtitle="Active leads & facilitators"
+          />
+        )}
         <StatCard
           title="GALLERY ITEMS"
           value={mockDashboardStats.galleryItems}
@@ -82,14 +78,25 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
           trendType="up"
           subtitle="Event media & highlights"
         />
-        <StatCard
-          title="ADMIN USERS"
-          value={mockDashboardStats.admins}
-          icon={ShieldCheck}
-          trend="Authorized"
-          trendType="neutral"
-          subtitle="Manage CMS credentials"
-        />
+        {isAdministrator ? (
+          <StatCard
+            title="ADMIN USERS"
+            value={mockDashboardStats.admins}
+            icon={ShieldCheck}
+            trend="Authorized"
+            trendType="neutral"
+            subtitle="Manage CMS credentials"
+          />
+        ) : (
+          <StatCard
+            title="YOUR PERMISSIONS"
+            value="Editor"
+            icon={ShieldCheck}
+            trend="Active"
+            trendType="neutral"
+            subtitle="Events & Gallery Form Access"
+          />
+        )}
       </div>
 
       {/* 2. Quick Actions Bar */}
@@ -107,14 +114,16 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
             <Plus size={14} />
             <span>Add Event</span>
           </button>
-          <button
-            type="button"
-            className="admin-btn admin-btn-secondary admin-btn-sm"
-            onClick={() => navigate('/admin/organizers?action=new')}
-          >
-            <Users size={14} />
-            <span>Add Organizer</span>
-          </button>
+          {isAdministrator && (
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary admin-btn-sm"
+              onClick={() => navigate('/admin/organizers?action=new')}
+            >
+              <Users size={14} />
+              <span>Add Organizer</span>
+            </button>
+          )}
           <button
             type="button"
             className="admin-btn admin-btn-secondary admin-btn-sm"
@@ -145,14 +154,13 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
             </Link>
           </div>
 
-          <div className="admin-table-wrapper" style={{ border: 'none' }}>
+          <div className="admin-table-container" style={{ border: 'none', margin: '0 -0.5rem' }}>
             <table className="admin-table">
               <thead>
                 <tr>
                   <th>Event Name</th>
-                  <th>Date</th>
-                  <th>Venue</th>
                   <th>Category</th>
+                  <th>Date</th>
                   <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
@@ -162,40 +170,29 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
                     <td>
                       <div className="admin-table-title-cell">
                         <span className="admin-table-main-text">{evt.name || evt.title}</span>
-                        <span className="admin-table-sub-text">{evt.category}</span>
+                        <span className="admin-table-sub-text">
+                          <MapPin size={12} style={{ display: 'inline', marginRight: '3px' }} />
+                          {evt.venue}
+                        </span>
                       </div>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem' }}>
+                      <Badge variant="category" label={evt.category} />
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', color: 'var(--admin-text-muted)' }}>
                         <Clock size={13} color="var(--admin-text-faint)" />
                         <span>{evt.event_date || evt.date}</span>
                       </div>
                     </td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        <MapPin size={13} color="var(--admin-text-faint)" />
-                        <span title={evt.venue}>{evt.venue}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--admin-blue-primary)' }}>
-                        {evt.category}
-                      </span>
-                    </td>
                     <td style={{ textAlign: 'right' }}>
                       <button
                         type="button"
-                        className="admin-btn admin-btn-icon"
-                        title="Edit event"
-                        onClick={() => {
-                          if (onEditEvent) {
-                            onEditEvent(evt);
-                          } else {
-                            navigate(`/admin/events?edit=${evt.id}`);
-                          }
-                        }}
+                        className="admin-btn-icon"
+                        title="Edit Event"
+                        onClick={() => navigate('/admin/events')}
                       >
-                        <Edit2 size={14} />
+                        <Edit2 size={15} />
                       </button>
                     </td>
                   </tr>
@@ -205,6 +202,57 @@ export default function Dashboard({ events = mockEvents, onEditEvent }) {
           </div>
         </div>
 
+        {/* Live Operational Status Panel */}
+        <div className="admin-card" style={{ padding: '1.25rem' }}>
+          <div className="admin-dashboard-section-header">
+            <h2 className="admin-dashboard-section-title">
+              <Clock size={18} color="var(--admin-blue-primary)" />
+              <span>System & Access Status</span>
+            </h2>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.85rem' }}>
+              <div
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#10B981',
+                  marginTop: '6px'
+                }}
+              />
+              <div>
+                <strong style={{ color: 'var(--admin-text-title)' }}>
+                  {isAdministrator ? 'Full Admin CMS Mode' : 'Editor Access Mode'}
+                </strong>
+                <p style={{ margin: '0.15rem 0 0 0', color: 'var(--admin-text-muted)', fontSize: '0.78rem' }}>
+                  {isAdministrator
+                    ? 'All modules (Events, Organizers, Gallery, Users & Requests, Settings) enabled.'
+                    : 'Permitted to add, edit, and publish Events and Gallery media.'}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.85rem' }}>
+              <div
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--admin-blue-primary)',
+                  marginTop: '6px'
+                }}
+              />
+              <div>
+                <strong style={{ color: 'var(--admin-text-title)' }}>Google OAuth Connected</strong>
+                <p style={{ margin: '0.15rem 0 0 0', color: 'var(--admin-text-muted)', fontSize: '0.78rem' }}>
+                  Authenticated via Supabase Google provider session.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,22 +1,28 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { Menu, Sun, Moon } from 'lucide-react';
-import { currentAdminUser } from '../data/mockData';
+import { Menu, Sun, Moon, LogOut } from 'lucide-react';
+import { currentAdminUser as fallbackUser } from '../data/mockData';
 
 // ============================================================================
 // ADMIN TOPBAR NAVIGATION COMPONENT
 // ============================================================================
-// Displays the contextual page title, system status, and current administrator profile.
-//
-// NOTE FOR FUTURE SUPABASE INTEGRATION:
-// // =========================================================================
-// // This user information will eventually come from Supabase Auth:
-// // const { data: { user } } = await supabase.auth.getUser();
-// // =========================================================================
+// Displays contextual page title, system status, active Google profile, and role.
 // ============================================================================
 
-export default function AdminTopbar({ onOpenMobile, theme = 'light', onThemeChange }) {
+export default function AdminTopbar({
+  currentUser,
+  onOpenMobile,
+  theme = 'light',
+  onThemeChange,
+  onLogoutClick
+}) {
   const location = useLocation();
+
+  // Active admin user data
+  const admin = currentUser || fallbackUser;
+  const avatarUrl = admin.avatarUrl || admin.avatar;
+  const displayName = admin.name || 'Admin';
+  const roleName = admin.role || 'Editor';
 
   // Determine page title from current route
   const getPageTitle = (pathname) => {
@@ -24,7 +30,7 @@ export default function AdminTopbar({ onOpenMobile, theme = 'light', onThemeChan
     if (pathname.startsWith('/admin/events')) return 'Events Management';
     if (pathname.startsWith('/admin/organizers')) return 'Organizers & Team';
     if (pathname.startsWith('/admin/gallery')) return 'Gallery & Media';
-    if (pathname.startsWith('/admin/users')) return 'Admin Access';
+    if (pathname.startsWith('/admin/users')) return 'Admin Access & Requests';
     if (pathname.startsWith('/admin/settings')) return 'Club & Admin Settings';
     return 'Admin Panel';
   };
@@ -67,29 +73,52 @@ export default function AdminTopbar({ onOpenMobile, theme = 'light', onThemeChan
         {/* System Status Indicator */}
         <div className="admin-system-status">
           <span className="admin-status-pulse" />
-          <span>CMS Ready</span>
+          <span>{roleName === 'Administrator' ? 'Super Admin' : 'Editor Mode'}</span>
         </div>
 
         {/* Current Admin User Profile Pill */}
-        {/* This user information will eventually come from Supabase Auth. */}
-        <div className="admin-profile-pill" title={`Logged in as ${currentAdminUser.email}`}>
+        <div
+          className="admin-profile-pill"
+          title={`Logged in as ${admin.email || displayName}`}
+          onClick={onLogoutClick}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="admin-avatar-wrapper">
-            {currentAdminUser.avatar ? (
+            {avatarUrl ? (
               <img
-                src={currentAdminUser.avatar}
-                alt={currentAdminUser.name}
+                src={avatarUrl}
+                alt={displayName}
                 className="admin-avatar-img"
               />
             ) : (
               <div className="admin-avatar-fallback">
-                {currentAdminUser.name.charAt(0)}
+                {displayName.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
           <div className="admin-user-info">
-            <span className="admin-user-name">{currentAdminUser.name}</span>
-            <span className="admin-user-role">{currentAdminUser.role}</span>
+            <span className="admin-user-name">{displayName}</span>
+            <span
+              className="admin-user-role"
+              style={{
+                color: roleName === 'Administrator' ? 'var(--admin-blue-primary)' : 'var(--admin-text-muted)'
+              }}
+            >
+              {roleName}
+            </span>
           </div>
+          <button
+            type="button"
+            className="admin-btn-icon"
+            style={{ width: '28px', height: '28px', marginLeft: '0.25rem', color: '#94A3B8' }}
+            title="Sign Out"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onLogoutClick) onLogoutClick();
+            }}
+          >
+            <LogOut size={14} />
+          </button>
         </div>
       </div>
     </header>

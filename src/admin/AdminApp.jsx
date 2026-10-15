@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 
 // Admin Layout
 import AdminLayout from './layout/AdminLayout';
@@ -11,9 +11,25 @@ import Organizers from './pages/Organizers';
 import Gallery from './pages/Gallery';
 import AdminUsers from './pages/AdminUsers';
 import Settings from './pages/Settings';
+import AdminLogin from './pages/AdminLogin';
 
-// Supabase Connection & Service
+// Supabase Connection & Services
 import { supabase } from '../lib/supabaseClient';
+import {
+  getCurrentSession,
+  signOutAdmin,
+  getAdminProfile,
+  bootstrapFirstAdminIfEmpty,
+  getUserAccessRequest,
+  createAccessRequest,
+  getAllAdminUsers,
+  getAllRequests,
+  updateAdminUserRole,
+  deleteAdminUser,
+  approveAccessRequest,
+  rejectAccessRequest
+} from '../services/adminAuthService';
+
 import {
   getEvents,
   createEvent,
@@ -31,13 +47,12 @@ import {
   deleteOrganizer
 } from '../services/organizersService';
 
-// Mock Data
+// Mock Data Fallbacks (for offline/demo)
 import {
   mockEvents as initialEvents,
   mockOrganizers as initialOrganizers,
   mockGallery as initialGallery,
-  mockAdminUsers as initialAdminUsers,
-  mockClubSettings
+  mockAdminUsers as initialAdminUsers
 } from './data/mockData';
 
 // Scoped Admin Stylesheets
@@ -48,47 +63,40 @@ import './styles/dashboard.css';
 import './styles/tables.css';
 import './styles/forms.css';
 import './styles/gallery.css';
-
-// ============================================================================
-// FUTURE AUTHENTICATION / SUPABASE AUTH GUARD
-// ============================================================================
-// TODO: Protect all /admin routes using Supabase authentication
-// and verify that the logged-in user has admin/editor permissions.
-//
-// Example AuthGuard implementation:
-// function AdminAuthGuard({ children }) {
-//   const [session, setSession] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//
-//   useEffect(() => {
-//     supabase.auth.getSession().then(({ data: { session } }) => {
-//       setSession(session);
-//       setLoading(false);
-//     });
-//   }, []);
-//
-//   if (loading) return <div>Loading...</div>;
-//   if (!session) return <Navigate to="/login" replace />;
-//   return children;
-// }
-// ============================================================================
+import './styles/auth.css';
 
 export default function AdminApp() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Active state for events (Live Supabase)
+  // --------------------------------------------------------------------------
+  // AUTHENTICATION & ACCESS REQUEST STATE
+  // --------------------------------------------------------------------------
+  const [session, setSession] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null); // Row from admin_users
+  const [pendingRequest, setPendingRequest] = useState(null); // Row from requests if not approved
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // --------------------------------------------------------------------------
+  // CONTENT MANAGEMENT STATE
+  // --------------------------------------------------------------------------
   const [events, setEvents] = useState([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
 
-  // Active state for organizers, gallery, and admin users
   const [organizers, setOrganizers] = useState(initialOrganizers);
   const [isLoadingOrganizers, setIsLoadingOrganizers] = useState(true);
+
   const [gallery, setGallery] = useState(initialGallery);
   const [isLoadingGallery, setIsLoadingGallery] = useState(false);
-  const [adminUsers, setAdminUsers] = useState(initialAdminUsers);
+
+  // Admin Users & Requests from live database
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+
   const [toast, setToast] = useState(null);
 
-  // Visual Theme State (Light theme default as requested, persists in localStorage)
+  // Visual Theme State (persists in localStorage)
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('technospark_admin_theme') || 'light';
   });
@@ -107,7 +115,59 @@ export default function AdminApp() {
     });
   };
 
-  // Fetch live events from Supabase
+  // --------------------------------------------------------------------------
+  // 1. RESOLVE USER AUTH & AUTHORIZATION STATUS
+  // --------------------------------------------------------------------------
+  const resolveUserAuth = useCallback(async (existingSession = null) => {
+    setAuthLoading(true);
+
+    try {
+      const activeSession = existingSession || (await getCurrentSession()).session;
+      setSession(activeSession);
+
+      if (!activeSession?.user) {
+        setCurrentUser(null);
+        setPendingRequest(null);
+        setAuthLoading(false);
+        return;
+      }
+
+      const authUser = activeSession.user;
+
+      // Check if admin_users is totally empty: if so, bootstrap first user as Administrator!
+      await bootstrapFirstAdminIfEmpty(authUser);
+
+      // Check if user is in public.admin_users
+      const { data: adminProfile } = await getAdminProfile(authUser);
+
+      if (adminProfile) {
+        // User is an authorized Administrator or Editor
+        setCurrentUser(adminProfile);
+        setPendingRequest(null);
+      } else {
+        // User has signed into Google, but is NOT in admin_users whitelist yet
+        setCurrentUser(null);
+
+        // Fetch or create their pending request in public.requests
+        const { data: req } = await getUserAccessRequest(authUser);
+        if (req) {
+          setPendingRequest(req);
+        } else {
+          // Auto-register request in requests table
+          const { data: newReq } = await createAccessRequest(authUser);
+          setPendingRequest(newReq);
+        }
+      }
+    } catch (err) {
+      console.error('[AdminApp] Error resolving user auth:', err);
+    } finally {
+      setAuthLoading(false);
+    }
+  }, []);
+
+  // --------------------------------------------------------------------------
+  // 2. DATA LOADERS
+  // --------------------------------------------------------------------------
   const loadEvents = async (silent = false) => {
     if (!silent) setIsLoadingEvents(true);
     const { data, error } = await getEvents();
@@ -116,108 +176,226 @@ export default function AdminApp() {
       console.warn('[AdminApp] Supabase fetch error, fallback to initial:', error);
       setEvents(initialEvents);
     } else {
-      console.log('[AdminApp] Loaded events from Supabase:', data);
       setEvents(data || []);
     }
   };
 
-  // Fetch live organizers from Supabase
   const loadOrganizers = async (silent = false) => {
     if (!silent) setIsLoadingOrganizers(true);
     const { data, error } = await getOrganizers();
     setIsLoadingOrganizers(false);
     if (error) {
-      console.warn('[AdminApp] Supabase organizers fetch error, fallback to initial:', error);
+      console.warn('[AdminApp] Supabase organizers fetch error:', error);
       setOrganizers((prev) => (prev.length > 0 ? prev : initialOrganizers));
     } else if (data && data.length > 0) {
-      console.log('[AdminApp] Loaded organizers from Supabase:', data);
       setOrganizers(data);
     } else {
       setOrganizers((prev) => (prev.length > 0 ? prev : initialOrganizers));
     }
   };
 
-  // Fetch media from Supabase Storage 'gallery' bucket
   const loadGalleryMedia = async (silent = false) => {
     if (!silent) setIsLoadingGallery(true);
     const { data, error } = await fetchGalleryFromStorage();
     setIsLoadingGallery(false);
     if (error) {
-      console.warn('[AdminApp] Supabase storage list error, using initial:', error);
       if (gallery.length === 0) setGallery(initialGallery);
     } else if (data && data.length > 0) {
-      console.log('[AdminApp] Loaded gallery files from Supabase Storage:', data);
-      // Merge: show Supabase files first, followed by any initial demo files not duplicated
       const supabasePaths = new Set(data.map((d) => d.storagePath || d.title));
       const remainingInitial = initialGallery.filter((ig) => !supabasePaths.has(ig.title));
       setGallery([...data, ...remainingInitial]);
     } else {
-      // If bucket has no items yet, retain initial demo gallery
       setGallery((prev) => (prev.length > 0 ? prev : initialGallery));
     }
   };
 
+  const loadUsersAndRequests = async (silent = false) => {
+    if (!silent) setIsLoadingUsers(true);
+    const [usersRes, reqRes] = await Promise.all([
+      getAllAdminUsers(),
+      getAllRequests()
+    ]);
+    setIsLoadingUsers(false);
+
+    if (usersRes.data) {
+      setAdminUsers(usersRes.data.length > 0 ? usersRes.data : initialAdminUsers);
+    }
+    if (reqRes.data) {
+      setRequests(reqRes.data);
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // 3. LIFECYCLE & SUPABASE REALTIME SUBSCRIPTIONS
+  // --------------------------------------------------------------------------
   useEffect(() => {
+    resolveUserAuth();
+
+    // Listen to Supabase Auth state changes (OAuth redirects, logins, logouts)
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, updatedSession) => {
+        console.log('[AdminApp] Auth state changed:', event);
+        resolveUserAuth(updatedSession);
+      }
+    );
+
     loadEvents();
     loadOrganizers();
     loadGalleryMedia(true);
+    loadUsersAndRequests(true);
 
-    // 1. Auto-refresh when tab gains focus (e.g. returning from Supabase dashboard)
+    // Auto-refresh when tab regains focus
     const handleFocus = () => {
       loadEvents(true);
       loadOrganizers(true);
       loadGalleryMedia(true);
+      loadUsersAndRequests(true);
     };
     window.addEventListener('focus', handleFocus);
 
-    // 2. Realtime listener for Postgres changes on public.events
-    let channel;
+    // Realtime listener on public.requests
+    let requestsChannel;
     try {
-      channel = supabase
-        .channel('public:events')
+      requestsChannel = supabase
+        .channel('public:requests')
         .on(
           'postgres_changes',
-          { event: '*', schema: 'public', table: 'events' },
+          { event: '*', schema: 'public', table: 'requests' },
           (payload) => {
-            console.log('[AdminApp] Realtime event update detected:', payload);
-            loadEvents(true);
+            console.log('[AdminApp] Realtime requests update:', payload);
+            loadUsersAndRequests(true);
+            // If the pending user gets approved, re-resolve their auth!
+            if (session?.user) {
+              resolveUserAuth();
+            }
           }
         )
         .subscribe();
     } catch (e) {
-      console.warn('[AdminApp] Realtime subscription init:', e);
+      console.warn('[AdminApp] Requests realtime init error:', e);
     }
 
-    // 3. Realtime listener for Postgres changes on public.organizers
-    let orgChannel;
+    // Realtime listener on public.admin_users
+    let adminUsersChannel;
     try {
-      orgChannel = supabase
-        .channel('public:organizers')
+      adminUsersChannel = supabase
+        .channel('public:admin_users')
         .on(
           'postgres_changes',
-          { event: '*', schema: 'public', table: 'organizers' },
+          { event: '*', schema: 'public', table: 'admin_users' },
           (payload) => {
-            console.log('[AdminApp] Realtime organizer update detected:', payload);
-            loadOrganizers(true);
+            console.log('[AdminApp] Realtime admin_users update:', payload);
+            loadUsersAndRequests(true);
+            if (session?.user) {
+              resolveUserAuth();
+            }
           }
         )
         .subscribe();
     } catch (e) {
-      console.warn('[AdminApp] Realtime organizers subscription init:', e);
+      console.warn('[AdminApp] Admin users realtime init error:', e);
     }
 
     return () => {
       window.removeEventListener('focus', handleFocus);
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-      if (orgChannel) {
-        supabase.removeChannel(orgChannel);
-      }
+      authListener?.subscription?.unsubscribe();
+      if (requestsChannel) supabase.removeChannel(requestsChannel);
+      if (adminUsersChannel) supabase.removeChannel(adminUsersChannel);
     };
-  }, []);
+  }, [resolveUserAuth]);
 
-  // Event Handlers connected to Supabase
+  // --------------------------------------------------------------------------
+  // 4. ACTION HANDLERS
+  // --------------------------------------------------------------------------
+  const handleLogout = async () => {
+    await signOutAdmin();
+    setSession(null);
+    setCurrentUser(null);
+    setPendingRequest(null);
+    showToast('Signed out of Technospark CMS.', 'info');
+  };
+
+  // Role Changes by Administrator
+  const handleRoleChange = async (userId, newRole) => {
+    if (currentUser?.role !== 'Administrator') {
+      showToast('Only Administrators can change user roles.', 'error');
+      return;
+    }
+
+    const { data, error } = await updateAdminUserRole(userId, newRole);
+    if (error) {
+      showToast(`Failed to update role: ${error.message || 'Database error'}`, 'error');
+      return;
+    }
+
+    setAdminUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+    );
+    showToast(`Role updated to ${newRole}!`, 'success');
+  };
+
+  // Revoke Admin User
+  const handleRevokeUser = async (userId) => {
+    if (currentUser?.role !== 'Administrator') {
+      showToast('Only Administrators can revoke access.', 'error');
+      return;
+    }
+
+    const { error } = await deleteAdminUser(userId);
+    if (error) {
+      showToast(`Failed to revoke user: ${error.message}`, 'error');
+      return;
+    }
+
+    setAdminUsers((prev) => prev.filter((u) => u.id !== userId));
+    showToast('User permissions revoked.', 'info');
+  };
+
+  // Accept / Approve Request (Defaults to Editor)
+  const handleApproveRequest = async (request) => {
+    if (currentUser?.role !== 'Administrator') {
+      showToast('Only Administrators can approve access requests.', 'error');
+      return;
+    }
+
+    const { success, adminUser, error } = await approveAccessRequest(request, 'Editor');
+    if (error) {
+      showToast(`Approval failed: ${error.message}`, 'error');
+      return;
+    }
+
+    if (adminUser) {
+      setAdminUsers((prev) => [adminUser, ...prev.filter((u) => u.email !== adminUser.email)]);
+    }
+
+    setRequests((prev) =>
+      prev.map((r) => (r.id === request.id ? { ...r, status: 'approved' } : r))
+    );
+
+    showToast(`Approved "${request.name}" as an Editor!`, 'success');
+  };
+
+  // Reject Request
+  const handleRejectRequest = async (requestId) => {
+    if (currentUser?.role !== 'Administrator') {
+      showToast('Only Administrators can reject access requests.', 'error');
+      return;
+    }
+
+    const { error } = await rejectAccessRequest(requestId);
+    if (error) {
+      showToast(`Failed to reject request: ${error.message}`, 'error');
+      return;
+    }
+
+    setRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? { ...r, status: 'rejected' } : r))
+    );
+
+    showToast('Access request rejected.', 'info');
+  };
+
+  // Event Handlers
   const handleAddEvent = async (newEvent) => {
     const { data, error } = await createEvent(newEvent);
     if (error) {
@@ -239,9 +417,7 @@ export default function AdminApp() {
       return false;
     }
     if (data) {
-      setEvents((prev) =>
-        prev.map((e) => (e.id === data.id ? data : e))
-      );
+      setEvents((prev) => prev.map((e) => (e.id === data.id ? data : e)));
       showToast(`Event "${data.name}" updated in Supabase!`, 'success');
       return true;
     }
@@ -259,12 +435,7 @@ export default function AdminApp() {
     return true;
   };
 
-  const handleRefreshEvents = async () => {
-    await loadEvents();
-    showToast('Refreshed events from Supabase!', 'info');
-  };
-
-  // Organizer Handlers connected to Supabase
+  // Organizer Handlers (Administrator only)
   const handleAddOrganizer = async (newOrg) => {
     const { data, error, isRlsError } = await createOrganizer(newOrg);
     if (error) {
@@ -296,10 +467,8 @@ export default function AdminApp() {
       return { success: false, error, isRlsError };
     }
     if (data) {
-      setOrganizers((prev) =>
-        prev.map((o) => (o.id === data.id ? data : o))
-      );
-      showToast(`Organizer "${data.name}" profile updated in Supabase!`, 'success');
+      setOrganizers((prev) => prev.map((o) => (o.id === data.id ? data : o)));
+      showToast(`Organizer "${data.name}" updated!`, 'success');
       return { success: true, data };
     }
     return { success: false };
@@ -312,19 +481,14 @@ export default function AdminApp() {
       return false;
     }
     setOrganizers((prev) => prev.filter((o) => o.id !== orgId));
-    showToast('Organizer removed from Supabase.', 'info');
+    showToast('Organizer removed.', 'info');
     return true;
-  };
-
-  const handleRefreshOrganizers = async () => {
-    await loadOrganizers();
-    showToast('Refreshed organizers from Supabase!', 'info');
   };
 
   // Gallery Handlers
   const handleAddMedia = (newMedia) => {
     setGallery((prev) => [newMedia, ...prev]);
-    showToast(`Media "${newMedia.title}" uploaded to Supabase gallery!`);
+    showToast(`Media "${newMedia.title}" uploaded!`);
   };
 
   const handleDeleteMedia = async (mediaId) => {
@@ -332,7 +496,7 @@ export default function AdminApp() {
     if (itemToDelete?.storagePath && itemToDelete?.fromSupabase) {
       const { error } = await deleteGalleryMediaFromStorage(itemToDelete.storagePath);
       if (error) {
-        showToast(`Storage deletion error: ${error.message || 'Could not delete file'}`, 'error');
+        showToast(`Storage deletion error: ${error.message}`, 'error');
         return;
       }
     }
@@ -340,37 +504,76 @@ export default function AdminApp() {
     showToast('Media file removed from gallery.', 'info');
   };
 
-  // User Handlers
-  const handleInviteUser = (newUser) => {
-    setAdminUsers((prev) => [newUser, ...prev]);
-    showToast(`Invitation sent to ${newUser.email}!`);
-  };
-
-  const handleRevokeUser = (userId) => {
-    setAdminUsers((prev) => prev.filter((u) => u.id !== userId));
-    showToast('Admin user permissions revoked.', 'info');
-  };
-
   const handleSaveSettings = () => {
     showToast('Club & Profile settings saved successfully!');
   };
 
+  // --------------------------------------------------------------------------
+  // 5. AUTH VERIFICATION & LOGIN / PENDING REQUEST SCREENS
+  // --------------------------------------------------------------------------
+  if (authLoading) {
+    return (
+      <div className="admin-login-screen">
+        <div style={{ textAlign: 'center', color: '#FFF' }}>
+          <div
+            className="admin-status-pulse"
+            style={{ width: '16px', height: '16px', margin: '0 auto 1rem auto' }}
+          />
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>
+            Verifying Admin Access...
+          </h2>
+          <p style={{ fontSize: '0.85rem', color: '#94A3B8', margin: 0 }}>
+            Checking Google OAuth session and credentials
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not authenticated OR has no approved admin_users record yet
+  if (!session || !currentUser) {
+    return (
+      <AdminLogin
+        user={session?.user}
+        request={pendingRequest}
+        onRefreshStatus={() => resolveUserAuth()}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // --------------------------------------------------------------------------
+  // 6. ROLE-BASED ACCESS CONTROL (RBAC)
+  // --------------------------------------------------------------------------
+  const isAdministrator = currentUser.role === 'Administrator';
+
   return (
     <Routes>
-      {/* Nested Admin Shell Layout */}
-      <Route element={<AdminLayout toast={toast} setToast={setToast} theme={theme} onThemeChange={handleThemeChange} />}>
-        {/* /admin Dashboard */}
+      <Route
+        element={
+          <AdminLayout
+            currentUser={currentUser}
+            onLogout={handleLogout}
+            toast={toast}
+            setToast={setToast}
+            theme={theme}
+            onThemeChange={handleThemeChange}
+          />
+        }
+      >
+        {/* Overview Dashboard — Both Editor and Admin */}
         <Route
           index
           element={
             <Dashboard
+              currentUser={currentUser}
               events={events}
-              onEditEvent={(evt) => navigate(`/admin/events`)}
+              onEditEvent={() => navigate('/admin/events')}
             />
           }
         />
 
-        {/* /admin/events */}
+        {/* Events Manager — Both Editor and Admin */}
         <Route
           path="events"
           element={
@@ -379,27 +582,12 @@ export default function AdminApp() {
               onAddEvent={handleAddEvent}
               onUpdateEvent={handleUpdateEvent}
               onDeleteEvent={handleDeleteEvent}
-              onRefresh={handleRefreshEvents}
+              onRefresh={loadEvents}
             />
           }
         />
 
-        {/* /admin/organizers */}
-        <Route
-          path="organizers"
-          element={
-            <Organizers
-              organizers={organizers}
-              isLoading={isLoadingOrganizers}
-              onAddOrganizer={handleAddOrganizer}
-              onUpdateOrganizer={handleUpdateOrganizer}
-              onDeleteOrganizer={handleDeleteOrganizer}
-              onRefresh={handleRefreshOrganizers}
-            />
-          }
-        />
-
-        {/* /admin/gallery */}
+        {/* Gallery Media — Both Editor and Admin */}
         <Route
           path="gallery"
           element={
@@ -413,31 +601,64 @@ export default function AdminApp() {
           }
         />
 
-        {/* /admin/users */}
+        {/* Admin Users & Requests — ONLY Administrator */}
         <Route
           path="users"
           element={
-            <AdminUsers
-              users={adminUsers}
-              onInviteUser={handleInviteUser}
-              onRevokeUser={handleRevokeUser}
-            />
+            isAdministrator ? (
+              <AdminUsers
+                currentUser={currentUser}
+                users={adminUsers}
+                requests={requests}
+                isLoading={isLoadingUsers}
+                onRoleChange={handleRoleChange}
+                onRevokeUser={handleRevokeUser}
+                onApproveRequest={handleApproveRequest}
+                onRejectRequest={handleRejectRequest}
+                onRefresh={() => loadUsersAndRequests()}
+              />
+            ) : (
+              <Navigate to="/admin/events" replace />
+            )
           }
         />
 
-        {/* /admin/settings */}
+        {/* Organizers Manager — ONLY Administrator */}
+        <Route
+          path="organizers"
+          element={
+            isAdministrator ? (
+              <Organizers
+                organizers={organizers}
+                isLoading={isLoadingOrganizers}
+                onAddOrganizer={handleAddOrganizer}
+                onUpdateOrganizer={handleUpdateOrganizer}
+                onDeleteOrganizer={handleDeleteOrganizer}
+                onRefresh={loadOrganizers}
+              />
+            ) : (
+              <Navigate to="/admin/events" replace />
+            )
+          }
+        />
+
+        {/* Settings — ONLY Administrator */}
         <Route
           path="settings"
           element={
-            <Settings
-              onSaveSettings={handleSaveSettings}
-              theme={theme}
-              onThemeChange={handleThemeChange}
-            />
+            isAdministrator ? (
+              <Settings
+                onSaveSettings={handleSaveSettings}
+                theme={theme}
+                onThemeChange={handleThemeChange}
+              />
+            ) : (
+              <Navigate to="/admin/events" replace />
+            )
           }
         />
 
-        {/* Catch-all fallback inside /admin */}
+        {/* Fallback Catch-All */}
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
     </Routes>

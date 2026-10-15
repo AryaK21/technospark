@@ -1,0 +1,352 @@
+/* ============================================================================
+   TECHNOSPARK ADMIN CMS — AUTHENTICATION & LOGIN STYLES
+   ============================================================================ */
+
+.admin-login-screen {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 15%, rgba(37, 99, 235, 0.12), transparent 45%),
+              linear-gradient(135deg, #091322 0%, #0F2447 50%, #081224 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* Subtle glowing background orbs */
+.admin-login-screen::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.18), transparent 70%);
+  top: -100px;
+  right: -100px;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+.admin-login-screen::after {
+  content: '';
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.22), transparent 70%);
+  bottom: -100px;
+  left: -100px;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+.admin-auth-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 460px;
+  background: rgba(15, 29, 54, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.25rem;
+  padding: 2.5rem 2.25rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(56, 189, 248, 0.15);
+  color: #FFFFFF;
+  text-align: center;
+  animation: authCardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes authCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-auth-header {
+  margin-bottom: 2rem;
+}
+
+.admin-auth-logo-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(2, 132, 199, 0.2));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+  margin-bottom: 1.25rem;
+}
+
+.admin-auth-logo-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.admin-auth-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #FFFFFF 30%, #BAE6FD 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-auth-subtitle {
+  font-size: 0.88rem;
+  color: #94A3B8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Google OAuth Button */
+.admin-google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  background: #FFFFFF;
+  color: #1F2937;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: 1px solid #E5E7EB;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.admin-google-btn:hover {
+  background: #F9FAFB;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.admin-google-btn:active {
+  transform: translateY(0);
+}
+
+.admin-google-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.admin-google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Security notice pill */
+.admin-auth-notice {
+  margin-top: 1.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: left;
+}
+
+/* Pending Request Status State */
+.admin-pending-card {
+  text-align: center;
+}
+
+.admin-status-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  margin-bottom: 1.25rem;
+}
+
+.admin-status-icon-badge.pending {
+  background: rgba(234, 179, 8, 0.15);
+  color: #FACC15;
+  border: 1px solid rgba(250, 204, 21, 0.3);
+}
+
+.admin-status-icon-badge.rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.admin-user-pill-highlight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  margin: 1.25rem 0;
+  text-align: left;
+}
+
+.admin-user-pill-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(56, 189, 248, 0.4);
+}
+
+.admin-user-pill-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-user-pill-name {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-user-pill-email {
+  display: block;
+  font-size: 0.76rem;
+  color: #94A3B8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Button Row */
+.admin-auth-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.admin-auth-actions-row .admin-btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* Tabs for AdminUsers page */
+.admin-tab-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--admin-border-subtle);
+  padding-bottom: 0.5rem;
+}
+
+.admin-tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-tab-button:hover {
+  color: var(--admin-text-title);
+  background: var(--admin-card-subtle);
+}
+
+.admin-tab-button.active {
+  color: var(--admin-blue-primary);
+  background: var(--admin-blue-light);
+}
+
+.admin-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: var(--admin-blue-primary);
+  color: #FFFFFF;
+}
+
+.admin-tab-badge.warning {
+  background: #EAB308;
+  color: #000000;
+}
+
+/* Disabled role select for editor */
+.admin-role-select {
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid var(--admin-border-subtle);
+  background: var(--admin-surface);
+  color: var(--admin-text-main);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.admin-role-select:focus {
+  border-color: var(--admin-blue-primary);
+  box-shadow: 0 0 0 2px var(--admin-blue-soft);
+}
+
+.admin-role-select:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: var(--admin-card-subtle);
+}
+
+/* Lock badge for restricted sidebar items */
+.admin-nav-item.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.admin-nav-item.locked:hover {
+  background: transparent;
+  color: inherit;
+}
+
+.admin-lock-badge {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--admin-text-muted);
+}
