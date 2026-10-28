@@ -1,32 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { clubInfo } from '../data/clubInfo';
-import use3DTilt from '../hooks/use3DTilt';
-
-function StatCard({ number, line1, highlightText }) {
-  const cardRef = useRef(null);
-  use3DTilt(cardRef, { max: 14, scale: 1.05 });
-
-  return (
-    <div ref={cardRef} className="stat-card tilt-3d-card spiderverse-card">
-      <div className="stat-number">{number}</div>
-      <div className="stat-label">
-        {line1} <br />
-        <span className="comic-red-highlight">{highlightText}</span>
-      </div>
-    </div>
-  );
-}
 
 // ============================================================================
-// ABOUT COMPONENT (Spiderverse Comic Panel Overhaul)
+// ABOUT COMPONENT (Clean High-Impact Layout)
 // ============================================================================
 
 export default function About() {
   const sectionRef = useRef(null);
   const titleColRef = useRef(null);
   const introColRef = useRef(null);
-  const statsRef = useRef(null);
   const quoteRef = useRef(null);
 
   useEffect(() => {
@@ -50,12 +33,6 @@ export default function About() {
                 '-=0.45'
               )
               .fromTo(
-                statsRef.current?.children || [],
-                { opacity: 0, y: 25 },
-                { opacity: 1, y: 0, stagger: 0.1, duration: 0.5 },
-                '-=0.3'
-              )
-              .fromTo(
                 quoteRef.current,
                 { opacity: 0, y: 20 },
                 { opacity: 1, y: 0, duration: 0.5 },
@@ -72,13 +49,6 @@ export default function About() {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
-
-  const stats = [
-    { number: '1,500+', line1: "BUILT SYSTEMS THAT DON'T JUST LOOK GOOD,", highlightText: 'THEY SCALE.' },
-    { number: '25+', line1: 'WORKED WITH MULTIVERSE TECH,', highlightText: 'A LOT OF TECH.' },
-    { number: '36 HRS', line1: 'TURNED MESSY IDEAS INTO', highlightText: 'SOMETHING USABLE.' },
-    { number: '100%', line1: 'AND YEAH... BROKE THINGS', highlightText: 'ALONG THE WAY TOO.' }
-  ];
 
   return (
     <section
@@ -111,13 +81,6 @@ export default function About() {
               From competitive coding marathons to AI masterclasses and full-stack software sprints, Technospark bridges academic theory with industry-grade software craftsmanship.
             </p>
           </div>
-        </div>
-
-        {/* Reference Image Style Comic Quote Cards */}
-        <div ref={statsRef} className="about-stats-grid">
-          {stats.map((stat, idx) => (
-            <StatCard key={idx} number={stat.number} line1={stat.line1} highlightText={stat.highlightText} />
-          ))}
         </div>
 
         {/* Core Team Quote Callout */}

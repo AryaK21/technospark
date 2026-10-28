@@ -1,20 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 // ============================================================================
-// CUSTOM CURSOR COMPONENT (Desktop Only)
+// HIGH-PERFORMANCE CUSTOM CURSOR (Desktop Only)
 // ============================================================================
-// Adds an elegant, non-intrusive follower dot and subtle expanding ring.
-//
-// Key Features:
-// - pointer-events: none (will never block clicking or text selection)
-// - Automatically disabled on touch screens, mobile devices, and reduced motion
-// - Expands smoothly when hovering over buttons, links, event cards, and gallery items
+// Uses direct DOM manipulation & requestAnimationFrame without triggering React
+// state updates, guaranteeing 120fps fluid cursor movement without frame drops.
 // ============================================================================
 
 export default function CustomCursor() {
-  const [position, setPosition] = useState({ x: -100, y: -100 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const cursorRef = useRef(null);
 
   useEffect(() => {
     // Check for touch device or reduced motion preference
@@ -22,23 +16,45 @@ export default function CustomCursor() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (isTouch || prefersReducedMotion) {
-      return; // Do not render custom cursor on touch/reduced-motion environments
+      return;
     }
 
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+
+    let mouseX = -100;
+    let mouseY = -100;
+    let rafId = null;
+
+    const render = () => {
+      cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      rafId = null;
+    };
+
     const handleMouseMove = (e) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      if (!isVisible) setIsVisible(true);
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!cursor.classList.contains('cursor-visible')) {
+        cursor.classList.add('cursor-visible');
+      }
+      if (!rafId) {
+        rafId = requestAnimationFrame(render);
+      }
     };
 
     const handleMouseLeave = () => {
-      setIsVisible(false);
+      cursor.classList.remove('cursor-visible');
     };
 
     // Detect interactive elements to expand cursor
     const handleElementHover = (e) => {
       const target = e.target;
-      const isInteractive = target.closest('a, button, [role="button"], .event-card, .organizer-card, .gallery-item, input, select');
-      setIsHovered(!!isInteractive);
+      const isInteractive = target && target.closest && target.closest('a, button, [role="button"], .event-card, .organizer-card, .gallery-item, input, select');
+      if (isInteractive) {
+        cursor.classList.add('cursor-hover');
+      } else {
+        cursor.classList.remove('cursor-hover');
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -46,19 +62,21 @@ export default function CustomCursor() {
     document.addEventListener('mouseover', handleElementHover, { passive: true });
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseover', handleElementHover);
     };
-  }, [isVisible]);
-
-  if (!isVisible) return null;
+  }, []);
 
   return (
     <div
-      className={`custom-cursor-container ${isHovered ? 'cursor-hover' : ''}`}
+      ref={cursorRef}
+      className="custom-cursor-container"
       style={{
-        transform: `translate3d(${position.x}px, ${position.y}px, 0)`
+        transform: 'translate3d(-100px, -100px, 0)',
+        willChange: 'transform',
+        pointerEvents: 'none'
       }}
       aria-hidden="true"
     >

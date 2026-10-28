@@ -1,20 +1,31 @@
-import React, { useRef } from 'react';
-import use3DTilt from '../hooks/use3DTilt';
+import React from 'react';
+import { MapPin, Calendar, ArrowRight } from 'lucide-react';
 
 // ============================================================================
-// EVENT CARD COMPONENT (Spiderverse Overhaul)
+// RETRO-COMIC / NEO-BRUTALIST EVENT CARD COMPONENT (2-SECTION LAYOUT)
 // ============================================================================
-// 3D Tilt card with Spiderverse neon borders, category pills, and action arrow.
+// - Section 1: Colored header banner with category flags & event title
+// - Section 2: Body containing narrative, full location & schedule, black pills,
+//              and chunky action button
+// - Completely eliminates duplication and ensures full visibility of venue info
 // ============================================================================
 
-export default function EventCard({ event, onSelect }) {
-  const cardRef = useRef(null);
-  use3DTilt(cardRef, { max: 12, perspective: 1000, scale: 1.03 });
+export const CATEGORY_ACCENT_COLORS = {
+  Hackathon: '#EF4444', // Bold Red (matching Image 2)
+  Workshop: '#A78BFA', // Lavender Purple (matching Image 1 & 3)
+  Competition: '#38BDF8', // Cyan Tactical Blue
+  Seminar: '#F59E0B'  // Warm Amber
+};
+
+export default function EventCard({ event, index = 0, onSelect }) {
+  const isPast = event.status === 'past';
+  const categoryKey = event.category || 'Workshop';
+  const accentColor = CATEGORY_ACCENT_COLORS[categoryKey] || '#A78BFA';
+  const indexFormatted = String(index + 1).padStart(2, '0');
 
   return (
     <article
-      ref={cardRef}
-      className="ref-comic-event-card tilt-3d-card"
+      className={`retro-comic-card ${isPast ? 'retro-comic-card--past' : ''}`}
       onClick={() => onSelect(event)}
       tabIndex={0}
       role="button"
@@ -26,76 +37,60 @@ export default function EventCard({ event, onSelect }) {
         }
       }}
     >
-      {/* 1. Top Header Block with Solid Fill Color */}
+      {/* ── Section 1: Colored Top Banner (Title & Flags) ──────────────── */}
       <div
-        className="ref-card-header-block"
-        style={{ backgroundColor: event.headerColor || '#F59E0B' }}
+        className="retro-card-banner"
+        style={{ backgroundColor: accentColor }}
       >
-        <span className="ref-header-eyebrow">
-          {event.headerCategory || event.category?.toUpperCase() || 'EVENT SPRINT'}
-        </span>
-        <h3 className="ref-header-title">
-          {event.title}
-        </h3>
+        <div className="retro-banner-eyebrow">
+          {event.category?.toUpperCase()} {event.badge ? `• ${event.badge.toUpperCase()}` : ''}
+        </div>
+        <h4 className="retro-banner-title">{event.title}</h4>
       </div>
 
-      {/* 2. Middle Media Preview Image Wrapper */}
-      <div className="ref-card-media-block">
-        <img
-          src={event.image || '/assets/images/event_hackathon_banner.jpg'}
-          alt={event.title}
-          className="ref-card-img"
-          loading="lazy"
-        />
-        <div className="ref-media-matrix-overlay" />
-      </div>
+      {/* ── Section 2: Main Body & Actions ─────────────────────────────── */}
+      <div className="retro-card-body">
+        {/* Short Description */}
+        <p className="retro-body-desc">{event.shortDesc}</p>
 
-      {/* 3. Description Block */}
-      <div className="ref-card-desc-block">
-        <p className="ref-card-desc-text">
-          {event.shortDesc}
-        </p>
-      </div>
-
-      {/* 4. Bottom Footer Block */}
-      <div className="ref-card-footer-panel">
-        {/* Tech Stack Pills Row */}
-        {event.techStack && event.techStack.length > 0 && (
-          <div className="ref-tech-pills-row">
-            {event.techStack.map((tech, idx) => (
-              <span key={idx} className="ref-tech-pill">
-                {tech}
-              </span>
-            ))}
+        {/* Location & Schedule Meta (Prominently placed for full visibility) */}
+        <div className="retro-body-meta">
+          <div className="retro-meta-item">
+            <MapPin size={15} className="retro-meta-icon" />
+            <span className="retro-meta-text">{event.location}</span>
           </div>
-        )}
-
-        {/* Subtext Label */}
-        <div className="ref-subtext-label">
-          <span>{event.linkSubtext || 'LIVE + ON THE STORE'}</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="7" y1="17" x2="17" y2="7"></line>
-            <polyline points="7 7 17 7 17 17"></polyline>
-          </svg>
+          <div className="retro-meta-item">
+            <Calendar size={15} className="retro-meta-icon" />
+            <span className="retro-meta-text">{event.date} • {event.time}</span>
+          </div>
         </div>
 
-        {/* Action Button */}
-        <button
-          type="button"
-          className="ref-action-btn"
-          style={{ backgroundColor: event.buttonColor || '#F59E0B' }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect(event);
-          }}
-        >
-          {event.buttonLabel || 'Infiltrate'}
-        </button>
+        {/* Footer Row: Black Pill Tags on Left, Action Button on Right */}
+        <div className="retro-footer-row">
+          <div className="retro-pills-row">
+            <span className="retro-black-pill">{event.category}</span>
+            {event.badge && <span className="retro-black-pill">{event.badge}</span>}
+            <span className="retro-black-pill">
+              {event.status === 'past' ? 'Completed' : 'Upcoming'}
+            </span>
+          </div>
 
-        {/* Bottom Right Card Index Number */}
-        <span className="ref-card-index">
-          {event.indexNum || '01'}
-        </span>
+          <div className="retro-footer-actions">
+            <button
+              type="button"
+              className="retro-btn-action"
+              style={{ backgroundColor: accentColor }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(event);
+              }}
+            >
+              <span>View Details</span>
+              <ArrowRight size={13} />
+            </button>
+            <span className="retro-card-index">{indexFormatted}</span>
+          </div>
+        </div>
       </div>
     </article>
   );

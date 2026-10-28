@@ -22,8 +22,11 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    let ticking = false;
+
+    const checkScroll = () => {
+      const scrolled = window.scrollY > 20;
+      setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
 
       const sections = ['hero', 'about', 'events', 'organizers', 'gallery'];
       const scrollPos = window.scrollY + 180;
@@ -34,14 +37,24 @@ export default function Navbar() {
           const top = el.offsetTop;
           const height = el.offsetHeight;
           if (scrollPos >= top && scrollPos < top + height) {
-            setActiveSection(id);
+            setActiveSection((prev) => (prev !== id ? id : prev));
             break;
           }
         }
       }
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(checkScroll);
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    checkScroll();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

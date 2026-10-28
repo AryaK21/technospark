@@ -1,101 +1,90 @@
-import React, { useRef } from 'react';
-import use3DTilt from '../hooks/use3DTilt';
+import React from 'react';
+import { ExternalLink } from 'lucide-react';
 
 // ============================================================================
-// ORGANIZER CARD COMPONENT (Comic Reference Theme - No Images)
+// CENTERED EXPERIMENTAL RETRO-BRUTALIST ORGANIZER CARD
 // ============================================================================
-// Uses the exact reference comic card theme with solid accent header,
-// italic titles, comic borders, social buttons, and index numbers!
+// Supports split testing:
+// - variant="tinted"  -> Option 3: Color-Tinted Dark Obsidian with Persona Glow
+// - variant="frosted" -> Option 4: Translucent Frosted Cyber Glass
 // ============================================================================
+
+const LinkedInIcon = ({ size = 15, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.45 1.45 0 0 0 1.45-1.45 1.45 1.45 0 0 0-1.45-1.45 1.45 1.45 0 0 0-1.45 1.45c0 .8.65 1.45 1.45 1.45m1.39 9.74v-8.37H5.07v8.37h2.78z" />
+  </svg>
+);
 
 export default function OrganizerCard({ organizer }) {
-  const cardRef = useRef(null);
-  use3DTilt(cardRef, { max: 12, perspective: 1000, scale: 1.03 });
-
-  const isTBD = organizer.name === "TO BE ANNOUNCED";
+  const accentColor = organizer.accentColor || '#00F0FF';
 
   return (
     <article
-      ref={cardRef}
-      className="ref-comic-event-card tilt-3d-card"
+      className="retro-organizer-card retro-organizer-card--centered retro-card--frosted"
+      style={{
+        '--card-accent': accentColor
+      }}
       tabIndex={0}
       role="article"
       aria-label={`Organizer Profile: ${organizer.name}`}
     >
-      {/* 1. Top Header Block with Solid Accent Fill Color */}
-      <div
-        className="ref-card-header-block"
-        style={{ backgroundColor: organizer.headerColor || '#00F0FF' }}
-      >
-        <span className="ref-header-eyebrow">
-          {organizer.headerCategory || 'CORE EXECUTIVE'}
-        </span>
-        <h3 className="ref-header-title">
-          {organizer.name}
-        </h3>
-      </div>
+      {/* ── Top Corner Index Badge ───────────────────────────────────────── */}
+      <span className="org-corner-badge">
+        #{organizer.indexNum || '01'}
+      </span>
 
-      {/* 2. Middle Role Content Block (No Image) */}
-      <div className="ref-card-desc-block">
-        <span className="ref-header-eyebrow" style={{ color: '#00F0FF', marginBottom: '6px' }}>
-          DESIGNATION / ROLE
-        </span>
-        <p className="ref-card-desc-text" style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.95rem', color: '#FFFFFF' }}>
-          {organizer.role}
-        </p>
-      </div>
-
-      {/* 3. Bottom Footer Panel with Social Buttons & Index Number */}
-      <div className="ref-card-footer-panel">
-        <div className="ref-subtext-label">
-          <span>{isTBD ? 'RESERVED SLOT 🔒' : 'SOCIAL PROFILES ↗'}</span>
+      {/* ── 1. Centered Circular Profile Picture ─────────────────────────── */}
+      <div className="org-center-avatar-wrap">
+        <div className="org-center-avatar-ring">
+          <img
+            src={organizer.photo}
+            alt={organizer.name}
+            className="org-center-avatar-img"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement.classList.add('org-avatar-fallback');
+              e.currentTarget.parentElement.innerText = organizer.name.charAt(0);
+            }}
+          />
         </div>
+      </div>
 
-        {!isTBD ? (
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
-            {organizer.linkedin && (
-              <a
-                href={organizer.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ref-action-btn"
-                style={{ backgroundColor: organizer.buttonColor || '#00F0FF', textDecoration: 'none', padding: '6px 14px', fontSize: '0.78rem' }}
-              >
-                LinkedIn
-              </a>
-            )}
-            {organizer.github && (
-              <a
-                href={organizer.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ref-action-btn"
-                style={{ backgroundColor: '#FFFFFF', textDecoration: 'none', padding: '6px 14px', fontSize: '0.78rem' }}
-              >
-                GitHub
-              </a>
-            )}
-          </div>
-        ) : (
-          <button
-            type="button"
-            className="ref-action-btn"
-            style={{ backgroundColor: organizer.buttonColor || '#F43F5E', cursor: 'not-allowed', opacity: 0.8 }}
-            disabled
-          >
-            TBA
-          </button>
+      {/* ── 2. Name Underneath ───────────────────────────────────────────── */}
+      <h3 className="org-center-name">{organizer.name}</h3>
+
+      {/* ── 3. Subtle Centered Accent Divider Line ───────────────────────── */}
+      <div className="org-center-divider" />
+
+      {/* ── 4. Position / Role Underneath ────────────────────────────────── */}
+      <div className="org-center-role-wrap">
+        <span className="org-center-role">{organizer.role}</span>
+        {organizer.tag && (
+          <span className="org-center-tag-pill">{organizer.tag}</span>
         )}
+      </div>
 
-        {/* Index Number */}
-        <span className="ref-card-index">
-          {organizer.indexNum || '01'}
-        </span>
+      {/* ── 5. Centered "View Profile" Button (To LinkedIn) ─────────────── */}
+      <div className="org-center-btn-wrap">
+        <a
+          href={organizer.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="org-view-profile-btn"
+          aria-label={`View ${organizer.name}'s profile on LinkedIn`}
+        >
+          <LinkedInIcon size={15} className="org-btn-icon" />
+          <span>View Profile</span>
+          <ExternalLink size={13} className="org-btn-arrow" />
+        </a>
       </div>
     </article>
   );
 }
-
-
-
-
