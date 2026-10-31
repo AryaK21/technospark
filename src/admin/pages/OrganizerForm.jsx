@@ -184,7 +184,7 @@ export default function OrganizerForm({
     setErrorMessage(null);
     setIsRlsError(false);
 
-    let finalImageUrl = formData.image || '/assets/images/akshat.jpg';
+    let finalImageUrl = formData.image || '/assets/images/Default_profile.webp';
 
     // 1. If user selected a new photo file, upload it to Supabase 'organizers' bucket
     if (selectedFile) {
@@ -331,7 +331,7 @@ export default function OrganizerForm({
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = '/assets/images/akshat.jpg';
+                      e.target.src = '/assets/images/Default_profile.webp';
                     }}
                   />
                 ) : (

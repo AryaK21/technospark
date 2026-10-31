@@ -120,6 +120,8 @@
   background: none;
   border: none;
   cursor: pointer;
+  align-items: center;
+  justify-content: center;
 }
 
 .mobile-nav-drawer {
@@ -128,18 +130,76 @@
   top: var(--navbar-height);
   left: 0;
   right: 0;
+  max-height: calc(100vh - var(--navbar-height));
+  overflow-y: auto;
   background-color: #0B0E26;
   background-image: var(--halftone-cyan);
   background-size: 12px 12px;
   border-bottom: 3px solid #000000;
   box-shadow: 0 6px 0px var(--hot-pink);
-  padding: 24px;
+  padding: 24px 20px;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   z-index: 999;
 }
 
 .mobile-nav-drawer.open {
   display: flex;
+}
+
+/* ============================================================================
+   NAVBAR RESPONSIVE BREAKPOINTS
+   ============================================================================ */
+@media (max-width: 920px) {
+  .comic-nav-list {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    padding: 7px;
+    background-color: #0D102B;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px 0px var(--cyber-cyan);
+    border-radius: 4px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .mobile-menu-btn:hover {
+    background-color: var(--cyber-cyan);
+    color: #000000;
+    box-shadow: 3px 3px 0px var(--hot-pink);
+    transform: translate(-1px, -1px);
+  }
+
+  .navbar-container {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 14px;
+  }
+
+  .navbar-logo-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .navbar-brand-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+  }
+
+  .navbar-spiderweb-corner svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mobile-nav-drawer {
+    padding: 20px 16px;
+    gap: 12px;
+  }
 }
 

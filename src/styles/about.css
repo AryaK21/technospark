@@ -593,16 +593,111 @@
 
   .about-stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-narrative-box {
+    padding: 26px 20px;
+    margin-bottom: 36px;
+    box-shadow: 4px 4px 0px #000000, 8px 8px 0px var(--cyber-cyan);
+  }
+
+  .about-affiliation-banner {
+    padding: 24px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    box-shadow: 4px 4px 0px #000000, 8px 8px 0px var(--hot-pink);
+  }
+
+  .about-affil-info {
+    flex: 1 1 100%;
+  }
+
+  .about-affil-tags {
+    min-width: 100%;
+  }
+
+  .about-pillars-grid {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+  }
+
+  .comic-stack-container {
+    margin-top: 50px;
+    padding: 20px 0 36px;
+  }
+
+  .comic-cover-card {
+    transform: none !important;
   }
 }
 
 @media (max-width: 640px) {
   .about-stats-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 32px 0;
   }
 
   .about-quote-box {
-    padding: 24px;
+    padding: 22px 18px;
+  }
+
+  .about-pillars-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-section {
+    padding: 24px 0 40px;
+  }
+
+  .about-container {
+    padding: 0 16px;
+  }
+
+  .about-lead-text {
+    font-size: 1.05rem;
+    line-height: 1.5;
+  }
+
+  .about-body-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .about-narrative-box {
+    padding: 20px 16px;
+    border-left-width: 5px;
+  }
+
+  .about-affiliation-banner {
+    padding: 20px 16px;
+    border-left-width: 6px;
+  }
+
+  .about-pillar-card {
+    padding: 20px 16px;
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--cyber-cyan) !important;
+  }
+
+  .about-pillar-card:nth-child(even) {
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--hot-pink) !important;
+  }
+
+  .stat-card {
+    transform: none !important;
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--cyber-cyan) !important;
+  }
+
+  .comic-cover-card {
+    width: min(100%, 250px);
+    height: auto;
+    min-height: 270px;
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--cyber-cyan) !important;
   }
 }
 

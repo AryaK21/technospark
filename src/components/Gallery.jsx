@@ -7,75 +7,8 @@ import {
   Play,
   Video
 } from 'lucide-react';
-import { galleryItems as importedGalleryItems } from '../data/gallery';
 import { fetchGalleryFromStorage } from '../services/galleryService';
 import '../styles/gallery.css';
-
-// ============================================================================
-// FALLBACK GALLERY ITEMS (Matches public/assets/images 5-card dataset)
-// ============================================================================
-const DEFAULT_GALLERY_ITEMS = [
-  {
-    id: 1,
-    title: 'TECHNOVA HACKATHON — 36H BUILD MATRIX',
-    category: 'Hackathons',
-    badgeCategory: '[ HACKATHON // ARENA ]',
-    associatedEvent: 'Technova 2026',
-    image: '/assets/images/event_hackathon_banner.jpg',
-    thumbnail: '/assets/images/event_hackathon_banner.jpg',
-    date: 'OCT 2026',
-    accentColor: '#00F0FF',
-    caption: 'Over 500 student developers collaborating continuous 36-hour coding sprints on AI and distributed cloud architectures.'
-  },
-  {
-    id: 2,
-    title: 'DEEP LEARNING & TENSOR VISION LAB',
-    category: 'Workshops',
-    badgeCategory: '[ WORKSHOP // AI ]',
-    associatedEvent: 'AI & Neural Nets',
-    image: '/assets/images/project_ai_vision.jpg',
-    thumbnail: '/assets/images/project_ai_vision.jpg',
-    date: 'NOV 2026',
-    accentColor: '#00F0FF',
-    caption: 'Students constructing and deploying real-time convolutional neural networks using PyTorch on cloud GPU instances.'
-  },
-  {
-    id: 3,
-    title: 'CYBERSHIELD DEFCON CTF SHOWDOWN',
-    category: 'Competitions',
-    badgeCategory: '[ COMPETITION // SEC ]',
-    associatedEvent: 'CyberShield CTF',
-    image: '/assets/images/project_cyber_shield.jpg',
-    thumbnail: '/assets/images/project_cyber_shield.jpg',
-    date: 'DEC 2026',
-    accentColor: '#00F0FF',
-    caption: 'High-intensity 8-hour capture the flag tournament testing binary reverse engineering, cryptography, and zero-day defense.'
-  },
-  {
-    id: 4,
-    title: 'SMART CAMPUS IoT & HARDWARE INNOVATION',
-    category: 'Exhibitions',
-    badgeCategory: '[ EXHIBITION // HARDWARE ]',
-    associatedEvent: 'IoT Tech Expo',
-    image: '/assets/images/project_iot_smart_campus.jpg',
-    thumbnail: '/assets/images/project_iot_smart_campus.jpg',
-    date: 'JUL 2025',
-    accentColor: '#00F0FF',
-    caption: 'Prototyping connected embedded hardware systems for smart energy grids, autonomous sensors, and campus automation.'
-  },
-  {
-    id: 5,
-    title: 'EXECUTIVE TECH KEYNOTE AT PCCOE',
-    category: 'Keynotes',
-    badgeCategory: '[ KEYNOTE // LEADERSHIP ]',
-    associatedEvent: 'ITSA Orientation',
-    image: '/assets/images/akshat.jpg',
-    thumbnail: '/assets/images/akshat.jpg',
-    date: 'AUG 2025',
-    accentColor: '#A855F7',
-    caption: 'Annual technical club orientation and keynote presentation on open-source software engineering roadmaps.'
-  }
-];
 
 // ============================================================================
 // ALTERNATING --CYBER FRAME COLOR PALETTE
@@ -86,49 +19,63 @@ const CYBER_FRAME_THEMES = [
 ];
 
 // ============================================================================
-// CYBER BENTO IMAGE GALLERY (Replacing 2D Canvas)
+// CYBER BENTO IMAGE GALLERY (Connected to Supabase Storage 'gallery' bucket)
 // ============================================================================
 export function Gallery({ itemsData }) {
-  const defaultItems =
-    itemsData ||
-    (importedGalleryItems && importedGalleryItems.length > 0
-      ? importedGalleryItems
-      : DEFAULT_GALLERY_ITEMS);
-
-  const [galleryList, setGalleryList] = useState(defaultItems);
+  const [galleryList, setGalleryList] = useState(itemsData || []);
+  const [isLoading, setIsLoading] = useState(!itemsData || itemsData.length === 0);
+  const [selectedLightboxItem, setSelectedLightboxItem] = useState(null);
+  const headerRef = useRef(null);
+  const gridRef = useRef(null);
 
   useEffect(() => {
+    // If external itemsData is passed, use it directly
+    if (itemsData && itemsData.length > 0) {
+      setGalleryList(itemsData);
+      setIsLoading(false);
+      return;
+    }
+
     let isMounted = true;
+    setIsLoading(true);
+
     fetchGalleryFromStorage().then(({ data, error }) => {
-      if (!error && data && data.length > 0 && isMounted) {
+      if (!isMounted) return;
+      setIsLoading(false);
+
+      if (!error && data && data.length > 0) {
         const storageItems = data.map((d) => {
           const rawEvent = (d.associatedEvent || '').trim();
-          const cleanCategory = rawEvent && !rawEvent.toLowerCase().includes('supabase')
-            ? rawEvent
-            : (d.mediaType === 'video' ? 'Video' : 'Photo');
+          const cleanCategory =
+            rawEvent && !rawEvent.toLowerCase().includes('supabase')
+              ? rawEvent
+              : d.mediaType === 'video'
+              ? 'Video'
+              : 'Photo';
 
           return {
             ...d,
             image: d.url || d.thumbnail,
             category: cleanCategory,
             associatedEvent: cleanCategory,
-            badgeCategory: d.mediaType === 'video' ? '[ VIDEO // HIGHLIGHT ]' : '[ PHOTO // ARCHIVE ]'
+            badgeCategory:
+              d.mediaType === 'video'
+                ? '[ VIDEO // HIGHLIGHT ]'
+                : '[ PHOTO // ARCHIVE ]'
           };
         });
-        // Prepend Supabase live uploads
-        setGalleryList([...storageItems, ...defaultItems]);
+        setGalleryList(storageItems);
+      } else {
+        setGalleryList([]);
       }
     });
+
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [itemsData]);
 
   const rawItems = galleryList;
-
-  const [selectedLightboxItem, setSelectedLightboxItem] = useState(null);
-  const headerRef = useRef(null);
-  const gridRef = useRef(null);
 
   // Cinematic opening entrance animation with GSAP
   useEffect(() => {
@@ -145,7 +92,7 @@ export function Gallery({ itemsData }) {
         );
       }
 
-      if (gridRef.current) {
+      if (gridRef.current && gridRef.current.children.length > 0) {
         tl.fromTo(
           gridRef.current.children,
           { opacity: 0, y: 28, scale: 0.96 },
@@ -156,7 +103,7 @@ export function Gallery({ itemsData }) {
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [isLoading, rawItems.length]);
 
   // Lightbox Keyboard Navigation (Arrows + Escape)
   useEffect(() => {
@@ -207,77 +154,171 @@ export function Gallery({ itemsData }) {
         </div>
       </div>
 
+      {/* Loading state indicator */}
+      {isLoading && (
+        <div style={{ textAlign: 'center', padding: '90px 24px' }}>
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              border: '4.5px solid #13183D',
+              borderTopColor: 'var(--cyber-cyan, #00F0FF)',
+              borderRightColor: 'var(--hot-pink, #F43F5E)',
+              borderRadius: '50%',
+              animation: 'spinSlow 0.9s linear infinite',
+              margin: '0 auto 20px',
+              boxShadow: '3px 3px 0px #000000'
+            }}
+          />
+          <p
+            style={{
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '0.9rem',
+              fontWeight: 800,
+              letterSpacing: '0.14em',
+              color: 'var(--cyber-cyan, #00F0FF)',
+              textTransform: 'uppercase'
+            }}
+          >
+            SYNCING MULTIVERSE MEDIA ARCHIVES...
+          </p>
+        </div>
+      )}
+
+      {/* Standby Empty State when no live media is uploaded yet */}
+      {!isLoading && rawItems.length === 0 && (
+        <div
+          style={{
+            maxWidth: '620px',
+            margin: '40px auto 80px',
+            padding: '50px 30px',
+            textAlign: 'center',
+            backgroundColor: '#0C0F29',
+            border: '3.5px dashed var(--cyber-cyan, #00F0FF)',
+            borderRadius: '6px',
+            boxShadow: '6px 6px 0px #000000, 10px 10px 0px var(--hot-pink, #F43F5E)'
+          }}
+        >
+          <div
+            style={{
+              color: 'var(--cyber-cyan, #00F0FF)',
+              marginBottom: '14px',
+              display: 'flex',
+              justifyContent: 'center'
+            }}
+          >
+            <Video size={40} />
+          </div>
+          <h3
+            style={{
+              fontFamily: 'var(--font-heading, "Orbitron", sans-serif)',
+              fontSize: '1.25rem',
+              fontWeight: 900,
+              color: '#FFFFFF',
+              letterSpacing: '0.06em',
+              marginBottom: '10px',
+              textTransform: 'uppercase'
+            }}
+          >
+            ARCHIVE STANDBY // NO MEDIA UPLOADED
+          </h3>
+          <p
+            style={{
+              fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
+              fontSize: '0.86rem',
+              color: 'var(--text-secondary, #CBD5E1)',
+              lineHeight: 1.6,
+              margin: 0
+            }}
+          >
+            Live event captures, photography, and hackathon reels will appear here dynamically once uploaded via the admin portal.
+          </p>
+        </div>
+      )}
+
       {/* ==================================================================== */}
       {/* 2. CYBER BENTO IMAGE GALLERY SECTION                                 */}
       {/* ==================================================================== */}
-      <div className="cyber-gallery-wrap">
-        <div className="cyber-gallery-grid" ref={gridRef}>
-          {rawItems.map((item, idx) => {
-            const patternIdx = idx % 5;
-            // Row 1: Card 0 (span 7), Card 1 (span 10), Card 2 (span 7) = 24 cols
-            // Row 2: Card 3 (span 12), Card 4 (span 12) = 24 cols
-            const spanClass = `cyber-card--span-${patternIdx}`;
-            const isRow2 = patternIdx === 3 || patternIdx === 4;
-            const cyberTheme = CYBER_FRAME_THEMES[idx % CYBER_FRAME_THEMES.length];
+      {!isLoading && rawItems.length > 0 && (
+        <div className="cyber-gallery-wrap">
+          <div className="cyber-gallery-grid" ref={gridRef}>
+            {rawItems.map((item, idx) => {
+              const patternIdx = idx % 5;
+              // Row 1: Card 0 (span 7), Card 1 (span 10), Card 2 (span 7) = 24 cols
+              // Row 2: Card 3 (span 12), Card 4 (span 12) = 24 cols
+              const spanClass = `cyber-card--span-${patternIdx}`;
+              const isRow2 = patternIdx === 3 || patternIdx === 4;
+              const cyberTheme = CYBER_FRAME_THEMES[idx % CYBER_FRAME_THEMES.length];
 
-            return (
-              <article
-                key={item.id || idx}
-                className={`cyber-card ${spanClass} ${isRow2 ? 'cyber-card--row2' : ''}`}
-                style={{
-                  '--card-border': cyberTheme.border,
-                  '--card-glow': cyberTheme.glow
-                }}
-                onClick={() => setSelectedLightboxItem(item)}
-              >
-                {/* Media Image / Video Frame */}
-                <div className="cyber-card-img-wrap">
-                  {item.mediaType === 'video' ? (
-                    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#060714' }}>
-                      <video
-                        src={item.url}
-                        muted
-                        preload="metadata"
-                        className="cyber-card-img"
-                        style={{ objectFit: 'cover' }}
-                      />
+              return (
+                <article
+                  key={item.id || idx}
+                  className={`cyber-card ${spanClass} ${isRow2 ? 'cyber-card--row2' : ''}`}
+                  style={{
+                    '--card-border': cyberTheme.border,
+                    '--card-glow': cyberTheme.glow
+                  }}
+                  onClick={() => setSelectedLightboxItem(item)}
+                >
+                  {/* Media Image / Video Frame */}
+                  <div className="cyber-card-img-wrap">
+                    {item.mediaType === 'video' ? (
                       <div
                         style={{
-                          position: 'absolute',
-                          width: '38px',
-                          height: '38px',
-                          borderRadius: '50%',
-                          backgroundColor: 'rgba(0, 240, 255, 0.88)',
+                          position: 'relative',
+                          width: '100%',
+                          height: '100%',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#000',
-                          boxShadow: '0 0 14px rgba(0, 240, 255, 0.6)'
+                          background: '#060714'
                         }}
                       >
-                        <Play size={16} fill="#000" />
+                        <video
+                          src={item.url}
+                          muted
+                          preload="metadata"
+                          className="cyber-card-img"
+                          style={{ objectFit: 'cover' }}
+                        />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(0, 240, 255, 0.88)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#000',
+                            boxShadow: '0 0 14px rgba(0, 240, 255, 0.6)'
+                          }}
+                        >
+                          <Play size={16} fill="#000" />
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <img
-                      src={item.image || item.thumbnail || item.url}
-                      alt={item.title}
-                      className="cyber-card-img"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
-                      }}
-                    />
-                  )}
-                  <div className="cyber-card-halftone" />
-                </div>
-              </article>
-            );
-          })}
+                    ) : (
+                      <img
+                        src={item.image || item.thumbnail || item.url}
+                        alt={item.title}
+                        className="cyber-card-img"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src =
+                            'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
+                        }}
+                      />
+                    )}
+                    <div className="cyber-card-halftone" />
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ==================================================================== */}
       {/* 3. FULL-SCREEN SPIDER-VERSE LIGHTBOX INSPECTOR MODAL                 */}
@@ -328,7 +369,11 @@ export function Gallery({ itemsData }) {
                 />
               ) : (
                 <img
-                  src={selectedLightboxItem.image || selectedLightboxItem.thumbnail || selectedLightboxItem.url}
+                  src={
+                    selectedLightboxItem.image ||
+                    selectedLightboxItem.thumbnail ||
+                    selectedLightboxItem.url
+                  }
                   alt={selectedLightboxItem.title}
                   className="gallery-lightbox-img"
                 />

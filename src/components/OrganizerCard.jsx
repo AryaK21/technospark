@@ -6,6 +6,8 @@ import '../styles/team.css';
 // SPIDER-VERSE COLLECTOR EDITION ORGANIZER & TEAM MEMBER CARD
 // ============================================================================
 
+export const DEFAULT_PROFILE_IMAGE = '/assets/images/Default_profile.webp';
+
 const LinkedInIcon = ({ size = 14, className }) => (
   <svg
     width={size}
@@ -37,12 +39,15 @@ const GithubIcon = ({ size = 14, className }) => (
 );
 
 export function OrganizerCard({ organizer = {}, isFaculty = false }) {
-  const photoUrl = organizer.image || organizer.photo || organizer.fallbackPhoto;
+  const photoUrl =
+    organizer.image || organizer.photo || organizer.fallbackPhoto || DEFAULT_PROFILE_IMAGE;
   const [imgSrc, setImgSrc] = useState(photoUrl);
   const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {
-    setImgSrc(organizer.image || organizer.photo || organizer.fallbackPhoto);
+    setImgSrc(
+      organizer.image || organizer.photo || organizer.fallbackPhoto || DEFAULT_PROFILE_IMAGE
+    );
     setImgFailed(false);
   }, [organizer.image, organizer.photo, organizer.fallbackPhoto]);
 
@@ -59,8 +64,8 @@ export function OrganizerCard({ organizer = {}, isFaculty = false }) {
     .join('');
 
   const handleImgError = () => {
-    if (organizer.fallbackPhoto && imgSrc !== organizer.fallbackPhoto) {
-      setImgSrc(organizer.fallbackPhoto);
+    if (imgSrc !== DEFAULT_PROFILE_IMAGE) {
+      setImgSrc(DEFAULT_PROFILE_IMAGE);
     } else {
       setImgFailed(true);
     }

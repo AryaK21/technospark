@@ -880,6 +880,8 @@ RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
   padding: 10px 0;
 }
 
@@ -962,5 +964,138 @@ RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
     display: flex;
     justify-content: space-between;
     gap: 12px;
+  }
+
+  .events-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .events-title-col {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .theme-events-switch-wrap {
+    width: 100%;
+  }
+
+  .theme-events-switch {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .theme-switch-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .events-container {
+    padding: 0 14px;
+  }
+
+  .retro-modal-backdrop {
+    padding: 10px;
+  }
+
+  .retro-modal-dialog {
+    max-width: calc(100vw - 20px);
+    max-height: 90vh;
+    box-shadow: 4px 4px 0 #000000, 7px 7px 0 var(--hot-pink);
+  }
+
+  .retro-modal-header {
+    padding: 10px 14px;
+  }
+
+  .retro-modal-body {
+    padding: 14px;
+  }
+
+  .retro-modal-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+
+  .retro-modal-desc {
+    font-size: 0.84rem;
+  }
+
+  .retro-venue-line,
+  .retro-date-line {
+    font-size: 0.78rem;
+  }
+
+  .retro-modal-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .retro-btn-modal {
+    width: 100%;
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-switch-tab {
+    padding: 5px 6px;
+    font-size: 0.67rem;
+    gap: 3px;
+  }
+
+  .theme-tab-count {
+    font-size: 0.62rem;
+  }
+
+  .mobile-vertical-timeline {
+    gap: 20px;
+  }
+
+  .mobile-timeline-cards-list {
+    padding-left: 14px;
+    gap: 14px;
+  }
+
+  .mobile-timeline-dot {
+    left: -21px;
+    width: 12px;
+    height: 12px;
+    top: 16px;
+  }
+
+  .timeline-canvas-controls-bar {
+    gap: 8px;
+  }
+
+  .timeline-nav-btn {
+    padding: 6px 10px;
+    font-size: 0.67rem;
+    gap: 4px;
+    box-shadow: 2px 2px 0px #000000;
+  }
+
+  .retro-comic-card {
+    box-shadow: 2.5px 2.5px 0 #000000, 5px 5px 0 var(--cyber-cyan);
+  }
+
+  .retro-comic-card:hover {
+    transform: none;
+    box-shadow: 3px 3px 0 #000000, 6px 6px 0 var(--hot-pink);
+  }
+
+  .retro-card-banner {
+    padding: 6px 8px;
+  }
+
+  .retro-card-body {
+    padding: 8px 9px;
   }
 }

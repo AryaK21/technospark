@@ -256,7 +256,6 @@ export function Hero({ onShowLogo, GlobeComponent, OrbitComponent, gsapInstance 
           ref={introWrapRef}
           className="hero-intro-overlay"
           onClick={handleSkipIntro}
-          title="Click to explore 3D Globe"
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {

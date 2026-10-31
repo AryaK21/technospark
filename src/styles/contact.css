@@ -3,7 +3,7 @@ CONTACT SEPARATE PAGE STYLES (SPIDER-VERSE COMIC PANEL THEME)
 ============================================================================ */
 .contact-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 32px;
   max-width: 1040px;
   margin: 0 auto 50px;
@@ -58,7 +58,7 @@ CONTACT SEPARATE PAGE STYLES (SPIDER-VERSE COMIC PANEL THEME)
   width: 42px;
   height: 42px;
   border-radius: 4px;
-  background: var(--cyber-cyan);
+  background: var(--cyber-amber);
   border: 2.5px solid #000000;
   box-shadow: 3px 3px 0px #000000;
   color: #000000;
@@ -212,4 +212,114 @@ CONTACT SEPARATE PAGE STYLES (SPIDER-VERSE COMIC PANEL THEME)
   transform: translate(-1px, -1px);
 }
 
+.contact-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #060714;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  border-radius: 4px;
+  box-shadow: 3px 3px 0px #000000, 5px 5px 0px var(--cyber-cyan, #00F0FF);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
 
+.contact-social-btn:hover {
+  background-color: var(--cyber-cyan, #00F0FF);
+  color: #000000;
+  box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--hot-pink, #F43F5E);
+  transform: translate(-2px, -2px);
+}
+
+.contact-social-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px #000000;
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINTS (TABLET & MOBILE)
+   ============================================================================ */
+@media (max-width: 768px) {
+  .contact-grid-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 0 16px;
+    margin-bottom: 36px;
+  }
+
+  .contact-info-card,
+  .contact-form-card {
+    padding: 28px 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-grid-container {
+    gap: 20px;
+    padding: 0 12px;
+    margin-bottom: 28px;
+  }
+
+  .contact-info-card,
+  .contact-form-card {
+    padding: 20px 14px;
+    border-width: 2.5px;
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--cyber-cyan);
+  }
+
+  .contact-form-card {
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--hot-pink);
+  }
+
+  .contact-card-title {
+    font-size: 1.15rem;
+  }
+
+  .contact-card-desc {
+    font-size: 0.82rem;
+    margin-bottom: 18px;
+  }
+
+  .contact-items-list {
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .contact-item-row {
+    gap: 10px;
+  }
+
+  .contact-icon-box {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+
+  .contact-item-value {
+    font-size: 0.85rem;
+    word-break: break-word;
+  }
+
+  .contact-input {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    border-width: 2px;
+  }
+
+  .contact-submit-btn {
+    width: 100%;
+    padding: 12px 18px;
+    font-size: 0.85rem;
+  }
+
+  .contact-social-btn {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+}

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Mail } from 'lucide-react';
 import { clubInfo } from '../data/clubInfo';
+import { InstagramIcon, LinkedInIcon } from './SocialIcons';
 import '../styles/footer.css';
 
 // ============================================================================
@@ -31,8 +33,8 @@ export default function Footer() {
               <Link to="/" className="footer-link">Home</Link>
               <Link to="/about" className="footer-link">About</Link>
               <Link to="/events" className="footer-link">Events Timeline</Link>
-              <Link to="/team" className="footer-link">Team Hierarchy</Link>
-              <Link to="/gallery" className="footer-link">3D Gallery</Link>
+              <Link to="/team" className="footer-link">Team</Link>
+              <Link to="/gallery" className="footer-link">Gallery</Link>
               <Link to="/contact" className="footer-link">Contact & Inquiries</Link>
             </div>
           </div>
@@ -40,21 +42,33 @@ export default function Footer() {
           {/* Social Links */}
           <div>
             <div className="footer-col-title">CONNECT</div>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              {clubInfo.socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="organizer-social-btn"
-                  aria-label={social.name}
-                >
-                  <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>{social.name[0]}</span>
-                </a>
-              ))}
+            <div className="footer-social-row" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <a
+                href="#"
+                className="footer-social-btn"
+                aria-label="Instagram"
+                title="Instagram"
+              >
+                <InstagramIcon size={18} />
+              </a>
+              <a
+                href="#"
+                className="footer-social-btn"
+                aria-label="LinkedIn"
+                title="LinkedIn"
+              >
+                <LinkedInIcon size={18} />
+              </a>
+              <a
+                href="#"
+                className="footer-social-btn"
+                aria-label="Email"
+                title="Email"
+              >
+                <Mail size={18} />
+              </a>
             </div>
-            <div style={{ marginTop: '16px' }}>
+            <div style={{ marginTop: '18px' }}>
               <Link to="/admin" className="footer-link" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                 🔒 Admin CMS Console
               </Link>

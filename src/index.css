@@ -98,6 +98,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-dark);
   color: var(--text-primary);
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 html.lenis,
@@ -241,6 +243,12 @@ CUSTOM CURSOR (Comic Crosshair & Offset Reticle)
   transform: rotate(6deg);
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .custom-cursor-container {
+    display: none !important;
+  }
+}
+
 /* ============================================================================
 TYPOGRAPHY & UTILITIES
 ============================================================================ */
@@ -270,6 +278,20 @@ TYPOGRAPHY & UTILITIES
   color: #FFFFFF;
   letter-spacing: 0.02em;
   margin-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.15rem);
+    line-height: 1.15;
+  }
+
+  .section-eyebrow {
+    font-size: 0.68rem;
+    padding: 4px 12px;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
 }
 
 .text-highlight {

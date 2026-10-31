@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, MapPin, Globe, Send, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
+import { InstagramIcon, LinkedInIcon } from '../../components/SocialIcons';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import CustomCursor from '../../components/CustomCursor';
@@ -139,23 +140,23 @@ export default function ContactPage() {
                   <div className="contact-items-list">
                     {/* Email */}
                     <div className="contact-item-row">
-                      <div className="contact-icon-box" style={{ color: 'var(--cyber-cyan)' }}>
+                      <div className="contact-icon-box" style={{ color: 'black' }}>
                         <Mail size={18} />
                       </div>
                       <div>
                         <div className="contact-item-label font-mono">DIRECT INQUIRIES</div>
                         <a
-                          href="mailto:technospark@pccoepune.org"
+                          href="#"
                           className="contact-item-value"
                         >
-                          technospark@pccoepune.org
+                          #
                         </a>
                       </div>
                     </div>
 
                     {/* Institution Address */}
                     <div className="contact-item-row">
-                      <div className="contact-icon-box" style={{ color: 'var(--neon-purple)' }}>
+                      <div className="contact-icon-box" style={{ color: 'black' }}>
                         <MapPin size={18} />
                       </div>
                       <div>
@@ -172,7 +173,7 @@ export default function ContactPage() {
 
                     {/* College Portal */}
                     <div className="contact-item-row">
-                      <div className="contact-icon-box" style={{ color: 'var(--cyber-amber)' }}>
+                      <div className="contact-icon-box" style={{ color: 'black' }}>
                         <Globe size={18} />
                       </div>
                       <div>
@@ -195,19 +196,34 @@ export default function ContactPage() {
                     <div className="contact-item-label font-mono" style={{ marginBottom: '10px' }}>
                       OFFICIAL SOCIAL CHANNELS
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                      {clubInfo.socialLinks.map((s) => (
-                        <a
-                          key={s.name}
-                          href={s.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="contact-submit-btn contact-submit-btn--secondary hero-cta-btn hero-cta-btn-secondary"
-                          style={{ padding: '6px 14px', fontSize: '0.75rem' }}
-                        >
-                          <span>{s.name}</span>
-                        </a>
-                      ))}
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      <a
+                        href="#"
+                        className="contact-social-btn"
+                        aria-label="Instagram"
+                        title="Instagram"
+                      >
+                        <InstagramIcon size={16} />
+                        <span>Instagram</span>
+                      </a>
+                      <a
+                        href="#"
+                        className="contact-social-btn"
+                        aria-label="LinkedIn"
+                        title="LinkedIn"
+                      >
+                        <LinkedInIcon size={16} />
+                        <span>LinkedIn</span>
+                      </a>
+                      <a
+                        href="#"
+                        className="contact-social-btn"
+                        aria-label="Email"
+                        title="Email"
+                      >
+                        <Mail size={16} />
+                        <span>Mail</span>
+                      </a>
                     </div>
                   </div>
                 </div>

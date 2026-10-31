@@ -43,17 +43,17 @@ const TEAM_CONFIG = {
     accentColor: '#A855F7', // Neon Purple
     icon: Code2,
     description:
-      'Engineering the interactive 3D WebGL multiverse experience, real-time registration systems, and digital dashboards.',
+      'Engineering the interactive multiverse experience, real-time registration systems, and digital dashboards.',
     priority: 2
   },
   technical: {
     branchId: 'technical',
-    branchName: 'Technical & AI Team',
+    branchName: 'Technical Team',
     shortName: 'Technical',
     accentColor: '#D946EF', // magenta
     icon: Cpu,
     description:
-      'Architecting hackathon problem tracks, CTF systems, AI/ML models, and deep-tech workshops.',
+      'Architecting hackathon problem tracks, CTF systems, and deep-tech workshops.',
     priority: 3
   },
   sponsorship: {
@@ -73,7 +73,7 @@ const TEAM_CONFIG = {
     accentColor: '#F59E0B', // Cyber Amber
     icon: Palette,
     description:
-      'Crafting Spider-Verse graphic aesthetics, stage visual collateral, comic posters, and technical documentation.',
+      'Crafting graphic aesthetics, stage visual collateral, posters, and technical documentation.',
     priority: 5
   },
   'social media': {
@@ -183,7 +183,8 @@ function buildTeamHierarchy(rawOrganizers) {
   rawOrganizers.forEach((rawOrg) => {
     const roleKey = getNormalizedRole(rawOrg.role);
     const name = rawOrg.Name || rawOrg.name || 'Operative';
-    const photo = rawOrg.image || rawOrg.photo || '/assets/images/akshat.jpg';
+    const photo =
+      rawOrg.image || rawOrg.photo || '/assets/images/Default_profile.webp';
     const linkedin = rawOrg.linkedin || rawOrg.profile || '';
 
     if (roleKey === 'faculty') {
@@ -605,7 +606,6 @@ export function Organizers({
                 <span>LEVEL 03 // STUDENT OPERATIONS DIVISIONS</span>
               </div>
               <div className="team-trunk-line" />
-              <div className="team-manifold-bar" />
             </div>
 
             {/* ============================================================ */}

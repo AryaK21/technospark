@@ -76,12 +76,12 @@ export default function Organizers({
       render: (row) => (
         <div className="admin-table-avatar-cell">
           <img
-            src={row.image || '/assets/images/akshat.jpg'}
+            src={row.image || '/assets/images/Default_profile.webp'}
             alt={row.name || row.Name}
             className="admin-table-avatar-img"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = '/assets/images/akshat.jpg';
+              e.target.src = '/assets/images/Default_profile.webp';
             }}
           />
           <div className="admin-table-title-cell">

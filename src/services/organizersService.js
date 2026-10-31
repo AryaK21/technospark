@@ -78,7 +78,7 @@ export function normalizeOrganizer(row) {
     role: roleValue,
     linkedin: row.linkedin || '',
     profile: row.linkedin || '', // compatibility alias
-    image: row.image || '/assets/images/akshat.jpg',
+    image: row.image || '/assets/images/Default_profile.webp',
     team: isNoTeam ? null : (row.team || null),
     fromSupabase: true
   };

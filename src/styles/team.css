@@ -164,7 +164,7 @@ COMMAND HEADER & TELEMETRY SUMMARY HUD
 
 .team-faculty-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 340px));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 340px));
   justify-content: center;
   gap: 28px;
 }
@@ -772,6 +772,11 @@ COMMAND HEADER & TELEMETRY SUMMARY HUD
     padding: 24px 16px;
   }
 
+  .team-faculty-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
   .team-branch-header {
     padding: 18px 18px;
   }
@@ -796,6 +801,169 @@ COMMAND HEADER & TELEMETRY SUMMARY HUD
 
   .team-trunk-line {
     height: 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .team-telemetry-strip {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: 10px;
+  }
+
+  .team-stat-stamp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    transform: none !important;
+  }
+
+  .team-stat-value {
+    font-size: 1.45rem;
+    margin-bottom: 0;
+  }
+
+  .team-stat-label {
+    font-size: 0.72rem;
+  }
+
+  .team-branch-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .team-branch-count-badge {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .organizers-container {
+    padding: 0 14px;
+  }
+
+  .team-command-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    gap: 18px;
+  }
+
+  .team-header-lead {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .team-tier-panel,
+  .team-tier-panel--leadership {
+    padding: 18px 12px;
+    border-width: 2.5px;
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--cyber-amber, #F59E0B);
+  }
+
+  .team-tier-panel--leadership {
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--hot-pink, #F43F5E);
+  }
+
+  .team-tier-banner {
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .team-tier-badge-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .team-tier-heading {
+    font-size: 1.25rem;
+  }
+
+  .team-tier-caption {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.72rem;
+    padding: 5px 10px;
+  }
+
+  .team-trunk-hub {
+    padding: 8px 14px;
+    font-size: 0.72rem;
+    box-shadow: 3px 3px 0px #000000, 6px 6px 0px var(--hot-pink, #F43F5E);
+  }
+
+  .team-control-console {
+    padding: 12px;
+    margin-bottom: 28px;
+  }
+
+  .team-branch-tab {
+    padding: 6px 10px;
+    font-size: 0.68rem;
+    gap: 4px;
+  }
+
+  .team-branch-card {
+    border-width: 2.5px;
+    box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--branch-accent, #00F0FF);
+  }
+
+  .team-branch-header {
+    padding: 14px 12px;
+  }
+
+  .team-branch-icon-stamp {
+    width: 40px;
+    height: 40px;
+  }
+
+  .team-branch-name {
+    font-size: 1.15rem;
+  }
+
+  .team-branch-description {
+    font-size: 0.82rem;
+  }
+
+  .team-branch-members-grid {
+    padding: 14px 10px 18px;
+    gap: 16px;
+  }
+
+  .retro-organizer-card,
+  .retro-organizer-card--faculty {
+    max-width: 100%;
+    min-height: auto;
+    border-width: 2.5px;
+    box-shadow: 3.5px 3.5px 0 #000000, 7px 7px 0 var(--card-accent, #00F0FF);
+  }
+
+  .retro-organizer-card:hover {
+    transform: none;
+    box-shadow: 4px 4px 0 #000000, 8px 8px 0 var(--card-accent, #00F0FF);
+  }
+
+  .org-card-inner-body {
+    padding: 14px 12px;
+  }
+
+  .org-center-avatar-ring {
+    width: 98px;
+    height: 98px;
+  }
+
+  .org-center-name {
+    font-size: 1.05rem;
+  }
+
+  .org-center-role {
+    font-size: 0.78rem;
   }
 }
 
