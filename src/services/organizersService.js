@@ -103,11 +103,11 @@ export async function uploadOrganizerPhoto(file) {
 
     console.log(`[organizersService] Uploading photo to bucket "${ORGANIZERS_BUCKET}": ${filePath}`);
 
-    // Upload to Supabase Storage bucket 'organizers'
+    // Upload to Supabase Storage bucket 'organizers' with 1-year CDN caching
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(ORGANIZERS_BUCKET)
       .upload(filePath, file, {
-        cacheControl: '3600',
+        cacheControl: '31536000',
         upsert: false
       });
 
@@ -126,25 +126,11 @@ export async function uploadOrganizerPhoto(file) {
       };
     }
 
-    // Generate long-lived signed URL (guarantees display whether bucket is public or private)
-    let accessibleUrl = '';
-    try {
-      const { data: signedData } = await supabase.storage
-        .from(ORGANIZERS_BUCKET)
-        .createSignedUrl(filePath, URL_EXPIRATION_SECONDS);
-      if (signedData?.signedUrl) {
-        accessibleUrl = signedData.signedUrl;
-      }
-    } catch (e) {
-      console.warn('[organizersService] Signed URL fallback:', e);
-    }
-
-    if (!accessibleUrl) {
-      const { data: publicUrlData } = supabase.storage
-        .from(ORGANIZERS_BUCKET)
-        .getPublicUrl(filePath);
-      accessibleUrl = publicUrlData?.publicUrl || '';
-    }
+    // Generate public CDN URL (Cached Egress via Cloudflare Smart CDN)
+    const { data: publicUrlData } = supabase.storage
+      .from(ORGANIZERS_BUCKET)
+      .getPublicUrl(filePath);
+    const accessibleUrl = publicUrlData?.publicUrl || '';
 
     console.log('[organizersService] Upload successful! URL:', accessibleUrl);
     return {

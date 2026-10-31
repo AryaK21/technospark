@@ -277,7 +277,7 @@ export function Gallery({ itemsData }) {
                         <video
                           src={item.url}
                           muted
-                          preload="metadata"
+                          preload="none"
                           className="cyber-card-img"
                           style={{ objectFit: 'cover' }}
                         />

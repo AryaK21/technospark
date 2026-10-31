@@ -58,18 +58,6 @@ export function cleanFileNameToTitle(fileName) {
  * private buckets, falls back to public CDN URL).
  */
 export async function getFileAccessibleUrl(filePath) {
-  try {
-    const { data: signedData, error: signError } = await supabase.storage
-      .from(GALLERY_BUCKET)
-      .createSignedUrl(filePath, URL_EXPIRATION_SECONDS);
-
-    if (!signError && signedData?.signedUrl) {
-      return signedData.signedUrl;
-    }
-  } catch (err) {
-    console.warn('[galleryService] Signed URL creation fallback:', err);
-  }
-
   const { data: publicUrlData } = supabase.storage
     .from(GALLERY_BUCKET)
     .getPublicUrl(filePath);
@@ -124,7 +112,7 @@ export async function uploadMediaToGallery(file, customTitle = null) {
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(GALLERY_BUCKET)
       .upload(filePath, file, {
-        cacheControl: '3600',
+        cacheControl: '31536000',
         upsert: false,
         contentType: contentType || undefined
       });
@@ -198,32 +186,12 @@ export async function fetchGalleryFromStorage() {
       return { data: [], error: null };
     }
 
-    // Batch create signed URLs for all files (compatible with private and public buckets)
-    const fileNames = validFiles.map((f) => f.name);
-    const { data: signedResults, error: signedError } = await supabase.storage
-      .from(GALLERY_BUCKET)
-      .createSignedUrls(fileNames, URL_EXPIRATION_SECONDS);
-
-    const signedUrlMap = new Map();
-    if (signedResults && !signedError) {
-      signedResults.forEach((item) => {
-        if (item.signedUrl) {
-          signedUrlMap.set(item.path, item.signedUrl);
-        }
-      });
-    }
-
     const items = validFiles.map((file) => {
-      // Use signed URL if available, otherwise fallback to public URL
-      const signedUrl = signedUrlMap.get(file.name);
-      let finalUrl = signedUrl;
-
-      if (!finalUrl) {
-        const { data: publicUrlData } = supabase.storage
-          .from(GALLERY_BUCKET)
-          .getPublicUrl(file.name);
-        finalUrl = publicUrlData?.publicUrl || '';
-      }
+      // Use direct Public CDN URL (Cached Egress via Cloudflare Smart CDN)
+      const { data: publicUrlData } = supabase.storage
+        .from(GALLERY_BUCKET)
+        .getPublicUrl(file.name);
+      const finalUrl = publicUrlData?.publicUrl || '';
 
       const isVideo = /\.(mp4|webm|ogg|mov|mkv)$/i.test(file.name);
       const isHeic = /\.(heic|heif)$/i.test(file.name);
