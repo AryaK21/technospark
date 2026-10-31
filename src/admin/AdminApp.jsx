@@ -256,6 +256,11 @@ export default function AdminApp() {
   // 3. LIFECYCLE & SUPABASE REALTIME SUBSCRIPTIONS
   // --------------------------------------------------------------------------
   useEffect(() => {
+    // Clean up trailing '#' or leftover OAuth hash fragments cleanly from browser address bar
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+
     // Initial silent check if cached profile exists; otherwise full resolution
     const hasCached = Boolean(getCachedAdminProfile());
     resolveUserAuth(null, hasCached);

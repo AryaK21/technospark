@@ -15,12 +15,21 @@ function ScrollToTop() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    if (!hash) {
+    // If there's an empty trailing hash or leftover OAuth fragment, clean it from the URL bar
+    if (window.location.hash === '#' || window.location.hash.includes('access_token')) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+
+    if (!hash || hash === '#') {
       window.scrollTo(0, 0);
     } else {
-      const el = document.querySelector(hash);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
+      try {
+        const el = document.querySelector(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (e) {
+        window.scrollTo(0, 0);
       }
     }
   }, [pathname, hash]);
