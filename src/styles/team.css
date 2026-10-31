@@ -236,7 +236,7 @@ COMMAND HEADER & TELEMETRY SUMMARY HUD
   margin-bottom: 40px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -244,6 +244,7 @@ COMMAND HEADER & TELEMETRY SUMMARY HUD
 .team-branch-filter-tabs {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
   margin: 0;
@@ -796,4 +797,92 @@ COMMAND HEADER & TELEMETRY SUMMARY HUD
   .team-trunk-line {
     height: 28px;
   }
+}
+
+/* ============================================================================
+8. LEVEL 02: EXECUTIVE LEADERSHIP DECK & DYNAMIC STATES
+============================================================================ */
+.team-tier-panel--leadership {
+  background-color: rgba(18, 12, 38, 0.94);
+  background-image: radial-gradient(rgba(244, 63, 94, 0.12) 1.3px, transparent 1.3px);
+  box-shadow: 7px 7px 0px #000000, 13px 13px 0px var(--hot-pink, #F43F5E);
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+.team-tier-code--leadership {
+  background-color: var(--hot-pink, #F43F5E);
+  color: #FFFFFF;
+}
+
+.team-tier-caption--leadership {
+  box-shadow: 2px 2px 0px var(--hot-pink, #F43F5E);
+}
+
+.team-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  background-color: #0C0F29;
+  border: 3.5px solid #000000;
+  box-shadow: 7px 7px 0px #000000, 13px 13px 0px var(--cyber-cyan, #00F0FF);
+  border-radius: 6px;
+  margin: 30px 0;
+}
+
+.team-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4.5px solid #13183D;
+  border-top-color: var(--cyber-cyan, #00F0FF);
+  border-right-color: var(--hot-pink, #F43F5E);
+  border-radius: 50%;
+  animation: teamSpin 0.75s linear infinite;
+  margin-bottom: 20px;
+  box-shadow: 3px 3px 0px #000000;
+}
+
+@keyframes teamSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.team-loading-text {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--cyber-cyan, #00F0FF);
+  text-transform: uppercase;
+}
+
+.team-error-banner {
+  background: #1e1124;
+  border: 2.5px solid var(--hot-pink, #F43F5E);
+  border-radius: 5px;
+  padding: 14px 20px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #FFFFFF;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.82rem;
+  box-shadow: 4px 4px 0px #000000;
+}
+
+.team-error-retry-btn {
+  background: var(--hot-pink, #F43F5E);
+  color: #000000;
+  border: 2px solid #000000;
+  padding: 4px 12px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 3px;
+  box-shadow: 2px 2px 0px #000000;
 }
