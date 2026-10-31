@@ -13,6 +13,7 @@ import DataTable from '../components/DataTable';
 import ConfirmDialog from '../components/ConfirmDialog';
 import OrganizerForm from './OrganizerForm';
 import { mockOrganizers } from '../data/mockData';
+import { isLeadershipOrFacultyRole } from '../../services/organizersService';
 
 // ============================================================================
 // ORGANIZERS ADMIN MANAGEMENT PAGE (/admin/organizers)
@@ -100,6 +101,55 @@ export default function Organizers({
           {row.role || 'Club Lead'}
         </span>
       )
+    },
+    {
+      key: 'team',
+      label: 'Team Assignment',
+      render: (row) => {
+        const isNoTeam = isLeadershipOrFacultyRole(row.role);
+        if (isNoTeam) {
+          return (
+            <span
+              style={{
+                fontSize: '0.74rem',
+                color: 'var(--admin-text-faint)',
+                fontStyle: 'italic',
+                backgroundColor: 'var(--admin-bg-table-header)',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '4px',
+                border: '1px solid var(--admin-border-subtle)'
+              }}
+            >
+              Executive (No Team)
+            </span>
+          );
+        }
+
+        if (!row.team) {
+          return (
+            <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-faint)' }}>
+              Unassigned
+            </span>
+          );
+        }
+
+        return (
+          <span
+            style={{
+              fontSize: '0.76rem',
+              fontWeight: 600,
+              color: 'var(--admin-blue-primary)',
+              backgroundColor: 'var(--admin-blue-light)',
+              padding: '0.2rem 0.55rem',
+              borderRadius: '4px',
+              border: '1px solid var(--admin-border-blue)',
+              display: 'inline-block'
+            }}
+          >
+            {row.team}
+          </span>
+        );
+      }
     },
     {
       key: 'linkedin',
@@ -233,9 +283,18 @@ export default function Organizers({
         data={organizers}
         searchKey={(item, query) =>
           (item.name || item.Name || '').toLowerCase().includes(query) ||
-          (item.role || '').toLowerCase().includes(query)
+          (item.role || '').toLowerCase().includes(query) ||
+          (item.team || '').toLowerCase().includes(query)
         }
-        searchPlaceholder="Search organizers by name or role..."
+        searchPlaceholder="Search organizers by name, role, or team..."
+        filterOptions={[
+          { value: 'Faculty Co-ordinator', label: 'Faculty Co-ordinators' },
+          { value: 'Lead', label: 'Leads' },
+          { value: 'Co-lead', label: 'Co-leads' },
+          { value: 'head', label: 'Heads' },
+          { value: 'member', label: 'Members' }
+        ]}
+        filterKey="role"
         emptyMessage="No organizers found matching your search."
       />
 

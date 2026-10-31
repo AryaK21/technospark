@@ -11,18 +11,26 @@ import {
   Edit2,
   Clock,
   MapPin,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import PageHeader from '../components/PageHeader';
 import Badge from '../components/Badge';
-import { mockDashboardStats, mockEvents } from '../data/mockData';
 
 // ============================================================================
 // ADMIN DASHBOARD OVERVIEW PAGE (/admin) — ROLE-AWARE
 // ============================================================================
 
-export default function Dashboard({ currentUser, events = mockEvents, onEditEvent }) {
+export default function Dashboard({
+  currentUser,
+  events = [],
+  organizers = [],
+  gallery = [],
+  adminUsers = [],
+  queries = [],
+  onEditEvent
+}) {
   const navigate = useNavigate();
   const isAdministrator = currentUser?.role === 'Administrator';
 
@@ -50,29 +58,27 @@ export default function Dashboard({ currentUser, events = mockEvents, onEditEven
         </button>
       </PageHeader>
 
-      {/* 1. Primary Metrics / Stat Cards */}
+      {/* 1. Primary Metrics / Stat Cards — Realtime Actual Counts */}
       <div className="admin-stats-grid">
         <StatCard
           title="TOTAL EVENTS"
-          value={events.length > 0 ? events.length : mockDashboardStats.events}
+          value={events.length}
           icon={Calendar}
           trend="+ Live on Portal"
           trendType="up"
           subtitle="Flagships, workshops & labs"
         />
-        {isAdministrator && (
-          <StatCard
-            title="TOTAL ORGANIZERS"
-            value={mockDashboardStats.organizers}
-            icon={Users}
-            trend="Core Team"
-            trendType="neutral"
-            subtitle="Active leads & facilitators"
-          />
-        )}
+        <StatCard
+          title="TOTAL ORGANIZERS"
+          value={organizers.length}
+          icon={Users}
+          trend="Core Team"
+          trendType="neutral"
+          subtitle="Active leads & facilitators"
+        />
         <StatCard
           title="GALLERY ITEMS"
-          value={mockDashboardStats.galleryItems}
+          value={gallery.length}
           icon={ImageIcon}
           trend="Photos & Videos"
           trendType="up"
@@ -81,7 +87,7 @@ export default function Dashboard({ currentUser, events = mockEvents, onEditEven
         {isAdministrator ? (
           <StatCard
             title="ADMIN USERS"
-            value={mockDashboardStats.admins}
+            value={adminUsers.length}
             icon={ShieldCheck}
             trend="Authorized"
             trendType="neutral"
@@ -114,6 +120,16 @@ export default function Dashboard({ currentUser, events = mockEvents, onEditEven
             <Plus size={14} />
             <span>Add Event</span>
           </button>
+          {isAdministrator && (
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary admin-btn-sm"
+              onClick={() => navigate('/admin/queries')}
+            >
+              <MessageSquare size={14} />
+              <span>View Queries ({queries.length})</span>
+            </button>
+          )}
           {isAdministrator && (
             <button
               type="button"

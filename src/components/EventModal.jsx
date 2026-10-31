@@ -75,13 +75,15 @@ export default function EventModal({ event, onClose }) {
         {/* ── Modal Body: Title, About, When & Venue ─────────────────────── */}
         <div className="retro-modal-body">
           <h2 id="modal-event-title" className="retro-modal-title">
-            {event.title}
+            {event.name || event.title}
           </h2>
 
           {/* Section: ABOUT THIS EVENT */}
           <div className="retro-modal-section">
             <h4 className="retro-modal-subtitle">ABOUT THIS EVENT</h4>
-            <p className="retro-modal-desc">{event.fullDesc || event.shortDesc}</p>
+            <p className="retro-modal-desc">
+              {event.event_Description || event.fullDesc || event.shortDesc || event.description || 'Join us for this exciting technical event hosted by Technospark.'}
+            </p>
           </div>
 
           {/* Section: WHEN AND VENUE */}
@@ -90,11 +92,11 @@ export default function EventModal({ event, onClose }) {
             <div className="retro-modal-venue-box">
               <div className="retro-venue-line">
                 <MapPin size={15} className="retro-venue-icon" />
-                <span>{event.location}</span>
+                <span>{event.venue || event.location}</span>
               </div>
               <div className="retro-date-line">
                 <Calendar size={15} className="retro-venue-icon" />
-                <span>{event.date} • {event.time}</span>
+                <span>{event.event_date || event.date} • {event.time || 'TBD'}</span>
               </div>
             </div>
           </div>
@@ -109,11 +111,21 @@ export default function EventModal({ event, onClose }) {
           >
             Close Window
           </button>
-          {!isPast && (
+          {(event['Registration link'] || event.registration_link || event.registrationLink) && !isPast ? (
             <a
-              href="mailto:technospark@pccoepune.org?subject=Inquiry regarding Event"
+              href={event['Registration link'] || event.registration_link || event.registrationLink}
+              target="_blank"
+              rel="noopener noreferrer"
               className="retro-btn-modal retro-btn-modal-action"
-              style={{ backgroundColor: accentColor }}
+              style={{ backgroundColor: accentColor, textDecoration: 'none' }}
+            >
+              Register for Event
+            </a>
+          ) : !isPast && (
+            <a
+              href={`mailto:technospark@pccoepune.org?subject=Inquiry regarding ${encodeURIComponent(event.name || event.title || 'Event')}`}
+              className="retro-btn-modal retro-btn-modal-action"
+              style={{ backgroundColor: accentColor, textDecoration: 'none' }}
             >
               Contact Coordinators
             </a>

@@ -28,6 +28,7 @@ export default function AdminTopbar({
   const getPageTitle = (pathname) => {
     if (pathname === '/admin') return 'Dashboard Overview';
     if (pathname.startsWith('/admin/events')) return 'Events Management';
+    if (pathname.startsWith('/admin/queries')) return 'Public Queries (Read-Only)';
     if (pathname.startsWith('/admin/organizers')) return 'Organizers & Team';
     if (pathname.startsWith('/admin/gallery')) return 'Gallery & Media';
     if (pathname.startsWith('/admin/users')) return 'Admin Access & Requests';

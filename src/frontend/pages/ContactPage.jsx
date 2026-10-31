@@ -6,6 +6,7 @@ import CustomCursor from '../../components/CustomCursor';
 import ScrollProgress from '../../components/ScrollProgress';
 import ComicSkylineBg from '../../components/ComicSkylineBg';
 import { clubInfo } from '../../data/clubInfo';
+import { submitContactQuery } from '../../services/queriesService';
 import '../../styles/contact.css';
 
 // ============================================================================
@@ -49,7 +50,7 @@ export default function ContactPage() {
     return errs;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -60,11 +61,20 @@ export default function ContactPage() {
     setErrors({});
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    try {
+      await submitContactQuery({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message
+      });
+    } catch (err) {
+      console.warn('[ContactPage] Failed to save query to Supabase:', err);
+    } finally {
       setIsSubmitting(false);
       setIsSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 1000);
+    }
   };
 
   const handleChange = (e) => {

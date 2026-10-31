@@ -81,31 +81,52 @@ export async function getFileAccessibleUrl(filePath) {
  * Uploads a file directly to the Supabase storage bucket `gallery`.
  *
  * @param {File} file - Browser File object from input / dropzone
+ * @param {string|null} customTitle - Optional custom title/name for the media item
  * @returns {Promise<{ data: Object|null, error: Object|null, isRlsError?: boolean }>}
  */
-export async function uploadMediaToGallery(file) {
+export async function uploadMediaToGallery(file, customTitle = null) {
   try {
     if (!file) {
       return { data: null, error: new Error('No file selected for upload') };
     }
 
-    // Determine media type
-    const isVideo = file.type.startsWith('video');
+    // Determine media type (supports mp4, mov, heic, webm, jpg, png, etc.)
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    const isVideo = (file.type && file.type.startsWith('video')) || ['mp4', 'mov', 'webm', 'ogg', 'mkv'].includes(ext);
+    const isHeic = ['heic', 'heif'].includes(ext);
     const mediaType = isVideo ? 'video' : 'image';
 
-    // Sanitize unique file name
+    // Format display title and sanitized storage filename
+    const displayTitle = customTitle && customTitle.trim()
+      ? customTitle.trim()
+      : cleanFileNameToTitle(file.name);
+
+    // Keep extension and sanitize filename for cloud storage
+    const sanitizedBase = displayTitle
+      .replace(/\.[^/.]+$/, '')
+      .replace(/[^a-zA-Z0-9._ -]/g, '_')
+      .trim();
+    const cleanFileName = `${sanitizedBase}.${ext}`;
+
     const timestamp = Date.now();
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filePath = `${timestamp}_${sanitizedName}`;
+    const filePath = `${timestamp}_${cleanFileName.replace(/\s+/g, '_')}`;
 
     console.log(`[galleryService] Uploading to bucket "${GALLERY_BUCKET}": ${filePath}`);
 
-    // Upload to Supabase Storage
+    // Upload to Supabase Storage with appropriate content type
+    let contentType = file.type;
+    if (!contentType || contentType === 'application/octet-stream') {
+      if (ext === 'heic') contentType = 'image/heic';
+      else if (ext === 'mov') contentType = 'video/quicktime';
+      else if (ext === 'mp4') contentType = 'video/mp4';
+    }
+
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(GALLERY_BUCKET)
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        contentType: contentType || undefined
       });
 
     if (uploadError) {
@@ -128,14 +149,15 @@ export async function uploadMediaToGallery(file) {
     const newMediaItem = {
       id: uploadData?.path || filePath,
       storagePath: uploadData?.path || filePath,
-      title: cleanFileNameToTitle(file.name),
-      name: file.name,
+      title: displayTitle,
+      name: cleanFileName,
       mediaType,
+      isHeic,
       url: accessibleUrl,
       thumbnail: accessibleUrl,
-      associatedEvent: 'Gallery Upload',
+      associatedEvent: 'Gallery Archive',
       fileSize: formatFileSize(file.size),
-      dimensions: isVideo ? '1080p Video' : 'Original Resolution',
+      dimensions: isVideo ? '1080p Video' : (isHeic ? 'HEIC Photo' : 'Original Resolution'),
       uploadDate: new Date().toISOString().split('T')[0],
       fromSupabase: true
     };
@@ -203,7 +225,8 @@ export async function fetchGalleryFromStorage() {
         finalUrl = publicUrlData?.publicUrl || '';
       }
 
-      const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(file.name);
+      const isVideo = /\.(mp4|webm|ogg|mov|mkv)$/i.test(file.name);
+      const isHeic = /\.(heic|heif)$/i.test(file.name);
 
       return {
         id: file.id || file.name,
@@ -211,11 +234,12 @@ export async function fetchGalleryFromStorage() {
         title: cleanFileNameToTitle(file.name),
         name: file.name,
         mediaType: isVideo ? 'video' : 'image',
+        isHeic,
         url: finalUrl,
         thumbnail: finalUrl,
         associatedEvent: 'Supabase Storage',
         fileSize: formatFileSize(file.metadata?.size),
-        dimensions: isVideo ? 'Video Clip' : 'Photo',
+        dimensions: isVideo ? 'Video Clip (MP4/MOV)' : (isHeic ? 'HEIC Photo' : 'Photo'),
         uploadDate: file.created_at
           ? file.created_at.split('T')[0]
           : new Date().toISOString().split('T')[0],
@@ -272,4 +296,74 @@ export async function deleteGalleryMediaFromStorage(storagePath) {
     console.error('[galleryService] Unexpected error deleting file:', err);
     return { error: err };
   }
+}
+
+/**
+ * Extracts a Google Drive file ID from standard shareable links:
+ * - https://drive.google.com/file/d/{FILE_ID}/view?usp=sharing
+ * - https://drive.google.com/open?id={FILE_ID}
+ * - https://drive.google.com/uc?id={FILE_ID}
+ * - Direct ID string
+ */
+export function extractGoogleDriveFileId(url) {
+  if (!url) return null;
+  const trimmed = url.trim();
+  const matchFile = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (matchFile) return matchFile[1];
+  const matchId = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (matchId) return matchId[1];
+  const matchD = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (matchD) return matchD[1];
+  if (/^[a-zA-Z0-9_-]{25,}$/.test(trimmed)) return trimmed;
+  return null;
+}
+
+/**
+ * Creates a normalized gallery media object for a Google Drive asset.
+ */
+export function createDriveMediaItem({
+  url,
+  title = '',
+  mediaType = null,
+  associatedEvent = 'Archive',
+  fileId = null
+}) {
+  const extractedId = fileId || extractGoogleDriveFileId(url);
+  const id = extractedId
+    ? `gdrive_${extractedId}`
+    : `gdrive_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
+  // Auto-detect media type from url or title if not explicitly provided
+  let detectedType = mediaType;
+  if (!detectedType) {
+    const isVideoExt = /\.(mp4|mov|webm|ogg|mkv)/i.test(url) || /\.(mp4|mov|webm|ogg|mkv)/i.test(title);
+    detectedType = isVideoExt ? 'video' : 'image';
+  }
+
+  const isVideo = detectedType === 'video';
+
+  // High-performance direct image CDN & video streaming URLs
+  const directImageUrl = extractedId ? `https://lh3.googleusercontent.com/d/${extractedId}` : url;
+  const videoStreamUrl = extractedId ? `https://drive.google.com/file/d/${extractedId}/preview` : url;
+  const finalMediaUrl = isVideo ? videoStreamUrl : directImageUrl;
+
+  const displayTitle = (title && title.trim())
+    ? title.trim()
+    : (extractedId ? `Drive Asset (${extractedId.slice(0, 6)})` : 'Google Drive Media');
+
+  return {
+    id,
+    storagePath: null,
+    title: displayTitle,
+    name: displayTitle,
+    mediaType: detectedType,
+    url: finalMediaUrl,
+    thumbnail: directImageUrl,
+    associatedEvent: associatedEvent || 'Archive',
+    fileSize: 'Drive Cloud Asset',
+    dimensions: isVideo ? 'Drive Video Stream' : 'Drive High-Res',
+    uploadDate: new Date().toISOString().split('T')[0],
+    fromDrive: true,
+    driveFileId: extractedId
+  };
 }

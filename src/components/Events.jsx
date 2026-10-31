@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { Sparkles, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
-import { events } from '../data/events';
+import { events as defaultEvents } from '../data/events';
+import { getEvents } from '../services/eventsService';
 import EventCard from './EventCard';
 import EventModal from './EventModal';
 import '../styles/events.css';
@@ -23,15 +24,28 @@ import '../styles/events.css';
 export default function Events() {
   const [filter, setFilter] = useState('all'); // 'all' | 'upcoming' | 'past'
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [eventsList, setEventsList] = useState(defaultEvents);
+
+  useEffect(() => {
+    let isMounted = true;
+    getEvents().then(({ data, error }) => {
+      if (!error && data && data.length > 0 && isMounted) {
+        setEventsList(data);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const timelineScrollRef = useRef(null);
 
-  const pastEvents = events.filter((e) => e.status === 'past');
-  const futureEvents = events.filter((e) => e.status === 'upcoming');
+  const pastEvents = eventsList.filter((e) => e.status === 'past');
+  const futureEvents = eventsList.filter((e) => e.status !== 'past');
 
-  const allCount = events.length;
+  const allCount = eventsList.length;
   const upcomingCount = futureEvents.length;
   const pastCount = pastEvents.length;
 

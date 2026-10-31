@@ -44,9 +44,54 @@ export async function signInWithGoogle() {
 }
 
 /**
+ * Session storage cache keys for persistent fast tab changes
+ */
+const PROFILE_CACHE_KEY = 'technospark_admin_profile';
+
+export function getCachedAdminProfile() {
+  try {
+    const raw = sessionStorage.getItem(PROFILE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Expire cache after 4 hours
+    if (parsed.timestamp && Date.now() - parsed.timestamp < 4 * 60 * 60 * 1000) {
+      return parsed.profile;
+    }
+    sessionStorage.removeItem(PROFILE_CACHE_KEY);
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function setCachedAdminProfile(profile) {
+  try {
+    if (!profile) {
+      sessionStorage.removeItem(PROFILE_CACHE_KEY);
+      return;
+    }
+    sessionStorage.setItem(
+      PROFILE_CACHE_KEY,
+      JSON.stringify({ profile, timestamp: Date.now() })
+    );
+  } catch (e) {
+    // Ignore storage quota errors
+  }
+}
+
+export function clearCachedAdminProfile() {
+  try {
+    sessionStorage.removeItem(PROFILE_CACHE_KEY);
+  } catch (e) {
+    // Ignore
+  }
+}
+
+/**
  * Signs out the currently authenticated user from Supabase.
  */
 export async function signOutAdmin() {
+  clearCachedAdminProfile();
   return await supabase.auth.signOut();
 }
 
@@ -133,7 +178,11 @@ export async function getAdminProfile(user) {
 
       if (data) {
         const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || data.avatar_url;
-        if (!data.user_id || (!data.avatar_url && avatarUrl)) {
+        const lastActiveTime = data.last_active ? new Date(data.last_active).getTime() : 0;
+        const twoHours = 2 * 60 * 60 * 1000;
+        const needsUpdate = !data.user_id || (!data.avatar_url && avatarUrl) || (Date.now() - lastActiveTime > twoHours);
+
+        if (needsUpdate) {
           await supabase
             .from('admin_users')
             .update({
@@ -168,14 +217,20 @@ export async function getAdminProfile(user) {
       if (matched) {
         console.log('[AuthService] Found matching admin in table via fallback scan:', matched);
         const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || matched.avatar_url;
-        await supabase
-          .from('admin_users')
-          .update({
-            user_id: user.id,
-            avatar_url: avatarUrl,
-            last_active: new Date().toISOString()
-          })
-          .eq('id', matched.id);
+        const lastActiveTime = matched.last_active ? new Date(matched.last_active).getTime() : 0;
+        const twoHours = 2 * 60 * 60 * 1000;
+        const needsUpdate = !matched.user_id || (!matched.avatar_url && avatarUrl) || (Date.now() - lastActiveTime > twoHours);
+
+        if (needsUpdate) {
+          await supabase
+            .from('admin_users')
+            .update({
+              user_id: user.id,
+              avatar_url: avatarUrl,
+              last_active: new Date().toISOString()
+            })
+            .eq('id', matched.id);
+        }
 
         return { data: normalizeAdminUser({ ...matched, user_id: user.id, avatar_url: avatarUrl }), error: null };
       }

@@ -9,16 +9,17 @@ import {
   Settings,
   LogOut,
   ExternalLink,
-  Lock
+  Lock,
+  MessageSquare
 } from 'lucide-react';
 import { clubInfo } from '../../data/clubInfo';
 
 // ============================================================================
 // ADMIN SIDEBAR NAVIGATION COMPONENT (ROLE-AWARE)
 // ============================================================================
-// - Administrator: Full access to all 6 modules.
-// - Editor: Allowed access to Events, Gallery, Admin Users, and Dashboard.
-//   Restricted modules (Organizers, Settings) are locked with an "Admin" badge.
+// - Administrator: Full access to all modules (including Queries, Admin Users, Settings).
+// - Editor: Allowed access to Events, Gallery, and Dashboard.
+//   Restricted modules (Queries, Organizers, Admin Users, Settings) are locked with an "Admin" badge.
 // ============================================================================
 
 export default function AdminSidebar({
@@ -44,6 +45,12 @@ export default function AdminSidebar({
       path: '/admin/events',
       icon: Calendar,
       adminOnly: false
+    },
+    {
+      label: 'Queries',
+      path: '/admin/queries',
+      icon: MessageSquare,
+      adminOnly: true // Only Administrator role
     },
     {
       label: 'Organizers',

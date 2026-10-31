@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, ExternalLink, Calendar, Clock, MapPin, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, ExternalLink, Calendar, Clock, MapPin, RefreshCw, FileText } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import DataTable from '../components/DataTable';
-import Badge from '../components/Badge';
 import ConfirmDialog from '../components/ConfirmDialog';
 import EventForm from './EventForm';
-import { mockEvents } from '../data/mockData';
 
 // ============================================================================
 // EVENTS ADMIN MANAGEMENT PAGE (/admin/events)
 // ============================================================================
-// Administrators can view, search, filter, create, edit, and delete events.
+// Administrators & Editors can view, search, filter, create, edit, and delete events.
 // Synchronized with live Supabase table: public.events
+//
+// Table Schema (PostgreSQL):
+// - id: uuid NOT NULL DEFAULT gen_random_uuid()
+// - name: character varying NOT NULL DEFAULT ''
+// - category: character varying NULL
+// - event_date: date NULL
+// - start_time: time without time zone NULL
+// - end_time: time without time zone NULL
+// - venue: character varying NOT NULL
+// - "event_Description": character varying NULL
+// - "Registration link": character varying NULL (OPTIONAL)
 // ============================================================================
 
 export default function Events({
@@ -80,7 +89,7 @@ export default function Events({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: '0.8rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--admin-text-main)' }}>
             <Calendar size={13} color="var(--admin-blue-primary)" />
-            <span>{row.event_date || row.date || 'No Date'}</span>
+            <span>{row.event_date || row.date || 'TBD'}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--admin-text-muted)' }}>
             <Clock size={13} />
@@ -93,13 +102,73 @@ export default function Events({
       key: 'venue',
       label: 'Venue',
       render: (row) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', maxWidth: '200px', color: 'var(--admin-text-main)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', maxWidth: '160px', color: 'var(--admin-text-main)' }}>
           <MapPin size={13} color="var(--admin-text-faint)" />
           <span title={row.venue} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {row.venue}
           </span>
         </div>
       )
+    },
+    {
+      key: 'event_Description',
+      label: 'Description',
+      render: (row) => {
+        const desc = row.event_Description || row.description;
+        return desc ? (
+          <span
+            style={{
+              fontSize: '0.8rem',
+              color: 'var(--admin-text-muted)',
+              maxWidth: '160px',
+              display: 'inline-block',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+            title={desc}
+          >
+            {desc}
+          </span>
+        ) : (
+          <span style={{ fontSize: '0.78rem', color: 'var(--admin-text-faint)', fontStyle: 'italic' }}>
+            None
+          </span>
+        );
+      }
+    },
+    {
+      key: 'Registration link',
+      label: 'Reg. Link',
+      render: (row) => {
+        const link = row['Registration link'] || row.registration_link;
+        return link ? (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              color: 'var(--admin-blue-primary)',
+              backgroundColor: 'var(--admin-blue-light)',
+              padding: '0.2rem 0.5rem',
+              borderRadius: '4px',
+              textDecoration: 'none',
+              border: '1px solid var(--admin-border-blue)'
+            }}
+            title={link}
+          >
+            <span>Link</span>
+            <ExternalLink size={11} />
+          </a>
+        ) : (
+          <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-faint)' }}>None</span>
+        );
+      }
     },
     {
       key: 'actions',
@@ -129,15 +198,13 @@ export default function Events({
     }
   ];
 
-
   const filterOptions = [
     { value: 'Hackathon', label: 'Hackathons' },
     { value: 'Workshop', label: 'Workshops' },
     { value: 'Seminar', label: 'Seminars' },
     { value: 'Competition', label: 'Competitions' },
-    { value: 'upcoming', label: 'Status: Upcoming' },
-    { value: 'past', label: 'Status: Past' },
-    { value: 'draft', label: 'Status: Draft' }
+    { value: 'Webinar', label: 'Webinars' },
+    { value: 'Bootcamp', label: 'Bootcamps' }
   ];
 
   return (
@@ -177,9 +244,11 @@ export default function Events({
         searchKey={(item, query) =>
           (item.name || item.title || '').toLowerCase().includes(query) ||
           (item.venue || '').toLowerCase().includes(query) ||
-          (item.category || '').toLowerCase().includes(query)
+          (item.category || '').toLowerCase().includes(query) ||
+          (item.event_Description || item.description || '').toLowerCase().includes(query) ||
+          (item['Registration link'] || item.registration_link || '').toLowerCase().includes(query)
         }
-        searchPlaceholder="Search events by name, venue, or category..."
+        searchPlaceholder="Search events by name, venue, category, or description..."
         filterOptions={filterOptions}
         filterKey="category"
         emptyMessage="No events found matching your filter criteria."

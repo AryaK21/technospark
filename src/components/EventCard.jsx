@@ -29,7 +29,7 @@ export default function EventCard({ event, index = 0, onSelect }) {
       onClick={() => onSelect(event)}
       tabIndex={0}
       role="button"
-      aria-label={`View details for ${event.title}`}
+      aria-label={`View details for ${event.name || event.title}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -45,23 +45,25 @@ export default function EventCard({ event, index = 0, onSelect }) {
         <div className="retro-banner-eyebrow">
           {event.category?.toUpperCase()} {event.badge ? `• ${event.badge.toUpperCase()}` : ''}
         </div>
-        <h4 className="retro-banner-title">{event.title}</h4>
+        <h4 className="retro-banner-title">{event.name || event.title}</h4>
       </div>
 
       {/* ── Section 2: Main Body & Actions ─────────────────────────────── */}
       <div className="retro-card-body">
         {/* Short Description */}
-        <p className="retro-body-desc">{event.shortDesc}</p>
+        <p className="retro-body-desc">
+          {event.event_Description || event.shortDesc || event.description || 'Join us for this technical event hosted by Technospark.'}
+        </p>
 
         {/* Location & Schedule Meta */}
         <div className="retro-body-meta">
           <div className="retro-meta-item">
             <MapPin size={13} className="retro-meta-icon" />
-            <span className="retro-meta-text">{event.location}</span>
+            <span className="retro-meta-text">{event.venue || event.location}</span>
           </div>
           <div className="retro-meta-item">
             <Calendar size={13} className="retro-meta-icon" />
-            <span className="retro-meta-text">{event.date}</span>
+            <span className="retro-meta-text">{event.event_date || event.date}</span>
           </div>
         </div>
 

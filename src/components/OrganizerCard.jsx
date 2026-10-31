@@ -37,17 +37,18 @@ const GithubIcon = ({ size = 14, className }) => (
 );
 
 export function OrganizerCard({ organizer = {}, isFaculty = false }) {
-  const [imgSrc, setImgSrc] = useState(organizer.photo || organizer.fallbackPhoto);
+  const photoUrl = organizer.image || organizer.photo || organizer.fallbackPhoto;
+  const [imgSrc, setImgSrc] = useState(photoUrl);
   const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {
-    setImgSrc(organizer.photo || organizer.fallbackPhoto);
+    setImgSrc(organizer.image || organizer.photo || organizer.fallbackPhoto);
     setImgFailed(false);
-  }, [organizer.photo, organizer.fallbackPhoto]);
+  }, [organizer.image, organizer.photo, organizer.fallbackPhoto]);
 
   const accentColor = organizer.accentColor || (isFaculty ? '#F59E0B' : '#00F0FF');
   const roleText = organizer.role || organizer.position || 'Team Member';
-  const nameText = organizer.name || 'Technospark Operative';
+  const nameText = organizer.Name || organizer.name || 'Technospark Operative';
 
   // Generate 2-letter initials for clean comic avatar fallback
   const initials = nameText
@@ -113,7 +114,8 @@ export function OrganizerCard({ organizer = {}, isFaculty = false }) {
         {/* 4. Position / Role Underneath */}
         <div className="org-center-role-wrap">
           <span className="org-center-role">{roleText}</span>
-          {organizer.tag && <span className="org-center-tag-pill">{organizer.tag}</span>}
+          {organizer.team && <span className="org-center-tag-pill">{organizer.team}</span>}
+          {organizer.tag && !organizer.team && <span className="org-center-tag-pill">{organizer.tag}</span>}
         </div>
 
         {/* 5. Action / Social Links */}

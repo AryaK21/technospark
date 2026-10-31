@@ -30,6 +30,9 @@ export function normalizeEvent(row) {
     ? (endTimeFormatted ? `${startTimeFormatted} - ${endTimeFormatted}` : startTimeFormatted)
     : 'TBD';
 
+  const desc = row['event_Description'] || row.event_Description || row.description || '';
+  const regLink = row['Registration link'] || row.registration_link || row.registrationLink || '';
+
   return {
     id: row.id,
     name: row.name || '',
@@ -44,17 +47,31 @@ export function normalizeEvent(row) {
     time: timeDisplay,
     venue: row.venue || '',
     location: row.venue || '', // Compatibility alias
+    event_Description: desc,
+    description: desc, // Compatibility alias
+    'Registration link': regLink,
+    registration_link: regLink, // Compatibility alias
+    registrationLink: regLink, // Compatibility alias
     status: 'upcoming'
   };
 }
 
 /**
  * Extracts and strictly sanitizes fields for insertion/update in public.events.
- * Prevents schema cache mismatch errors by only sending columns that exist in PostgreSQL.
+ * Aligned with actual Supabase PostgreSQL public.events schema:
+ * - id: uuid
+ * - name: character varying NOT NULL
+ * - category: character varying NULL
+ * - event_date: date NULL
+ * - start_time: time without time zone NULL
+ * - end_time: time without time zone NULL
+ * - venue: character varying NOT NULL
+ * - "event_Description": character varying NULL
+ * - "Registration link": character varying NULL (OPTIONAL)
  */
 export function prepareEventPayload(formData) {
   const name = (formData.name || formData.title || '').trim();
-  const category = (formData.category || 'Workshop').trim();
+  const category = formData.category ? formData.category.trim() : null;
   const event_date = formData.event_date || formData.date || null;
   const venue = (formData.venue || '').trim();
 
@@ -69,13 +86,25 @@ export function prepareEventPayload(formData) {
     end_time = `${end_time}:00`;
   }
 
+  const event_Description =
+    formData['event_Description'] !== undefined
+      ? formData['event_Description']
+      : (formData.event_Description || formData.description || '');
+
+  const registration_link =
+    formData['Registration link'] !== undefined
+      ? formData['Registration link']
+      : (formData.registration_link || formData.registrationLink || '');
+
   return {
     name,
     category,
     event_date,
     start_time: start_time || null,
     end_time: end_time || null,
-    venue
+    venue,
+    'event_Description': event_Description ? String(event_Description).trim() : null,
+    'Registration link': registration_link ? String(registration_link).trim() : null
   };
 }
 

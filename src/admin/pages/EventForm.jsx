@@ -1,43 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, MapPin, Tag } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Tag, FileText, Link as LinkIcon } from 'lucide-react';
 
 // ============================================================================
 // REUSABLE ADD / EDIT EVENT FORM MODAL
 // ============================================================================
 // Aligned with PostgreSQL Table: public.events
 //
-// Schema:
+// Table Schema (PostgreSQL):
 // - id: uuid NOT NULL DEFAULT gen_random_uuid()
 // - name: character varying NOT NULL DEFAULT ''
-// - category: character varying
-// - event_date: date
-// - start_time: time without time zone
-// - end_time: time without time zone
+// - category: character varying NULL
+// - event_date: date NULL
+// - start_time: time without time zone NULL
+// - end_time: time without time zone NULL
 // - venue: character varying NOT NULL
-//
-// NOTE FOR FUTURE SUPABASE INTEGRATION:
-// // =========================================================================
-// // In handleSubmit:
-// // if (isEditMode) {
-// //   const { data, error } = await supabase.from('events').update({
-// //     name: formData.name,
-// //     category: formData.category,
-// //     event_date: formData.event_date,
-// //     start_time: formData.start_time,
-// //     end_time: formData.end_time,
-// //     venue: formData.venue
-// //   }).eq('id', initialData.id);
-// // } else {
-// //   const { data, error } = await supabase.from('events').insert([{
-// //     name: formData.name,
-// //     category: formData.category,
-// //     event_date: formData.event_date,
-// //     start_time: formData.start_time,
-// //     end_time: formData.end_time,
-// //     venue: formData.venue
-// //   }]);
-// // }
-// // =========================================================================
+// - "event_Description": character varying NULL
+// - "Registration link": character varying NULL (OPTIONAL)
 // ============================================================================
 
 export default function EventForm({
@@ -54,7 +32,9 @@ export default function EventForm({
     event_date: '',
     start_time: '10:00',
     end_time: '16:00',
-    venue: ''
+    venue: '',
+    event_Description: '',
+    'Registration link': ''
   };
 
   const [formData, setFormData] = useState(defaultState);
@@ -68,7 +48,9 @@ export default function EventForm({
         event_date: initialData.event_date || initialData.date || '',
         start_time: initialData.start_time || initialData.startTime || '10:00',
         end_time: initialData.end_time || initialData.endTime || '16:00',
-        venue: initialData.venue || ''
+        venue: initialData.venue || '',
+        event_Description: initialData.event_Description || initialData.description || '',
+        'Registration link': initialData['Registration link'] || initialData.registration_link || initialData.registrationLink || ''
       });
     } else {
       setFormData(defaultState);
@@ -93,26 +75,32 @@ export default function EventForm({
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Event name is required (NOT NULL)';
     if (!formData.venue.trim()) newErrors.venue = 'Venue is required (NOT NULL)';
-    if (!formData.event_date) newErrors.event_date = 'Event date is required';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
+    const regLink = formData['Registration link'] ? formData['Registration link'].trim() : null;
+    const description = formData.event_Description ? formData.event_Description.trim() : null;
+
     const eventPayload = {
       ...(isEditMode && initialData?.id ? { id: initialData.id } : {}),
       name: formData.name.trim(),
-      category: formData.category,
-      event_date: formData.event_date,
-      start_time: formData.start_time,
-      end_time: formData.end_time,
+      category: formData.category || null,
+      event_date: formData.event_date || null,
+      start_time: formData.start_time || null,
+      end_time: formData.end_time || null,
       venue: formData.venue.trim(),
-      // Legacy compatibility aliases for existing views
+      'event_Description': description,
+      'Registration link': regLink,
+      // Compatibility aliases
       title: formData.name.trim(),
-      date: formData.event_date,
-      startTime: formData.start_time,
-      endTime: formData.end_time
+      date: formData.event_date || '',
+      startTime: formData.start_time || '',
+      endTime: formData.end_time || '',
+      description: description || '',
+      registration_link: regLink || ''
     };
 
     onSubmit(eventPayload);
@@ -123,7 +111,7 @@ export default function EventForm({
     <div className="admin-modal-backdrop" onClick={onClose}>
       <div 
         className="admin-modal-container" 
-        style={{ maxWidth: '640px' }} 
+        style={{ maxWidth: '680px' }} 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -180,9 +168,7 @@ export default function EventForm({
           {/* 3. event_date (date) & start_time / end_time (time without time zone) */}
           <div className="admin-form-row-3">
             <div className="admin-form-group">
-              <label className="admin-form-label">
-                Event Date <span className="admin-form-required">*</span>
-              </label>
+              <label className="admin-form-label">Event Date</label>
               <input
                 type="date"
                 name="event_date"
@@ -190,7 +176,6 @@ export default function EventForm({
                 onChange={handleChange}
                 className="admin-form-input"
               />
-              {errors.event_date && <span style={{ color: '#f87171', fontSize: '0.75rem' }}>{errors.event_date}</span>}
             </div>
 
             <div className="admin-form-group">
@@ -230,6 +215,56 @@ export default function EventForm({
               className="admin-form-input"
             />
             {errors.venue && <span style={{ color: '#f87171', fontSize: '0.75rem' }}>{errors.venue}</span>}
+          </div>
+
+          {/* 5. event_Description (character varying NULL) */}
+          <div className="admin-form-group">
+            <label className="admin-form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <FileText size={14} color="var(--admin-blue-primary)" />
+              <span>Event Description</span>
+            </label>
+            <textarea
+              name="event_Description"
+              rows={3}
+              value={formData.event_Description}
+              onChange={handleChange}
+              placeholder="Brief details about the event, problem statements, domains, or schedule..."
+              className="admin-form-input"
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+
+          {/* 6. Registration link (character varying NULL, OPTIONAL) */}
+          <div className="admin-form-group">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+              <label className="admin-form-label" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <LinkIcon size={14} color="var(--admin-sky-blue)" />
+                <span>Registration Link</span>
+              </label>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'var(--admin-text-faint)',
+                  backgroundColor: 'var(--admin-bg-table-header)',
+                  padding: '0.15rem 0.4rem',
+                  borderRadius: '4px'
+                }}
+              >
+                Optional
+              </span>
+            </div>
+            <input
+              type="url"
+              name="Registration link"
+              value={formData['Registration link']}
+              onChange={handleChange}
+              placeholder="e.g. https://unstop.com/... or https://forms.gle/... (optional)"
+              className="admin-form-input"
+            />
+            <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-faint)', marginTop: '0.2rem', display: 'block' }}>
+              Leave blank if registration is closed, on-spot, or not required.
+            </span>
           </div>
 
           {/* Modal Footer */}

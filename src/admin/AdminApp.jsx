@@ -7,6 +7,7 @@ import AdminLayout from './layout/AdminLayout';
 // Admin Pages
 import Dashboard from './pages/Dashboard';
 import Events from './pages/Events';
+import Queries from './pages/Queries';
 import Organizers from './pages/Organizers';
 import Gallery from './pages/Gallery';
 import AdminUsers from './pages/AdminUsers';
@@ -27,7 +28,10 @@ import {
   updateAdminUserRole,
   deleteAdminUser,
   approveAccessRequest,
-  rejectAccessRequest
+  rejectAccessRequest,
+  getCachedAdminProfile,
+  setCachedAdminProfile,
+  clearCachedAdminProfile
 } from '../services/adminAuthService';
 
 import {
@@ -36,6 +40,7 @@ import {
   updateEvent,
   deleteEvent
 } from '../services/eventsService';
+import { getQueries } from '../services/queriesService';
 import {
   fetchGalleryFromStorage,
   deleteGalleryMediaFromStorage
@@ -73,9 +78,9 @@ export default function AdminApp() {
   // AUTHENTICATION & ACCESS REQUEST STATE
   // --------------------------------------------------------------------------
   const [session, setSession] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null); // Row from admin_users
+  const [currentUser, setCurrentUser] = useState(() => getCachedAdminProfile()); // Instant load from cache
   const [pendingRequest, setPendingRequest] = useState(null); // Row from requests if not approved
-  const [authLoading, setAuthLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(() => !getCachedAdminProfile());
 
   // --------------------------------------------------------------------------
   // CONTENT MANAGEMENT STATE
@@ -83,10 +88,13 @@ export default function AdminApp() {
   const [events, setEvents] = useState([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
 
-  const [organizers, setOrganizers] = useState(initialOrganizers);
+  const [queries, setQueries] = useState([]);
+  const [isLoadingQueries, setIsLoadingQueries] = useState(true);
+
+  const [organizers, setOrganizers] = useState([]);
   const [isLoadingOrganizers, setIsLoadingOrganizers] = useState(true);
 
-  const [gallery, setGallery] = useState(initialGallery);
+  const [gallery, setGallery] = useState([]);
   const [isLoadingGallery, setIsLoadingGallery] = useState(false);
 
   // Admin Users & Requests from live database
@@ -116,16 +124,20 @@ export default function AdminApp() {
   };
 
   // --------------------------------------------------------------------------
-  // 1. RESOLVE USER AUTH & AUTHORIZATION STATUS
+  // 1. RESOLVE USER AUTH & AUTHORIZATION STATUS (OPTIMIZED FOR ZERO-FLICKER)
   // --------------------------------------------------------------------------
-  const resolveUserAuth = useCallback(async (existingSession = null) => {
-    setAuthLoading(true);
+  const resolveUserAuth = useCallback(async (existingSession = null, silent = false) => {
+    // Only show full-screen blocking loader if user profile is completely unknown
+    if (!silent && !currentUser && !getCachedAdminProfile()) {
+      setAuthLoading(true);
+    }
 
     try {
       const activeSession = existingSession || (await getCurrentSession()).session;
       setSession(activeSession);
 
       if (!activeSession?.user) {
+        clearCachedAdminProfile();
         setCurrentUser(null);
         setPendingRequest(null);
         setAuthLoading(false);
@@ -142,10 +154,12 @@ export default function AdminApp() {
 
       if (adminProfile) {
         // User is an authorized Administrator or Editor
+        setCachedAdminProfile(adminProfile);
         setCurrentUser(adminProfile);
         setPendingRequest(null);
       } else {
         // User has signed into Google, but is NOT in admin_users whitelist yet
+        clearCachedAdminProfile();
         setCurrentUser(null);
 
         // Fetch or create their pending request in public.requests
@@ -163,7 +177,7 @@ export default function AdminApp() {
     } finally {
       setAuthLoading(false);
     }
-  }, []);
+  }, [currentUser]);
 
   // --------------------------------------------------------------------------
   // 2. DATA LOADERS
@@ -180,17 +194,26 @@ export default function AdminApp() {
     }
   };
 
+  const loadQueries = async (silent = false) => {
+    if (!silent) setIsLoadingQueries(true);
+    const { data, error } = await getQueries();
+    setIsLoadingQueries(false);
+    if (error) {
+      console.warn('[AdminApp] Supabase queries fetch error:', error);
+    } else {
+      setQueries(data || []);
+    }
+  };
+
   const loadOrganizers = async (silent = false) => {
     if (!silent) setIsLoadingOrganizers(true);
     const { data, error } = await getOrganizers();
     setIsLoadingOrganizers(false);
     if (error) {
       console.warn('[AdminApp] Supabase organizers fetch error:', error);
-      setOrganizers((prev) => (prev.length > 0 ? prev : initialOrganizers));
-    } else if (data && data.length > 0) {
-      setOrganizers(data);
+      if (organizers.length === 0) setOrganizers(initialOrganizers);
     } else {
-      setOrganizers((prev) => (prev.length > 0 ? prev : initialOrganizers));
+      setOrganizers(data || []);
     }
   };
 
@@ -199,13 +222,10 @@ export default function AdminApp() {
     const { data, error } = await fetchGalleryFromStorage();
     setIsLoadingGallery(false);
     if (error) {
+      console.warn('[AdminApp] Supabase gallery fetch error:', error);
       if (gallery.length === 0) setGallery(initialGallery);
-    } else if (data && data.length > 0) {
-      const supabasePaths = new Set(data.map((d) => d.storagePath || d.title));
-      const remainingInitial = initialGallery.filter((ig) => !supabasePaths.has(ig.title));
-      setGallery([...data, ...remainingInitial]);
     } else {
-      setGallery((prev) => (prev.length > 0 ? prev : initialGallery));
+      setGallery(data || []);
     }
   };
 
@@ -217,9 +237,13 @@ export default function AdminApp() {
     ]);
     setIsLoadingUsers(false);
 
-    if (usersRes.data) {
-      setAdminUsers(usersRes.data.length > 0 ? usersRes.data : initialAdminUsers);
+    if (usersRes.error) {
+      console.warn('[AdminApp] Supabase admin_users fetch error:', usersRes.error);
+      if (adminUsers.length === 0) setAdminUsers(initialAdminUsers);
+    } else if (usersRes.data) {
+      setAdminUsers(usersRes.data);
     }
+
     if (reqRes.data) {
       setRequests(reqRes.data);
     }
@@ -229,29 +253,110 @@ export default function AdminApp() {
   // 3. LIFECYCLE & SUPABASE REALTIME SUBSCRIPTIONS
   // --------------------------------------------------------------------------
   useEffect(() => {
-    resolveUserAuth();
+    // Initial silent check if cached profile exists; otherwise full resolution
+    const hasCached = Boolean(getCachedAdminProfile());
+    resolveUserAuth(null, hasCached);
 
     // Listen to Supabase Auth state changes (OAuth redirects, logins, logouts)
+    // Filtered so tab changes & automatic token refreshes NEVER interrupt UI
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, updatedSession) => {
-        console.log('[AdminApp] Auth state changed:', event);
-        resolveUserAuth(updatedSession);
+        if (event === 'SIGNED_OUT') {
+          clearCachedAdminProfile();
+          setSession(null);
+          setCurrentUser(null);
+          setPendingRequest(null);
+          return;
+        }
+
+        if (event === 'TOKEN_REFRESHED') {
+          // Token refresh occurs automatically in background; update session silently
+          setSession(updatedSession);
+          return;
+        }
+
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+          setSession(updatedSession);
+          const cached = getCachedAdminProfile();
+          // If already authenticated as this user, don't run heavy profile re-queries
+          if (cached && updatedSession?.user?.id && (cached.userId === updatedSession.user.id || cached.email === updatedSession.user.email)) {
+            return;
+          }
+          resolveUserAuth(updatedSession, true);
+        }
       }
     );
 
     loadEvents();
+    loadQueries(true);
     loadOrganizers();
     loadGalleryMedia(true);
     loadUsersAndRequests(true);
 
-    // Auto-refresh when tab regains focus
+    // Auto-refresh data when browser tab regains focus (throttled to max once every 60s)
+    let lastFocusRefresh = Date.now();
     const handleFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusRefresh < 60000) return;
+      lastFocusRefresh = now;
       loadEvents(true);
+      loadQueries(true);
       loadOrganizers(true);
       loadGalleryMedia(true);
       loadUsersAndRequests(true);
     };
     window.addEventListener('focus', handleFocus);
+
+    // Realtime listener on public.events
+    let eventsChannel;
+    try {
+      eventsChannel = supabase
+        .channel('public:events')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'events' },
+          () => {
+            loadEvents(true);
+          }
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('[AdminApp] Events realtime init error:', e);
+    }
+
+    // Realtime listener on public.organizers
+    let organizersChannel;
+    try {
+      organizersChannel = supabase
+        .channel('public:organizers')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'organizers' },
+          () => {
+            loadOrganizers(true);
+          }
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('[AdminApp] Organizers realtime init error:', e);
+    }
+
+    // Realtime listener on public.queries
+    let queriesChannel;
+    try {
+      queriesChannel = supabase
+        .channel('public:queries')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'queries' },
+          () => {
+            loadQueries(true);
+          }
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('[AdminApp] Queries realtime init error:', e);
+    }
 
     // Realtime listener on public.requests
     let requestsChannel;
@@ -262,11 +367,10 @@ export default function AdminApp() {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'requests' },
           (payload) => {
-            console.log('[AdminApp] Realtime requests update:', payload);
             loadUsersAndRequests(true);
-            // If the pending user gets approved, re-resolve their auth!
-            if (session?.user) {
-              resolveUserAuth();
+            // Only re-resolve if current user is actively waiting for approval
+            if (!currentUser && session?.user) {
+              resolveUserAuth(null, true);
             }
           }
         )
@@ -284,10 +388,10 @@ export default function AdminApp() {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'admin_users' },
           (payload) => {
-            console.log('[AdminApp] Realtime admin_users update:', payload);
             loadUsersAndRequests(true);
-            if (session?.user) {
-              resolveUserAuth();
+            // Only re-resolve if current user is actively waiting for approval
+            if (!currentUser && session?.user) {
+              resolveUserAuth(null, true);
             }
           }
         )
@@ -299,6 +403,9 @@ export default function AdminApp() {
     return () => {
       window.removeEventListener('focus', handleFocus);
       authListener?.subscription?.unsubscribe();
+      if (eventsChannel) supabase.removeChannel(eventsChannel);
+      if (organizersChannel) supabase.removeChannel(organizersChannel);
+      if (queriesChannel) supabase.removeChannel(queriesChannel);
       if (requestsChannel) supabase.removeChannel(requestsChannel);
       if (adminUsersChannel) supabase.removeChannel(adminUsersChannel);
     };
@@ -486,9 +593,20 @@ export default function AdminApp() {
   };
 
   // Gallery Handlers
-  const handleAddMedia = (newMedia) => {
-    setGallery((prev) => [newMedia, ...prev]);
-    showToast(`Media "${newMedia.title}" uploaded!`);
+  const handleAddMedia = (newMediaOrList) => {
+    if (Array.isArray(newMediaOrList)) {
+      if (newMediaOrList.length === 0) return;
+      setGallery((prev) => [...newMediaOrList, ...prev]);
+      showToast(
+        newMediaOrList.length === 1
+          ? `Media "${newMediaOrList[0].title}" added to gallery!`
+          : `${newMediaOrList.length} media items added to gallery!`,
+        'success'
+      );
+    } else if (newMediaOrList) {
+      setGallery((prev) => [newMediaOrList, ...prev]);
+      showToast(`Media "${newMediaOrList.title}" uploaded!`, 'success');
+    }
   };
 
   const handleDeleteMedia = async (mediaId) => {
@@ -568,6 +686,10 @@ export default function AdminApp() {
             <Dashboard
               currentUser={currentUser}
               events={events}
+              organizers={organizers}
+              gallery={gallery}
+              adminUsers={adminUsers}
+              queries={queries}
               onEditEvent={() => navigate('/admin/events')}
             />
           }
@@ -584,6 +706,22 @@ export default function AdminApp() {
               onDeleteEvent={handleDeleteEvent}
               onRefresh={loadEvents}
             />
+          }
+        />
+
+        {/* Public Queries (Read-Only) — ONLY Administrator */}
+        <Route
+          path="queries"
+          element={
+            isAdministrator ? (
+              <Queries
+                queries={queries}
+                isLoading={isLoadingQueries}
+                onRefresh={() => loadQueries()}
+              />
+            ) : (
+              <Navigate to="/admin/events" replace />
+            )
           }
         />
 

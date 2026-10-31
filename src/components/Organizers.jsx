@@ -193,7 +193,8 @@ const DEFAULT_BRANCHES = [
 function FallbackOrganizerCard({ organizer = {}, isFaculty = false }) {
   const accentColor = organizer.accentColor || (isFaculty ? '#F59E0B' : '#00F0FF');
   const roleText = organizer.role || organizer.position || 'Team Member';
-  const nameText = organizer.name || 'Team Member';
+  const nameText = organizer.Name || organizer.name || 'Team Member';
+  const photoUrl = organizer.image || organizer.photo;
   const initials = nameText
     .split(' ')
     .filter(Boolean)
@@ -219,8 +220,8 @@ function FallbackOrganizerCard({ organizer = {}, isFaculty = false }) {
       <div className="org-card-inner-body">
         <div className="org-center-avatar-wrap">
           <div className="org-center-avatar-ring">
-            {organizer.photo ? (
-              <img src={organizer.photo} alt={nameText} className="org-center-avatar-img" />
+            {photoUrl ? (
+              <img src={photoUrl} alt={nameText} className="org-center-avatar-img" />
             ) : (
               <div className="org-avatar-fallback">{initials}</div>
             )}

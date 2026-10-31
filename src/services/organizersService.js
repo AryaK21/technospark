@@ -7,15 +7,47 @@
 // Table Schema (PostgreSQL):
 // - id: bigint GENERATED ALWAYS AS IDENTITY NOT NULL (Primary Key)
 // - Name: character varying NOT NULL
-// - role: character varying
-// - linkedin: text
-// - image: text
+// - role: character varying NULL
+// - linkedin: text NULL
+// - image: text NULL
+// - team: character varying NULL
 // ============================================================================
 
 import { supabase } from '../lib/supabaseClient';
 
 export const ORGANIZERS_BUCKET = 'organizers';
 const URL_EXPIRATION_SECONDS = 315360000; // 10 years for signed media URLs
+
+export const ORGANIZER_ROLES = [
+  'Faculty Co-ordinator',
+  'Lead',
+  'Co-lead',
+  'head',
+  'member'
+];
+
+export const ORGANIZER_TEAMS = [
+  'managment',
+  'web',
+  'Technical',
+  'sponsorship',
+  'Documentation and design',
+  'Social media'
+];
+
+/**
+ * Checks if a role is an executive / faculty role that should NOT have any team.
+ */
+export function isLeadershipOrFacultyRole(role) {
+  if (!role) return false;
+  const lower = role.trim().toLowerCase();
+  return (
+    lower === 'faculty co-ordinator' ||
+    lower === 'faculty coordinator' ||
+    lower === 'lead' ||
+    lower === 'co-lead'
+  );
+}
 
 /**
  * SQL snippet to enable access if Row Level Security (RLS) blocks public.organizers.
@@ -36,14 +68,18 @@ CREATE POLICY "Allow public delete from organizers" ON storage.objects FOR DELET
 export function normalizeOrganizer(row) {
   if (!row) return null;
   const nameValue = row.Name || row.name || '';
+  const roleValue = row.role || '';
+  const isNoTeam = isLeadershipOrFacultyRole(roleValue);
+
   return {
     id: row.id,
     name: nameValue,
     Name: nameValue,
-    role: row.role || '',
+    role: roleValue,
     linkedin: row.linkedin || '',
     profile: row.linkedin || '', // compatibility alias
     image: row.image || '/assets/images/akshat.jpg',
+    team: isNoTeam ? null : (row.team || null),
     fromSupabase: true
   };
 }
@@ -156,12 +192,17 @@ export async function getOrganizers() {
  */
 export async function createOrganizer(formData) {
   try {
+    const role = (formData.role || '').trim();
+    const isNoTeam = isLeadershipOrFacultyRole(role);
+    const team = isNoTeam ? null : ((formData.team || '').trim() || null);
+
     // Note: Column is capitalized 'Name' in PostgreSQL table
     const payload = {
       Name: (formData.name || formData.Name || '').trim(),
-      role: (formData.role || '').trim(),
-      linkedin: (formData.linkedin || formData.profile || '').trim(),
-      image: (formData.image || '').trim()
+      role: role || null,
+      linkedin: (formData.linkedin || formData.profile || '').trim() || null,
+      image: (formData.image || '').trim() || null,
+      team: team
     };
 
     console.log('[organizersService] Inserting organizer payload:', payload);
@@ -193,11 +234,16 @@ export async function createOrganizer(formData) {
  */
 export async function updateOrganizer(id, formData) {
   try {
+    const role = (formData.role || '').trim();
+    const isNoTeam = isLeadershipOrFacultyRole(role);
+    const team = isNoTeam ? null : ((formData.team || '').trim() || null);
+
     const payload = {
       Name: (formData.name || formData.Name || '').trim(),
-      role: (formData.role || '').trim(),
-      linkedin: (formData.linkedin || formData.profile || '').trim(),
-      image: (formData.image || '').trim()
+      role: role || null,
+      linkedin: (formData.linkedin || formData.profile || '').trim() || null,
+      image: (formData.image || '').trim() || null,
+      team: team
     };
 
     console.log(`[organizersService] Updating organizer id ${id}:`, payload);

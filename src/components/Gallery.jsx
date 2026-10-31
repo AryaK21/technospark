@@ -3,9 +3,12 @@ import gsap from 'gsap';
 import {
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Play,
+  Video
 } from 'lucide-react';
 import { galleryItems as importedGalleryItems } from '../data/gallery';
+import { fetchGalleryFromStorage } from '../services/galleryService';
 import '../styles/gallery.css';
 
 // ============================================================================
@@ -86,11 +89,42 @@ const CYBER_FRAME_THEMES = [
 // CYBER BENTO IMAGE GALLERY (Replacing 2D Canvas)
 // ============================================================================
 export function Gallery({ itemsData }) {
-  const rawItems =
+  const defaultItems =
     itemsData ||
     (importedGalleryItems && importedGalleryItems.length > 0
       ? importedGalleryItems
       : DEFAULT_GALLERY_ITEMS);
+
+  const [galleryList, setGalleryList] = useState(defaultItems);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchGalleryFromStorage().then(({ data, error }) => {
+      if (!error && data && data.length > 0 && isMounted) {
+        const storageItems = data.map((d) => {
+          const rawEvent = (d.associatedEvent || '').trim();
+          const cleanCategory = rawEvent && !rawEvent.toLowerCase().includes('supabase')
+            ? rawEvent
+            : (d.mediaType === 'video' ? 'Video' : 'Photo');
+
+          return {
+            ...d,
+            image: d.url || d.thumbnail,
+            category: cleanCategory,
+            associatedEvent: cleanCategory,
+            badgeCategory: d.mediaType === 'video' ? '[ VIDEO // HIGHLIGHT ]' : '[ PHOTO // ARCHIVE ]'
+          };
+        });
+        // Prepend Supabase live uploads
+        setGalleryList([...storageItems, ...defaultItems]);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const rawItems = galleryList;
 
   const [selectedLightboxItem, setSelectedLightboxItem] = useState(null);
   const headerRef = useRef(null);
@@ -196,19 +230,47 @@ export function Gallery({ itemsData }) {
                 }}
                 onClick={() => setSelectedLightboxItem(item)}
               >
-                {/* Media Image Frame */}
+                {/* Media Image / Video Frame */}
                 <div className="cyber-card-img-wrap">
-                  <img
-                    src={item.image || item.thumbnail}
-                    alt={item.title}
-                    className="cyber-card-img"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src =
-                        'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
-                    }}
-                  />
+                  {item.mediaType === 'video' ? (
+                    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#060714' }}>
+                      <video
+                        src={item.url}
+                        muted
+                        preload="metadata"
+                        className="cyber-card-img"
+                        style={{ objectFit: 'cover' }}
+                      />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          width: '38px',
+                          height: '38px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(0, 240, 255, 0.88)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#000',
+                          boxShadow: '0 0 14px rgba(0, 240, 255, 0.6)'
+                        }}
+                      >
+                        <Play size={16} fill="#000" />
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={item.image || item.thumbnail || item.url}
+                      alt={item.title}
+                      className="cyber-card-img"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src =
+                          'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
+                      }}
+                    />
+                  )}
                   <div className="cyber-card-halftone" />
                 </div>
               </article>
@@ -231,10 +293,15 @@ export function Gallery({ itemsData }) {
             {/* Top Comic Issue Bar */}
             <div className="gallery-lightbox-topbar">
               <div className="gallery-lightbox-tags">
-                <span className="retro-black-pill">{selectedLightboxItem.category}</span>
-                {selectedLightboxItem.associatedEvent && (
-                  <span className="retro-black-pill">{selectedLightboxItem.associatedEvent}</span>
-                )}
+                {selectedLightboxItem.category &&
+                  !selectedLightboxItem.category.toLowerCase().includes('supabase') && (
+                    <span className="retro-black-pill">{selectedLightboxItem.category}</span>
+                  )}
+                {selectedLightboxItem.associatedEvent &&
+                  !selectedLightboxItem.associatedEvent.toLowerCase().includes('supabase') &&
+                  selectedLightboxItem.associatedEvent !== selectedLightboxItem.category && (
+                    <span className="retro-black-pill">{selectedLightboxItem.associatedEvent}</span>
+                  )}
                 {selectedLightboxItem.date && (
                   <span className="retro-black-pill">{selectedLightboxItem.date}</span>
                 )}
@@ -250,13 +317,22 @@ export function Gallery({ itemsData }) {
               </button>
             </div>
 
-            {/* Media Image Frame */}
+            {/* Media Image / Video Frame */}
             <div className="gallery-lightbox-frame">
-              <img
-                src={selectedLightboxItem.image || selectedLightboxItem.thumbnail}
-                alt={selectedLightboxItem.title}
-                className="gallery-lightbox-img"
-              />
+              {selectedLightboxItem.mediaType === 'video' ? (
+                <video
+                  src={selectedLightboxItem.url}
+                  controls
+                  autoPlay
+                  className="gallery-lightbox-img"
+                />
+              ) : (
+                <img
+                  src={selectedLightboxItem.image || selectedLightboxItem.thumbnail || selectedLightboxItem.url}
+                  alt={selectedLightboxItem.title}
+                  className="gallery-lightbox-img"
+                />
+              )}
             </div>
 
             {/* Information & Prev/Next Footer */}
