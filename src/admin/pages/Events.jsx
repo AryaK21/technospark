@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, ExternalLink, Calendar, Clock, MapPin, RefreshCw, FileText } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import DataTable from '../components/DataTable';
@@ -59,6 +59,32 @@ export default function Events({
     }
   };
 
+  // Sort events strictly in descending order so the latest entry appears at the top
+  const sortedEvents = useMemo(() => {
+    return [...events].sort((a, b) => {
+      // 1. If created_at timestamp exists, use it (newest insertion first)
+      const createdA = a.created_at || '';
+      const createdB = b.created_at || '';
+      if (createdA && createdB && createdA !== createdB) {
+        return createdB.localeCompare(createdA);
+      }
+
+      // 2. Otherwise sort by event_date descending (latest date on top)
+      const dateA = a.event_date || a.date || '';
+      const dateB = b.event_date || b.date || '';
+      if (dateA !== dateB) {
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return dateB.localeCompare(dateA);
+      }
+
+      // 3. Same date: sort by start_time descending
+      const timeA = a.start_time || a.startTime || '';
+      const timeB = b.start_time || b.startTime || '';
+      return timeB.localeCompare(timeA);
+    });
+  }, [events]);
+
   // Table Columns Definition (Aligned with PostgreSQL public.events schema)
   const columns = [
     {
@@ -81,6 +107,44 @@ export default function Events({
           {row.category || 'General'}
         </span>
       )
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (row) =>
+        row.status === 'past' ? (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '9999px',
+              backgroundColor: '#F1F5F9',
+              color: '#64748B',
+              border: '1px solid #CBD5E1'
+            }}
+          >
+            PAST
+          </span>
+        ) : (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '9999px',
+              backgroundColor: '#EFF6FF',
+              color: 'var(--admin-blue-primary)',
+              border: '1px solid #BFDBFE'
+            }}
+          >
+            UPCOMING
+          </span>
+        )
     },
     {
       key: 'event_date',
@@ -240,7 +304,7 @@ export default function Events({
       {/* Events Data Table */}
       <DataTable
         columns={columns}
-        data={events}
+        data={sortedEvents}
         searchKey={(item, query) =>
           (item.name || item.title || '').toLowerCase().includes(query) ||
           (item.venue || '').toLowerCase().includes(query) ||

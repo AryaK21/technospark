@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, MapPin, Globe, Send, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { Mail, MapPin, Globe, Send, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import CustomCursor from '../../components/CustomCursor';
@@ -14,7 +14,7 @@ import '../../styles/contact.css';
 // ============================================================================
 // Styled in Technospark Cyber Neon & Neo-Brutalist Theme:
 // - Campus coordinates and institutional information
-// - Interactive message inquiry form
+// - Interactive message inquiry form connected to Supabase public.queries
 // - Direct coordinator email and links
 // ============================================================================
 
@@ -28,6 +28,7 @@ export default function ContactPage() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionError, setSubmissionError] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -59,21 +60,34 @@ export default function ContactPage() {
     }
 
     setErrors({});
+    setSubmissionError(null);
     setIsSubmitting(true);
 
     try {
-      await submitContactQuery({
+      const { success, error, isRlsError } = await submitContactQuery({
         name: formData.name,
         email: formData.email,
         subject: formData.subject,
         message: formData.message
       });
-    } catch (err) {
-      console.warn('[ContactPage] Failed to save query to Supabase:', err);
-    } finally {
-      setIsSubmitting(false);
+
+      if (!success && error) {
+        console.error('[ContactPage] Failed to save query to Supabase:', error);
+        setSubmissionError(
+          isRlsError
+            ? 'Supabase Row Level Security is blocking inserts. Please run: ALTER TABLE public.queries DISABLE ROW LEVEL SECURITY; in your Supabase SQL editor.'
+            : (error.message || 'Transmission failed. Please check your network connection or try again.')
+        );
+        return;
+      }
+
       setIsSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      console.error('[ContactPage] Unexpected error submitting query:', err);
+      setSubmissionError('An unexpected transmission error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -188,7 +202,7 @@ export default function ContactPage() {
                           href={s.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hero-cta-btn hero-cta-btn-secondary"
+                          className="contact-submit-btn contact-submit-btn--secondary hero-cta-btn hero-cta-btn-secondary"
                           style={{ padding: '6px 14px', fontSize: '0.75rem' }}
                         >
                           <span>{s.name}</span>
@@ -219,7 +233,7 @@ export default function ContactPage() {
                       <button
                         type="button"
                         onClick={() => setIsSubmitted(false)}
-                        className="hero-cta-btn hero-cta-btn-primary"
+                        className="contact-submit-btn contact-submit-btn--primary"
                         style={{ marginTop: '20px' }}
                       >
                         Transmit Another Message
@@ -295,14 +309,48 @@ export default function ContactPage() {
                         {errors.message && <span className="contact-error-text font-mono">{errors.message}</span>}
                       </div>
 
+                      {/* Transmission Error Alert */}
+                      {submissionError && (
+                        <div
+                          style={{
+                            padding: '12px 14px',
+                            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                            border: '1.5px solid #EF4444',
+                            borderRadius: '4px',
+                            color: '#FCA5A5',
+                            fontSize: '0.84rem',
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: '8px',
+                            marginBottom: '16px',
+                            lineHeight: 1.4
+                          }}
+                        >
+                          <AlertCircle size={17} color="#EF4444" style={{ flexShrink: 0, marginTop: '2px' }} />
+                          <div>{submissionError}</div>
+                        </div>
+                      )}
+
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="hero-cta-btn hero-cta-btn-primary"
-                        style={{ width: '100%', justifyContent: 'center' }}
+                        className="contact-submit-btn contact-submit-btn--primary"
+                        style={{
+                          width: '100%',
+                          marginTop: '8px'
+                        }}
                       >
-                        <Send size={15} />
-                        <span>{isSubmitting ? 'TRANSMITTING...' : 'SEND INQUIRY'}</span>
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 size={18} className="admin-spinner" />
+                            <span>TRANSMITTING INQUIRY...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send size={18} />
+                            <span>TRANSMIT INQUIRY</span>
+                          </>
+                        )}
                       </button>
                     </form>
                   )}

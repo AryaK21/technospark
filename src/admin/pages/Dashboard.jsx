@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Calendar,
@@ -34,8 +34,24 @@ export default function Dashboard({
   const navigate = useNavigate();
   const isAdministrator = currentUser?.role === 'Administrator';
 
-  // Pick the latest 4 events for the dashboard preview table
-  const recentEvents = events.slice(0, 4);
+  // Pick the latest 4 events for the dashboard preview table (strictly descending)
+  const recentEvents = useMemo(() => {
+    return [...events]
+      .sort((a, b) => {
+        const createdA = a.created_at || '';
+        const createdB = b.created_at || '';
+        if (createdA && createdB && createdA !== createdB) return createdB.localeCompare(createdA);
+        const dateA = a.event_date || a.date || '';
+        const dateB = b.event_date || b.date || '';
+        if (dateA !== dateB) {
+          if (!dateA) return 1;
+          if (!dateB) return -1;
+          return dateB.localeCompare(dateA);
+        }
+        return (b.start_time || '').localeCompare(a.start_time || '');
+      })
+      .slice(0, 4);
+  }, [events]);
 
   return (
     <div className="admin-page-container">
@@ -127,7 +143,13 @@ export default function Dashboard({
               onClick={() => navigate('/admin/queries')}
             >
               <MessageSquare size={14} />
-              <span>View Queries ({queries.length})</span>
+              <span>
+                View Queries (
+                {queries.filter((q) => !q.resolved).length > 0
+                  ? `${queries.filter((q) => !q.resolved).length} pending`
+                  : `${queries.length}`}
+                )
+              </span>
             </button>
           )}
           {isAdministrator && (

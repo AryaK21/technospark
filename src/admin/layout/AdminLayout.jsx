@@ -11,6 +11,7 @@ import Toast from '../components/Toast';
 
 export default function AdminLayout({
   currentUser,
+  queriesCount = 0,
   onLogout,
   toast,
   setToast,
@@ -44,6 +45,7 @@ export default function AdminLayout({
         {/* Responsive Sidebar */}
         <AdminSidebar
           currentUser={currentUser}
+          queriesCount={queriesCount}
           isMobileOpen={isMobileOpen}
           onCloseMobile={() => setIsMobileOpen(false)}
           onLogoutClick={() => setShowLogoutConfirm(true)}

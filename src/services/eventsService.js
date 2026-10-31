@@ -17,8 +17,124 @@
 import { supabase } from '../lib/supabaseClient';
 
 /**
+ * Optional SQL snippet to create a sorted chronological view in Supabase SQL editor.
+ */
+export const EVENTS_TIMELINE_VIEW_SQL = `
+-- Run this in your Supabase SQL Editor if you want a dedicated database view:
+CREATE OR REPLACE VIEW public.events_timeline AS
+SELECT *
+FROM public.events
+ORDER BY event_date ASC NULLS LAST, start_time ASC NULLS LAST;
+`.trim();
+
+/**
+ * Checks if a given event date (and optional end/start time) is in the past
+ * by comparing against the client's current date and time.
+ */
+export function isEventPast(dateStr, endTime = null, startTime = null) {
+  if (!dateStr) return false;
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+
+  // If in YYYY-MM-DD format:
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    if (dateStr < todayStr) return true;
+    if (dateStr > todayStr) return false;
+  } else {
+    // String like 'OCT 24, 2026'
+    const parsed = new Date(dateStr);
+    if (!isNaN(parsed.getTime())) {
+      const pYear = parsed.getFullYear();
+      const pMonth = String(parsed.getMonth() + 1).padStart(2, '0');
+      const pDay = String(parsed.getDate()).padStart(2, '0');
+      const pDateStr = `${pYear}-${pMonth}-${pDay}`;
+      if (pDateStr < todayStr) return true;
+      if (pDateStr > todayStr) return false;
+    }
+  }
+
+  // Same day: check end_time or start_time
+  const checkTime = endTime || startTime;
+  if (checkTime) {
+    const hours = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const currentTimeStr = `${hours}:${mins}:00`;
+    const normalizedTime = checkTime.length === 5 ? `${checkTime}:00` : checkTime;
+    return currentTimeStr > normalizedTime;
+  }
+
+  return false;
+}
+
+/**
+ * Formats a raw YYYY-MM-DD date into a comic milestone date string (e.g., 'OCT 24, 2026').
+ */
+export function formatEventDate(dateStr) {
+  if (!dateStr) return 'TBD';
+  if (/[a-zA-Z]/.test(dateStr)) return dateStr;
+
+  const parts = String(dateStr).split('-');
+  if (parts.length === 3) {
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    const dateObj = new Date(year, month, day);
+    if (!isNaN(dateObj.getTime())) {
+      const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+      return `${monthNames[dateObj.getMonth()]} ${String(dateObj.getDate()).padStart(2, '0')}, ${dateObj.getFullYear()}`;
+    }
+  }
+
+  const d = new Date(dateStr);
+  if (!isNaN(d.getTime())) {
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return `${monthNames[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
+  }
+
+  return dateStr;
+}
+
+/**
+ * Robust chronological comparator for event objects.
+ */
+export function compareEventDates(a, b, ascending = true) {
+  const dateA = a.event_date || a.date || '';
+  const dateB = b.event_date || b.date || '';
+
+  if (!dateA && !dateB) return 0;
+  if (!dateA) return 1;
+  if (!dateB) return -1;
+
+  let cmp = 0;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateA) && /^\d{4}-\d{2}-\d{2}$/.test(dateB)) {
+    cmp = dateA.localeCompare(dateB);
+  } else {
+    const timeA = new Date(dateA).getTime();
+    const timeB = new Date(dateB).getTime();
+    if (!isNaN(timeA) && !isNaN(timeB)) {
+      cmp = timeA - timeB;
+    } else {
+      cmp = dateA.localeCompare(dateB);
+    }
+  }
+
+  if (cmp === 0) {
+    const timeA = a.start_time || a.startTime || '';
+    const timeB = b.start_time || b.startTime || '';
+    cmp = timeA.localeCompare(timeB);
+  }
+
+  return ascending ? cmp : -cmp;
+}
+
+/**
  * Normalizes a database row from public.events into the format expected by the UI.
  * Provides backwards-compatible aliases (e.g. title -> name, date -> event_date).
+ * Compares event_date against the current date to set real past/upcoming status.
  */
 export function normalizeEvent(row) {
   if (!row) return null;
@@ -33,13 +149,21 @@ export function normalizeEvent(row) {
   const desc = row['event_Description'] || row.event_Description || row.description || '';
   const regLink = row['Registration link'] || row.registration_link || row.registrationLink || '';
 
+  const eventDate = row.event_date || row.date || '';
+  const displayDate = formatEventDate(eventDate);
+
+  // Dynamically compute status by comparing event_date with current date
+  const past = isEventPast(eventDate, row.end_time, row.start_time);
+  const status = past ? 'past' : 'upcoming';
+
   return {
     id: row.id,
     name: row.name || '',
     title: row.name || '', // Compatibility alias
     category: row.category || 'Workshop',
-    event_date: row.event_date || '',
-    date: row.event_date || '', // Compatibility alias
+    event_date: eventDate,
+    date: eventDate, // Compatibility alias
+    displayDate: displayDate, // Formatted milestone tag date
     start_time: row.start_time || '',
     startTime: startTimeFormatted, // Compatibility alias
     end_time: row.end_time || '',
@@ -52,7 +176,8 @@ export function normalizeEvent(row) {
     'Registration link': regLink,
     registration_link: regLink, // Compatibility alias
     registrationLink: regLink, // Compatibility alias
-    status: 'upcoming'
+    status: status,
+    era: status
   };
 }
 
@@ -109,14 +234,14 @@ export function prepareEventPayload(formData) {
 }
 
 /**
- * Fetch all events from Supabase ordered by event_date.
+ * Fetch all events from Supabase ordered chronologically by event_date.
  */
 export async function getEvents() {
   try {
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .order('event_date', { ascending: false });
+      .order('event_date', { ascending: true, nullsFirst: false });
 
     if (error) {
       console.error('[eventsService] Error fetching events from Supabase:', error);
@@ -124,15 +249,8 @@ export async function getEvents() {
     }
 
     const normalized = (data || []).map(normalizeEvent);
-    // Sort latest date / time first
-    normalized.sort((a, b) => {
-      const dateA = a.event_date || a.date || '';
-      const dateB = b.event_date || b.date || '';
-      if (dateB !== dateA) return dateB.localeCompare(dateA);
-      const timeA = a.start_time || a.startTime || '';
-      const timeB = b.start_time || b.startTime || '';
-      return timeB.localeCompare(timeA);
-    });
+    // Guarantee chronological sorting (ascending from oldest to furthest future)
+    normalized.sort((a, b) => compareEventDates(a, b, true));
 
     return { data: normalized, error: null };
   } catch (err) {

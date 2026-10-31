@@ -24,6 +24,7 @@ import { clubInfo } from '../../data/clubInfo';
 
 export default function AdminSidebar({
   currentUser,
+  queriesCount = 0,
   isMobileOpen,
   onCloseMobile,
   onLogoutClick,
@@ -152,6 +153,19 @@ export default function AdminSidebar({
               >
                 <Icon className="admin-nav-icon" />
                 <span>{item.label}</span>
+                {item.label === 'Queries' && isAdministrator && queriesCount > 0 && (
+                  <span
+                    className="admin-nav-badge"
+                    style={{
+                      backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                      color: '#38BDF8',
+                      border: '1px solid rgba(56, 189, 248, 0.35)',
+                      fontWeight: 700
+                    }}
+                  >
+                    {queriesCount}
+                  </span>
+                )}
               </NavLink>
             );
           })}

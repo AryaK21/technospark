@@ -145,3 +145,71 @@ CONTACT SEPARATE PAGE STYLES (SPIDER-VERSE COMIC PANEL THEME)
   align-items: center;
 }
 
+/* ============================================================================
+   CONTACT BUTTON STYLES (NEO-BRUTALIST COMIC THEME)
+   ============================================================================ */
+.contact-submit-btn,
+.hero-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background-color: var(--cyber-cyan, #00F0FF);
+  color: #000000;
+  border: 3px solid #000000;
+  border-radius: 4px;
+  box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--hot-pink, #F43F5E);
+  font-family: var(--font-heading, 'Orbitron', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.contact-submit-btn:hover:not(:disabled),
+.hero-cta-btn:hover:not(:disabled) {
+  background-color: #38BDF8;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000000, 10px 10px 0px var(--hot-pink, #F43F5E);
+}
+
+.contact-submit-btn:active:not(:disabled),
+.hero-cta-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000000, 4px 4px 0px var(--hot-pink, #F43F5E);
+}
+
+.contact-submit-btn:disabled,
+.hero-cta-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.contact-submit-btn--secondary,
+.hero-cta-btn-secondary {
+  background-color: #060714;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px #000000, 5px 5px 0px var(--cyber-cyan, #00F0FF);
+  padding: 8px 16px;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+}
+
+.contact-submit-btn--secondary:hover,
+.hero-cta-btn-secondary:hover {
+  background-color: var(--cyber-cyan, #00F0FF);
+  color: #000000;
+  box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--hot-pink, #F43F5E);
+  transform: translate(-1px, -1px);
+}
+
+

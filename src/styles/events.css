@@ -597,7 +597,6 @@ RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
   overflow-x: auto;
   overflow-y: hidden;
   padding: 10px 0 14px;
-  scroll-behavior: smooth;
   scrollbar-width: none;
   /* Firefox */
   -ms-overflow-style: none;
@@ -605,6 +604,12 @@ RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
   /* Smooth edge gradient fade mask so cards glide gracefully without abrupt container cutoff borders */
   mask-image: linear-gradient(to right, transparent 0%, black 40px, black calc(100% - 40px), transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40px, black calc(100% - 40px), transparent 100%);
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.desktop-timeline-scroller.timeline-ready {
+  opacity: 1;
 }
 
 /* Remove horizontal scrollbar at the end of canvas */
@@ -621,9 +626,10 @@ RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
   align-items: center;
   justify-content: center;
   min-width: 2280px;
+  width: max-content;
   height: 485px;
   margin: 0 auto;
-  padding: 0 50px;
+  padding: 0 60px;
 }
 
 .desktop-timeline-continuous-axis {
@@ -645,12 +651,13 @@ RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
 .desktop-timeline-columns-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: center;
+  width: max-content;
+  min-width: 100%;
   height: 100%;
   position: relative;
   z-index: 5;
-  gap: 20px;
+  gap: 28px;
 }
 
 .timeline-node-col {
@@ -822,7 +829,23 @@ RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
   inset: -8px;
   border-radius: 50%;
   border: 2px dashed var(--cyber-cyan);
-  animation: rippleWave 1.8s infinite steps(6, end);
+  animation: rippleWave 2.8s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes rippleWave {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.22);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.42);
+    opacity: 0;
+  }
 }
 
 .now-marker-lower-label {

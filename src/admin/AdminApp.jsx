@@ -40,7 +40,7 @@ import {
   updateEvent,
   deleteEvent
 } from '../services/eventsService';
-import { getQueries } from '../services/queriesService';
+import { getQueries, toggleQueryResolved } from '../services/queriesService';
 import {
   fetchGalleryFromStorage,
   deleteGalleryMediaFromStorage
@@ -90,6 +90,7 @@ export default function AdminApp() {
 
   const [queries, setQueries] = useState([]);
   const [isLoadingQueries, setIsLoadingQueries] = useState(true);
+  const [isQueriesRlsError, setIsQueriesRlsError] = useState(false);
 
   const [organizers, setOrganizers] = useState([]);
   const [isLoadingOrganizers, setIsLoadingOrganizers] = useState(true);
@@ -196,11 +197,13 @@ export default function AdminApp() {
 
   const loadQueries = async (silent = false) => {
     if (!silent) setIsLoadingQueries(true);
-    const { data, error } = await getQueries();
+    const { data, error, isRlsError } = await getQueries();
     setIsLoadingQueries(false);
     if (error) {
       console.warn('[AdminApp] Supabase queries fetch error:', error);
+      if (isRlsError) setIsQueriesRlsError(true);
     } else {
+      setIsQueriesRlsError(false);
       setQueries(data || []);
     }
   };
@@ -622,6 +625,31 @@ export default function AdminApp() {
     showToast('Media file removed from gallery.', 'info');
   };
 
+  // Toggle Query Resolved Status
+  const handleToggleResolveQuery = async (queryId, currentStatus) => {
+    const newStatus = !currentStatus;
+    // Optimistically update state immediately
+    setQueries((prev) =>
+      prev.map((q) =>
+        q.id === queryId
+          ? { ...q, resolved: newStatus, status: newStatus ? 'resolved' : 'pending' }
+          : q
+      )
+    );
+
+    const { persistedInDb } = await toggleQueryResolved(queryId, newStatus);
+    if (newStatus) {
+      showToast(
+        persistedInDb
+          ? `Query #${queryId} marked as resolved.`
+          : `Query #${queryId} marked as resolved (persisted in browser).`,
+        'success'
+      );
+    } else {
+      showToast(`Query #${queryId} reopened as pending.`, 'info');
+    }
+  };
+
   const handleSaveSettings = () => {
     showToast('Club & Profile settings saved successfully!');
   };
@@ -664,6 +692,7 @@ export default function AdminApp() {
   // 6. ROLE-BASED ACCESS CONTROL (RBAC)
   // --------------------------------------------------------------------------
   const isAdministrator = currentUser.role === 'Administrator';
+  const unresolvedQueriesCount = queries.filter((q) => !q.resolved).length;
 
   return (
     <Routes>
@@ -671,6 +700,7 @@ export default function AdminApp() {
         element={
           <AdminLayout
             currentUser={currentUser}
+            queriesCount={unresolvedQueriesCount}
             onLogout={handleLogout}
             toast={toast}
             setToast={setToast}
@@ -717,7 +747,9 @@ export default function AdminApp() {
               <Queries
                 queries={queries}
                 isLoading={isLoadingQueries}
+                isRlsError={isQueriesRlsError}
                 onRefresh={() => loadQueries()}
+                onToggleResolve={handleToggleResolveQuery}
               />
             ) : (
               <Navigate to="/admin/events" replace />
