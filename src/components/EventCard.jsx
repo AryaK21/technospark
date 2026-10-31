@@ -53,15 +53,15 @@ export default function EventCard({ event, index = 0, onSelect }) {
         {/* Short Description */}
         <p className="retro-body-desc">{event.shortDesc}</p>
 
-        {/* Location & Schedule Meta (Prominently placed for full visibility) */}
+        {/* Location & Schedule Meta */}
         <div className="retro-body-meta">
           <div className="retro-meta-item">
-            <MapPin size={15} className="retro-meta-icon" />
+            <MapPin size={13} className="retro-meta-icon" />
             <span className="retro-meta-text">{event.location}</span>
           </div>
           <div className="retro-meta-item">
-            <Calendar size={15} className="retro-meta-icon" />
-            <span className="retro-meta-text">{event.date} • {event.time}</span>
+            <Calendar size={13} className="retro-meta-icon" />
+            <span className="retro-meta-text">{event.date}</span>
           </div>
         </div>
 
@@ -69,9 +69,8 @@ export default function EventCard({ event, index = 0, onSelect }) {
         <div className="retro-footer-row">
           <div className="retro-pills-row">
             <span className="retro-black-pill">{event.category}</span>
-            {event.badge && <span className="retro-black-pill">{event.badge}</span>}
             <span className="retro-black-pill">
-              {event.status === 'past' ? 'Completed' : 'Upcoming'}
+              {event.status === 'past' ? 'Past' : 'Upcoming'}
             </span>
           </div>
 
@@ -85,8 +84,8 @@ export default function EventCard({ event, index = 0, onSelect }) {
                 onSelect(event);
               }}
             >
-              <span>View Details</span>
-              <ArrowRight size={13} />
+              <span>Details</span>
+              <ArrowRight size={11} />
             </button>
             <span className="retro-card-index">{indexFormatted}</span>
           </div>

@@ -1,0 +1,145 @@
+/* ============================================================================
+   NON-HERO MOVING COMIC BUILDING SKYLINE BACKGROUND
+   Shared Parallax Building Skyline Layer used on non-hero pages
+   ============================================================================ */
+
+.non-hero-comic-wrapper {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+}
+
+.comic-skyline-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.comic-sky-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, #070510 0%, #150B28 30%, #2B103B 62%, #42143D 82%, #060714 100%);
+}
+
+.comic-halftone-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+  opacity: 0.9;
+}
+
+.spiderweb-accent {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.9;
+  filter: drop-shadow(3px 3px 0px #000000);
+}
+
+.spiderweb-accent.top-left {
+  top: 0;
+  left: 0;
+}
+
+.spiderweb-accent.top-right {
+  top: 0;
+  right: 0;
+}
+
+.skyline-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.skyline-layer.far-layer {
+  height: 60%;
+  opacity: 0.72;
+}
+
+.skyline-layer.far-layer .skyline-track-loop {
+  animation: skylineLoopFar 65s linear infinite;
+}
+
+.skyline-layer.mid-layer {
+  height: 75%;
+  opacity: 0.88;
+}
+
+.skyline-layer.mid-layer .skyline-track-loop {
+  animation: skylineLoopMid 42s linear infinite;
+}
+
+.skyline-layer.near-layer {
+  height: 50%;
+  opacity: 0.96;
+}
+
+.skyline-layer.near-layer .skyline-track-loop {
+  animation: skylineLoopNear 26s linear infinite;
+}
+
+.skyline-track-loop {
+  display: flex;
+  width: 200%;
+  height: 100%;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.skyline-svg {
+  width: 50%;
+  height: 100%;
+}
+
+@keyframes skylineLoopFar {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes skylineLoopMid {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes skylineLoopNear {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.non-hero-content-layer {
+  position: relative;
+  z-index: 2;
+  background-color: rgba(6, 7, 20, 0.84);
+}
+

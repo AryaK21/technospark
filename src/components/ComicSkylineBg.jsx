@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/skyline.css';
 
 // ============================================================================
 // SPIDERVERSE COMIC SKYLINE BACKGROUND COMPONENT

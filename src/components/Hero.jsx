@@ -1,107 +1,202 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { Play, Pause } from 'lucide-react';
+import GlobeScene from './GlobeScene';
+import OrbitNavigation from './OrbitNavigation';
+import '../styles/home.css';
 
 // ============================================================================
-// HERO COMPONENT (Spiderverse Typography & Optimized Background Video)
+// SESSION-LEVEL INTRO TRACKER
 // ============================================================================
-// Features:
-// 1. Hardware-accelerated background video strictly scoped to the Hero section.
-// 2. High-performance IntersectionObserver: pauses video decoding instantly when
-//    user scrolls down to other sections, eliminating 100% of video lag.
-// 3. Tab visibility listener: pauses when browser tab is inactive.
-// 4. Manual Play/Pause toggle in the corner for user preference.
-// 5. Spiderverse animated 3D neon title typography.
+let hasIntroRunSession = false;
+
+export function hasSeenHomeIntro() {
+  return hasIntroRunSession;
+}
+
+export function markHomeIntroAsSeen() {
+  hasIntroRunSession = true;
+}
+
+// ============================================================================
+// HERO COMPONENT (Exact Sequenced Intro -> 3D Celestial Planet)
 // ============================================================================
 
-export default function Hero() {
+export function Hero({ onShowLogo, GlobeComponent, OrbitComponent, gsapInstance }) {
+  const Globe = GlobeComponent || GlobeScene;
+  const Orbit = OrbitComponent || OrbitNavigation;
+  const gsapAnim = gsapInstance || gsap;
+
   const heroRef = useRef(null);
-  const spiderverseWrapRef = useRef(null);
+  const videoRef = useRef(null);
+  const videoWrapRef = useRef(null);
+  const globeVideoRef = useRef(null);
+  const globeVideoWrapRef = useRef(null);
+  const introWrapRef = useRef(null);
   const technoRef = useRef(null);
   const sparkRef = useRef(null);
-  const videoRef = useRef(null);
+  const globeWrapperRef = useRef(null);
 
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(!hasSeenHomeIntro());
   const [isManuallyPaused, setIsManuallyPaused] = useState(false);
+  const [introCompleted, setIntroCompleted] = useState(() => hasSeenHomeIntro());
 
-  // 1. Entrance GSAP Animation
+  const tlRef = useRef(null);
+
+  const onShowLogoRef = useRef(onShowLogo);
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    onShowLogoRef.current = onShowLogo;
+  });
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-
-      tl.fromTo(
-        technoRef.current,
-        { opacity: 0, scale: 1.3, rotateX: 45, y: -40, filter: 'blur(16px)' },
-        { opacity: 1, scale: 1, rotateX: 0, y: 0, filter: 'blur(0px)', duration: 1.1, ease: 'back.out(1.6)' }
-      ).fromTo(
-        sparkRef.current,
-        { opacity: 0, scale: 0.7, rotateY: -30, y: 40, filter: 'blur(16px)' },
-        { opacity: 1, scale: 1, rotateY: 0, y: 0, filter: 'blur(0px)', duration: 1, ease: 'elastic.out(1, 0.6)' },
-        '-=0.6'
-      );
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // 2. Viewport-Aware Autoplay/Auto-Pause (The Key Lag-Fix)
   useEffect(() => {
-    const video = videoRef.current;
-    const heroEl = heroRef.current;
-    if (!video || !heroEl) return;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      video.pause();
-      setIsPlaying(false);
+    if (hasSeenHomeIntro() || !gsapAnim) {
+      markHomeIntroAsSeen();
+      setIntroCompleted(true);
+      if (videoRef.current) videoRef.current.pause();
+      if (videoWrapRef.current) videoWrapRef.current.style.display = 'none';
+      if (introWrapRef.current) introWrapRef.current.style.display = 'none';
+      if (globeVideoWrapRef.current) globeVideoWrapRef.current.style.opacity = '1';
+      if (globeVideoRef.current) globeVideoRef.current.play().catch(() => { });
+      if (globeWrapperRef.current) {
+        globeWrapperRef.current.style.opacity = '1';
+        globeWrapperRef.current.style.transform = 'none';
+        globeWrapperRef.current.style.filter = 'none';
+        globeWrapperRef.current.style.pointerEvents = 'auto';
+      }
+      onShowLogoRef.current?.();
       return;
     }
 
-    // IntersectionObserver stops video decoding when Hero scrolls out of view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          if (!isManuallyPaused) {
-            video.play().then(() => setIsPlaying(true)).catch(() => { });
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      markHomeIntroAsSeen();
+      setIntroCompleted(true);
+      if (videoRef.current) videoRef.current.pause();
+      if (videoWrapRef.current) videoWrapRef.current.style.display = 'none';
+      if (introWrapRef.current) introWrapRef.current.style.display = 'none';
+      if (globeVideoWrapRef.current) gsapAnim.set(globeVideoWrapRef.current, { opacity: 1 });
+      if (globeWrapperRef.current) {
+        gsapAnim.set(globeWrapperRef.current, { opacity: 1, scale: 1, pointerEvents: 'auto', filter: 'blur(0px)' });
+      }
+      onShowLogoRef.current?.();
+      return;
+    }
+
+    const ctx = gsapAnim.context(() => {
+      gsapAnim.set(globeVideoWrapRef.current, { opacity: 0 });
+      gsapAnim.set(globeWrapperRef.current, {
+        opacity: 0,
+        scale: 0.85,
+        pointerEvents: 'none',
+        filter: 'blur(10px)'
+      });
+
+      const tl = gsapAnim.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+          markHomeIntroAsSeen();
+          setIntroCompleted(true);
+          if (videoRef.current) videoRef.current.pause();
+          if (videoWrapRef.current) videoWrapRef.current.style.display = 'none';
+          if (introWrapRef.current) introWrapRef.current.style.display = 'none';
+        }
+      });
+      tlRef.current = tl;
+
+      // ── 1. TECHNOSPARK ANIMATION ──────────────────────────────────────────
+      tl.fromTo(
+        technoRef.current,
+        { opacity: 0, scale: 1.4, rotateX: 45, y: -40, filter: 'blur(20px)' },
+        { opacity: 1, scale: 1, rotateX: 0, y: 0, filter: 'blur(0px)', duration: 1.0, ease: 'back.out(1.5)' },
+        0.15
+      )
+        .fromTo(
+          sparkRef.current,
+          { opacity: 0, scale: 0.6, rotateY: -35, y: 40, filter: 'blur(20px)' },
+          { opacity: 1, scale: 1, rotateY: 0, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'elastic.out(1, 0.65)' },
+          0.45
+        )
+        .to({}, { duration: 1.5 })
+
+        // ── 2. BLANK SCREEN ─────────────────────────────────────────────────
+        .to(videoWrapRef.current, {
+          opacity: 0,
+          duration: 0.65,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            if (videoRef.current) videoRef.current.pause();
           }
-        } else {
-          // Off-screen: stop decoder immediately to free up GPU & CPU for other sections
-          video.pause();
-          setIsPlaying(false);
-        }
-      },
-      {
-        threshold: 0.08,
-        rootMargin: '0px'
-      }
-    );
+        })
+        .to(
+          introWrapRef.current,
+          {
+            opacity: 0,
+            scale: 1.06,
+            filter: 'blur(16px)',
+            duration: 0.65,
+            ease: 'power2.inOut',
+            onComplete: () => {
+              if (introWrapRef.current) introWrapRef.current.style.display = 'none';
+            }
+          },
+          '<'
+        )
+        .to({}, { duration: 0.45 })
 
-    observer.observe(heroEl);
+        // ── 3. LOGO AND NAME ────────────────────────────────────────────────
+        .call(() => {
+          markHomeIntroAsSeen();
+          onShowLogoRef.current?.();
+        })
+        .to({}, { duration: 0.35 })
 
-    // Pause when tab is minimized / backgrounded
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        video.pause();
-        setIsPlaying(false);
-      } else if (!isManuallyPaused) {
-        const rect = heroEl.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < window.innerHeight) {
-          video.play().then(() => setIsPlaying(true)).catch(() => { });
-        }
-      }
-    };
+        // ── 4. GLOBE + DEDICATED SPACE VIDEO ────────────────────────────────
+        .call(() => {
+          if (globeVideoRef.current) {
+            globeVideoRef.current.play().catch(() => { });
+          }
+        })
+        .to(globeVideoWrapRef.current, {
+          opacity: 1,
+          duration: 1.2,
+          ease: 'power3.out'
+        })
+        .to(
+          globeWrapperRef.current,
+          {
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 1.2,
+            ease: 'power3.out',
+            pointerEvents: 'auto'
+          },
+          '<'
+        );
+    }, heroRef);
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => ctx.revert();
+  }, [gsapInstance]);
 
-    return () => {
-      observer.disconnect();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [isManuallyPaused]);
+  const handleSkipIntro = useCallback(() => {
+    markHomeIntroAsSeen();
+    if (tlRef.current && !introCompleted) {
+      tlRef.current.seek(tlRef.current.duration());
+    }
+    setIntroCompleted(true);
+    if (videoRef.current) videoRef.current.pause();
+    if (videoWrapRef.current) videoWrapRef.current.style.display = 'none';
+    if (introWrapRef.current) introWrapRef.current.style.display = 'none';
+    if (globeVideoWrapRef.current) globeVideoWrapRef.current.style.opacity = '1';
+    if (globeVideoRef.current) globeVideoRef.current.play().catch(() => { });
+    if (globeWrapperRef.current) {
+      globeWrapperRef.current.style.opacity = '1';
+      globeWrapperRef.current.style.transform = 'none';
+      globeWrapperRef.current.style.filter = 'none';
+      globeWrapperRef.current.style.pointerEvents = 'auto';
+    }
+    onShowLogoRef.current?.();
+  }, [introCompleted]);
 
-  // Toggle video playback manually
   const togglePlayPause = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -119,49 +214,104 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="hero" ref={heroRef} className="hero-craft-section spiderverse-hero" aria-label="Technospark Hero">
+    <section
+      id="hero"
+      ref={heroRef}
+      className={`hero-craft-section spiderverse-hero home-hero-fullscreen ${introCompleted ? 'hero-globe-active' : 'hero-intro-active'}`}
+      aria-label="Technospark 3D Portal"
+    >
+      {/* ── Stage 1 Only: Opening Intro Video Layer (/assets/bg-video.mp4) ──── */}
+      {!introCompleted && (
+        <div ref={videoWrapRef} className="hero-bg-video-wrapper">
+          <video
+            ref={videoRef}
+            src="/assets/bg-video.mp4"
+            poster="/assets/bg-video-poster.jpg"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            disablePictureInPicture
+            disableRemotePlayback
+            className="hero-bg-video-element"
+          />
+          <div className="hero-bg-vignette-overlay" aria-hidden="true" />
 
-      {/* Optimized Autoplay Background Video (Scoped strictly to Hero) */}
-      <div className="hero-bg-video-wrapper">
+          <button
+            type="button"
+            onClick={togglePlayPause}
+            className="hero-video-toggle-btn"
+            aria-label={isPlaying ? 'Pause background video' : 'Play background video'}
+          >
+            {isPlaying ? <Pause size={12} /> : <Play size={12} />}
+            <span>{isPlaying ? 'Pause' : 'Play'}</span>
+          </button>
+        </div>
+      )}
+
+      {/* ── Stage 1 Only: Start Animation TECHNOSPARK Typography ───────────── */}
+      {!introCompleted && (
+        <div
+          ref={introWrapRef}
+          className="hero-intro-overlay"
+          onClick={handleSkipIntro}
+          title="Click to explore 3D Globe"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') handleSkipIntro();
+          }}
+        >
+          <div className="spiderverse-text-wrap tilt-3d-card">
+            <h1 ref={technoRef} className="spiderverse-line spiderverse-techno">
+              TECHNO
+            </h1>
+            <h1 ref={sparkRef} className="spiderverse-line spiderverse-spark">
+              SPARK
+            </h1>
+          </div>
+        </div>
+      )}
+
+      {/* ── Stage 4 Only: Dedicated Spider-Verse Space Video for the 3D Globe ─ */}
+      <div
+        ref={globeVideoWrapRef}
+        className="globe-stage-video-wrapper"
+        style={introCompleted ? { opacity: 1 } : { opacity: 0 }}
+        aria-hidden="true"
+      >
         <video
-          ref={videoRef}
-          src="/assets/bg-video.mp4"
-          poster="/assets/bg-video-poster.jpg"
+          ref={globeVideoRef}
+          src="#"
           autoPlay
           loop
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
           disablePictureInPicture
           disableRemotePlayback
-          className="hero-bg-video-element"
+          className="globe-stage-video-element"
         />
-        {/* Enhanced Radial Vignette Overlay (Lighter center, darker corners) */}
-        <div className="hero-bg-vignette-overlay" aria-hidden="true" />
+        <div className="hero-bg-vignette-overlay" />
       </div>
 
-      {/* Manual Video Play/Pause Toggle Pill */}
-      <button
-        type="button"
-        onClick={togglePlayPause}
-        className="hero-video-toggle-btn"
-        aria-label={isPlaying ? 'Pause background video' : 'Play background video'}
-        title={isPlaying ? 'Pause background animation' : 'Play background animation'}
+      {/* ── Stage 4: 3D Celestial Planet + Tightly Positioned Orbit Navigation ── */}
+      <div
+        ref={globeWrapperRef}
+        className="hero-globe-wrapper hero-globe-prominent"
+        style={introCompleted ? { opacity: 1, filter: 'none', pointerEvents: 'auto', transform: 'none' } : undefined}
       >
-        {isPlaying ? <Pause size={12} /> : <Play size={12} />}
-        <span>{isPlaying ? 'Pause' : 'Play'}</span>
-      </button>
-
-      {/* Spiderverse Animated Stacked Title Typography */}
-      <div ref={spiderverseWrapRef} className="spiderverse-text-wrap tilt-3d-card">
-        <h1 ref={technoRef} className="spiderverse-line spiderverse-techno">
-          TECHNO
-        </h1>
-        <h1 ref={sparkRef} className="spiderverse-line spiderverse-spark">
-          SPARK
-        </h1>
+        <Globe />
+        <div className="hero-orbit-overlay">
+          <Orbit />
+        </div>
       </div>
-
     </section>
   );
+}
+
+export default Hero;
+export function App(props) {
+  return <Hero {...props} />;
 }

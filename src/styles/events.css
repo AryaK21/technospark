@@ -1,0 +1,943 @@
+/* ============================================================================
+EVENTS SECTION & FILTER SWITCH
+============================================================================ */
+.events-section {
+  padding: 16px 0 28px;
+  position: relative;
+  background-color: transparent;
+}
+
+.events-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.events-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.events-title-col {
+  flex: 1 1 320px;
+}
+
+.events-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  max-width: 540px;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.theme-events-switch-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.theme-events-switch {
+  display: inline-flex;
+  background: #FAF7F2;
+  border: 2px solid #000000;
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 4px;
+  box-shadow: 2.5px 2.5px 0 #000000;
+}
+
+.theme-switch-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #374151;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 9999px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.theme-switch-tab:hover:not(.active) {
+  color: #000000;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.theme-switch-tab.active {
+  background: #000000;
+  color: #FFFFFF;
+  border-color: #000000;
+  box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.theme-tab-count {
+  font-size: 0.7rem;
+  opacity: 0.85;
+}
+
+.theme-events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .theme-events-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* ============================================================================
+RETRO-COMIC / NEO-BRUTALIST COMPACT EVENT CARD
+Compact proportions: fits comfortably within default 100% desktop website zoom
+============================================================================ */
+.retro-comic-card {
+  background-color: var(--comic-paper);
+  border: 2.5px solid #000000;
+  box-shadow: 3.5px 3.5px 0 #000000, 6.5px 6.5px 0 var(--cyber-cyan);
+  border-radius: 5px;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.retro-comic-card:hover {
+  transform: translate(-2px, -3px) rotate(-0.3deg);
+  box-shadow: 5px 5px 0 #000000, 9px 9px 0 var(--hot-pink);
+}
+
+.retro-comic-card:focus-visible {
+  outline: 2.5px dashed var(--cyber-cyan);
+  outline-offset: 3px;
+}
+
+.retro-comic-card--past {
+  filter: saturate(0.85);
+  box-shadow: 3.5px 3.5px 0 #000000, 6.5px 6.5px 0 var(--neon-purple);
+}
+
+.retro-comic-card--past:hover {
+  filter: saturate(1);
+}
+
+.retro-card-banner {
+  border-bottom: 2px solid #000000;
+  padding: 7px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: #000000;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1.2px, transparent 1.2px);
+  background-size: 8px 8px;
+}
+
+.retro-banner-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.78);
+  line-height: 1;
+}
+
+.retro-banner-title {
+  font-family: var(--font-heading), 'Inter', sans-serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  color: #000000;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.retro-card-body {
+  background-color: var(--comic-paper);
+  padding: 9px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.retro-body-desc {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  color: #374151;
+  line-height: 1.32;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.retro-body-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background-color: var(--comic-paper-alt);
+  border: 1.5px solid #000000;
+  box-shadow: 1.5px 1.5px 0 #000000;
+  border-radius: 3px;
+  padding: 5px 8px;
+}
+
+.retro-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.retro-meta-icon {
+  color: #000000;
+  flex-shrink: 0;
+}
+
+.retro-meta-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.retro-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 6px;
+  border-top: 1.5px dashed rgba(0, 0, 0, 0.3);
+  flex-wrap: nowrap;
+}
+
+.retro-pills-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.retro-black-pill {
+  background-color: #000000;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.retro-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.retro-btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1.5px solid #000000;
+  border-radius: 3px;
+  box-shadow: 1.5px 1.5px 0 #000000;
+  padding: 3px 8px;
+  font-family: var(--font-heading), 'Inter', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #000000;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.retro-btn-action:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000000;
+}
+
+.retro-card-index {
+  font-family: var(--font-mono);
+  font-style: italic;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #6B7280;
+  user-select: none;
+}
+
+.events-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--comic-paper);
+  border: 3px dashed #000000;
+  box-shadow: 4px 4px 0 #000000, 8px 8px 0 var(--cyber-amber);
+  border-radius: 5px;
+  margin-top: 20px;
+  color: #374151;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* ============================================================================
+RETRO-COMIC / NEO-BRUTALIST EVENT MODAL POPUP
+============================================================================ */
+.retro-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(6, 7, 20, 0.86) !important;
+  background-image: radial-gradient(rgba(0, 240, 255, 0.16) 1.5px, transparent 1.5px) !important;
+  background-size: 12px 12px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.retro-modal-dialog {
+  background-color: var(--comic-paper);
+  border: 3.5px solid #000000;
+  box-shadow: 8px 8px 0 #000000, 14px 14px 0 var(--hot-pink);
+  border-radius: 6px;
+  max-width: 540px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  animation: retroModalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+@keyframes retroModalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.retro-modal-header {
+  border-bottom: 2.5px solid #000000;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.retro-modal-header-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.retro-modal-close-btn {
+  border: 2px solid #000000;
+  border-radius: 4px;
+  background: var(--comic-paper);
+  box-shadow: 2px 2px 0 #000000;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #000000;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+  flex-shrink: 0;
+}
+
+.retro-modal-close-btn:hover {
+  background: var(--hot-pink);
+  color: #FFFFFF;
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000000;
+}
+
+.retro-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--comic-paper);
+}
+
+.retro-modal-title {
+  font-family: var(--font-heading), 'Inter', sans-serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 1.45rem;
+  text-transform: uppercase;
+  color: #000000;
+  line-height: 1.2;
+  margin: 0 0 14px 0;
+  letter-spacing: 0.015em;
+}
+
+.retro-modal-section {
+  margin-bottom: 14px;
+}
+
+.retro-modal-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #4B5563;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.retro-modal-desc {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: #1F2937;
+  line-height: 1.6;
+}
+
+.retro-modal-venue-box {
+  background-color: var(--comic-paper-alt);
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+  border-radius: 4px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.retro-venue-line,
+.retro-date-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  color: #000000;
+  font-weight: 700;
+}
+
+.retro-venue-icon {
+  color: #000000;
+  flex-shrink: 0;
+}
+
+.retro-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 2px dashed rgba(0, 0, 0, 0.35);
+}
+
+.retro-btn-modal {
+  border: 2px solid #000000;
+  border-radius: 4px;
+  box-shadow: 3px 3px 0 #000000;
+  padding: 9px 20px;
+  font-family: var(--font-heading), 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.retro-btn-modal:hover {
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.retro-btn-modal-close {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.retro-btn-modal-action {
+  background-color: var(--cyber-cyan);
+  color: #000000;
+}
+
+/* ── EVENTS CHRONOLOGICAL TIMELINE NAVIGATION CONTROLS (ABOVE CANVAS) ───── */
+.timeline-canvas-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 10;
+}
+
+.timeline-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  font-family: var(--font-heading);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 2px solid #000000;
+  box-shadow: 2.5px 2.5px 0px #000000;
+  user-select: none;
+}
+
+.timeline-nav-btn:hover {
+  transform: translate(-1px, -1px);
+}
+
+.timeline-nav-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #000000;
+}
+
+/* Past Events Button — Left-Hand Side */
+.timeline-nav-btn--past {
+  color: #FFFFFF;
+  background: var(--neon-purple);
+  border-color: #000000;
+  box-shadow: 3px 3px 0px #000000;
+}
+
+.timeline-nav-btn--past:hover {
+  background: var(--neon-purple);
+  box-shadow: 4px 4px 0px #000000, 0 0 14px var(--purple-glow);
+  filter: brightness(1.1);
+}
+
+/* Future / Upcoming Events Button — Right-Hand Side */
+.timeline-nav-btn--upcoming {
+  color: #000000;
+  background: var(--cyber-amber);
+  border-color: #000000;
+  box-shadow: 3px 3px 0px #000000;
+}
+
+.timeline-nav-btn--upcoming:hover {
+  background: var(--cyber-cyan);
+  box-shadow: 4px 4px 0px #000000, 0 0 14px var(--cyan-glow);
+  filter: brightness(1.1);
+}
+
+/* ── Desktop Timeline Canvas & Scroller (Visible at 100% Desktop Zoom) ────── */
+.desktop-timeline-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.desktop-timeline-scroller {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 0 14px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  /* Smooth edge gradient fade mask so cards glide gracefully without abrupt container cutoff borders */
+  mask-image: linear-gradient(to right, transparent 0%, black 40px, black calc(100% - 40px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40px, black calc(100% - 40px), transparent 100%);
+}
+
+/* Remove horizontal scrollbar at the end of canvas */
+.desktop-timeline-scroller::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Height 485px: fits 100% within default 100% desktop website zoom without vertical page scrolling */
+.desktop-timeline-track-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2280px;
+  height: 485px;
+  margin: 0 auto;
+  padding: 0 50px;
+}
+
+.desktop-timeline-continuous-axis {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 5px;
+  transform: translateY(-50%);
+  background: var(--cyber-cyan);
+  border-top: 1.5px solid #000000;
+  border-bottom: 1.5px solid #000000;
+  box-shadow: 0 2px 0px var(--hot-pink);
+  z-index: 2;
+  pointer-events: none;
+  border-radius: 3px;
+}
+
+.desktop-timeline-columns-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 5;
+  gap: 20px;
+}
+
+.timeline-node-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 285px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.timeline-card-anchor-top {
+  position: absolute;
+  bottom: calc(50% + 10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 275px;
+}
+
+.timeline-card-anchor-bottom {
+  position: absolute;
+  top: calc(50% + 10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 275px;
+}
+
+.timeline-card-anchor-top .retro-comic-card,
+.timeline-card-anchor-bottom .retro-comic-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.timeline-vertical-stem {
+  width: 3px;
+  height: 20px;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #000000;
+  flex-shrink: 0;
+}
+
+.timeline-vertical-stem--down {
+  background: var(--cyber-cyan);
+}
+
+.timeline-vertical-stem--up {
+  background: var(--hot-pink);
+}
+
+.timeline-date-anchor-top {
+  position: absolute;
+  bottom: calc(50% + 16px);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.timeline-date-anchor-bottom {
+  position: absolute;
+  top: calc(50% + 16px);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.timeline-milestone-dot {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background-color: #000000;
+  cursor: pointer;
+  z-index: 6;
+  transition: transform 0.15s ease;
+}
+
+.timeline-milestone-dot--past {
+  border: 2px solid var(--hot-pink);
+  box-shadow: 1.5px 1.5px 0px #000000;
+}
+
+.timeline-milestone-dot--future {
+  border: 2px solid var(--cyber-cyan);
+  box-shadow: 1.5px 1.5px 0px #000000;
+}
+
+.timeline-milestone-dot:hover {
+  transform: translateY(-50%) rotate(0deg) scale(1.25);
+}
+
+/* Central NOW Marker */
+.timeline-now-marker-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 210px;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.now-marker-upper-badge {
+  position: absolute;
+  bottom: calc(50% + 20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.now-temporal-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  background: var(--cyber-amber);
+  border: 1.5px solid #000000;
+  border-radius: 3px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #000000;
+  box-shadow: 2px 2px 0px #000000;
+  white-space: nowrap;
+}
+
+.now-stem-guide {
+  width: 3px;
+  height: 14px;
+  background: #000000;
+}
+
+.now-radiant-core {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--hot-pink);
+  border: 2.5px solid #000000;
+  box-shadow: -2px -1.5px 0px var(--cyber-cyan), 3px 3px 0px #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 12;
+  cursor: default;
+}
+
+.now-inner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1.5px solid #000000;
+}
+
+.now-ripple-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px dashed var(--cyber-cyan);
+  animation: rippleWave 1.8s infinite steps(6, end);
+}
+
+.now-marker-lower-label {
+  position: absolute;
+  top: calc(50% + 20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.now-text-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #FFFFFF;
+  text-shadow: 0 0 12px var(--cyan-glow);
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+.now-text-sub {
+  font-size: 0.6rem;
+  color: var(--cyber-cyan);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* Mobile Vertical Timeline */
+.mobile-vertical-timeline {
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.mobile-timeline-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--neon-purple);
+  margin-bottom: 12px;
+  padding-left: 18px;
+}
+
+.mobile-timeline-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  padding-left: 20px;
+  border-left: 2.5px solid var(--cyber-cyan);
+}
+
+.mobile-timeline-item {
+  position: relative;
+}
+
+.mobile-timeline-dot {
+  position: absolute;
+  top: 20px;
+  left: -28px;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background-color: #000000;
+}
+
+.mobile-timeline-dot--past {
+  border: 2px solid var(--hot-pink);
+}
+
+.mobile-timeline-dot--future {
+  border: 2px solid var(--cyber-cyan);
+}
+
+.mobile-now-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0;
+}
+
+.mobile-now-core {
+  position: relative;
+  top: auto;
+  transform: none;
+  flex-shrink: 0;
+}
+
+.mobile-now-text {
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #FFFFFF;
+  text-shadow: 0 0 10px var(--cyan-glow);
+}
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+  .desktop-timeline-wrapper {
+    display: none;
+  }
+
+  .mobile-vertical-timeline {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-canvas-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+}

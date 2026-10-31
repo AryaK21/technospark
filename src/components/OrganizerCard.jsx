@@ -1,15 +1,12 @@
-import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ExternalLink, Mail } from 'lucide-react';
+import '../styles/team.css';
 
 // ============================================================================
-// CENTERED EXPERIMENTAL RETRO-BRUTALIST ORGANIZER CARD
-// ============================================================================
-// Supports split testing:
-// - variant="tinted"  -> Option 3: Color-Tinted Dark Obsidian with Persona Glow
-// - variant="frosted" -> Option 4: Translucent Frosted Cyber Glass
+// SPIDER-VERSE COLLECTOR EDITION ORGANIZER & TEAM MEMBER CARD
 // ============================================================================
 
-const LinkedInIcon = ({ size = 15, className }) => (
+const LinkedInIcon = ({ size = 14, className }) => (
   <svg
     width={size}
     height={size}
@@ -22,69 +19,146 @@ const LinkedInIcon = ({ size = 15, className }) => (
   </svg>
 );
 
-export default function OrganizerCard({ organizer }) {
-  const accentColor = organizer.accentColor || '#00F0FF';
+const GithubIcon = ({ size = 14, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    aria-hidden="true"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+    />
+  </svg>
+);
+
+export function OrganizerCard({ organizer = {}, isFaculty = false }) {
+  const [imgSrc, setImgSrc] = useState(organizer.photo || organizer.fallbackPhoto);
+  const [imgFailed, setImgFailed] = useState(false);
+
+  useEffect(() => {
+    setImgSrc(organizer.photo || organizer.fallbackPhoto);
+    setImgFailed(false);
+  }, [organizer.photo, organizer.fallbackPhoto]);
+
+  const accentColor = organizer.accentColor || (isFaculty ? '#F59E0B' : '#00F0FF');
+  const roleText = organizer.role || organizer.position || 'Team Member';
+  const nameText = organizer.name || 'Technospark Operative';
+
+  // Generate 2-letter initials for clean comic avatar fallback
+  const initials = nameText
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
+
+  const handleImgError = () => {
+    if (organizer.fallbackPhoto && imgSrc !== organizer.fallbackPhoto) {
+      setImgSrc(organizer.fallbackPhoto);
+    } else {
+      setImgFailed(true);
+    }
+  };
 
   return (
     <article
-      className="retro-organizer-card retro-organizer-card--centered retro-card--frosted"
-      style={{
-        '--card-accent': accentColor
-      }}
+      className={`retro-organizer-card ${isFaculty ? 'retro-organizer-card--faculty' : ''}`}
+      style={{ '--card-accent': accentColor }}
       tabIndex={0}
       role="article"
-      aria-label={`Organizer Profile: ${organizer.name}`}
+      aria-label={`Team Profile: ${nameText}`}
     >
-      {/* ── Top Corner Index Badge ───────────────────────────────────────── */}
-      <span className="org-corner-badge">
-        #{organizer.indexNum || '01'}
-      </span>
+      {/* ── Top Comic Issue Header Strip ─────────────────────────────────── */}
+      <div className="org-card-top-bar">
+        <span className="org-card-Clearance">
+          <span className="org-clearance-dot" />
+          {isFaculty ? 'FACULTY ARCHITECT' : organizer.divisionCode || 'CORE OPERATIVE'}
+        </span>
 
-      {/* ── 1. Centered Circular Profile Picture ─────────────────────────── */}
-      <div className="org-center-avatar-wrap">
-        <div className="org-center-avatar-ring">
-          <img
-            src={organizer.photo}
-            alt={organizer.name}
-            className="org-center-avatar-img"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.parentElement.classList.add('org-avatar-fallback');
-              e.currentTarget.parentElement.innerText = organizer.name.charAt(0);
-            }}
-          />
+        <span className="org-corner-badge">
+          #{organizer.indexNum || (organizer.tag ? organizer.tag.slice(0, 4) : 'TS')}
+        </span>
+      </div>
+
+      {/* ── Card Inner Content ───────────────────────────────────────────── */}
+      <div className="org-card-inner-body">
+        {/* 1. Centered Circular Profile Picture */}
+        <div className="org-center-avatar-wrap">
+          <div className="org-center-avatar-ring">
+            {!imgFailed && imgSrc ? (
+              <img
+                src={imgSrc}
+                alt={nameText}
+                className="org-center-avatar-img"
+                loading="lazy"
+                onError={handleImgError}
+              />
+            ) : (
+              <div className="org-avatar-fallback">{initials || 'TS'}</div>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* ── 2. Name Underneath ───────────────────────────────────────────── */}
-      <h3 className="org-center-name">{organizer.name}</h3>
+        {/* 2. Name Underneath */}
+        <h3 className="org-center-name">{nameText}</h3>
 
-      {/* ── 3. Subtle Centered Accent Divider Line ───────────────────────── */}
-      <div className="org-center-divider" />
+        {/* 3. Subtle Centered Accent Divider Line */}
+        <div className="org-center-divider" />
 
-      {/* ── 4. Position / Role Underneath ────────────────────────────────── */}
-      <div className="org-center-role-wrap">
-        <span className="org-center-role">{organizer.role}</span>
-        {organizer.tag && (
-          <span className="org-center-tag-pill">{organizer.tag}</span>
-        )}
-      </div>
+        {/* 4. Position / Role Underneath */}
+        <div className="org-center-role-wrap">
+          <span className="org-center-role">{roleText}</span>
+          {organizer.tag && <span className="org-center-tag-pill">{organizer.tag}</span>}
+        </div>
 
-      {/* ── 5. Centered "View Profile" Button (To LinkedIn) ─────────────── */}
-      <div className="org-center-btn-wrap">
-        <a
-          href={organizer.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="org-view-profile-btn"
-          aria-label={`View ${organizer.name}'s profile on LinkedIn`}
-        >
-          <LinkedInIcon size={15} className="org-btn-icon" />
-          <span>View Profile</span>
-          <ExternalLink size={13} className="org-btn-arrow" />
-        </a>
+        {/* 5. Action / Social Links */}
+        <div className="org-center-btn-wrap">
+          {organizer.linkedin && (
+            <a
+              href={organizer.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="org-view-profile-btn"
+              aria-label={`View ${nameText}'s profile on LinkedIn`}
+            >
+              <LinkedInIcon size={14} className="org-btn-icon" />
+              <span>Profile</span>
+              <ExternalLink size={12} className="org-btn-arrow" />
+            </a>
+          )}
+
+          {organizer.github && (
+            <a
+              href={organizer.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="org-sub-link-btn"
+              aria-label={`${nameText} GitHub`}
+              title="GitHub Profile"
+            >
+              <GithubIcon size={15} />
+            </a>
+          )}
+
+          {organizer.email && (
+            <a
+              href={`mailto:${organizer.email}`}
+              className="org-sub-link-btn"
+              aria-label={`Email ${nameText}`}
+              title={`Email ${nameText}`}
+            >
+              <Mail size={15} />
+            </a>
+          )}
+        </div>
       </div>
     </article>
   );
 }
+
+export default OrganizerCard;

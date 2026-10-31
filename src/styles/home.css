@@ -1,0 +1,587 @@
+/* ============================================================================
+   HOME PAGE STYLESHEET
+   Single-Viewport Hero, 3D Globe Scene Mount, Space Video & Orbit Navigation
+   ============================================================================ */
+
+.public-home-viewport {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  background-color: var(--bg-dark);
+}
+
+.home-main-stage {
+  width: 100%;
+  position: relative;
+}
+
+/* ── Top-Left Floating Brand Identity ──────────────────────────────────────── */
+.home-top-brand {
+  position: fixed;
+  top: 24px;
+  left: 28px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  size: 25pt;
+}
+
+.home-top-brand--visible {
+  animation: brandHeaderSlideDown 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes brandHeaderSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-brand-anchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  transition: all var(--transition-fast);
+  position: sticky;
+  top: 24px;
+  left: 28px;
+  z-index: 100;
+}
+
+.home-brand-anchor:hover {
+  transform: scale(1.03);
+  opacity: 0.92;
+}
+
+.home-brand-logo-img {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6));
+}
+
+.home-brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #FFFFFF;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+
+}
+
+/* ── Hero Section & Fullscreen Containers ──────────────────────────────────── */
+.spiderverse-hero {
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+
+.hero-craft-section.spiderverse-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+  padding: 0;
+}
+
+.hero-craft-section.home-hero-fullscreen {
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  transition: background 0.8s ease;
+}
+
+.hero-craft-section.home-hero-fullscreen.hero-globe-active {
+  background: radial-gradient(circle at 50% 50%, #0A0D28 0%, #050813 70%, #03040B 100%);
+}
+
+.public-home-viewport .footer-section {
+  margin-top: 0;
+  border-top: 4px solid #000000;
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Stage 1: Intro Opening Video Background ───────────────────────────────── */
+.hero-bg-video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  contain: strict;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.hero-bg-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.88;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.hero-bg-vignette-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(rgba(0, 0, 0, 0.28) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 50% 50%,
+      rgba(6, 7, 20, 0) 0%,
+      rgba(6, 7, 20, 0.08) 34%,
+      rgba(6, 7, 20, 0.68) 68%,
+      rgba(6, 7, 20, 0.96) 96%);
+  background-size: 12px 12px, 100% 100%;
+  pointer-events: none;
+  contain: strict;
+}
+
+.hero-video-toggle-btn {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #000000;
+  background: var(--comic-paper);
+  border: 2.5px solid #000000;
+  border-radius: 3px;
+  box-shadow: 3px 3px 0px #000000, 5px 5px 0px var(--cyber-cyan);
+  cursor: pointer;
+  transform: rotate(-1.5deg);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.hero-video-toggle-btn:hover {
+  color: #000000;
+  background: var(--cyber-amber);
+  box-shadow: 4px 4px 0px #000000, 7px 7px 0px var(--hot-pink);
+  transform: translate(-1px, -1px) rotate(0deg);
+}
+
+/* ── Stage 1: TECHNOSPARK Typography Animation ─────────────────────────────── */
+.hero-intro-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+}
+
+.spiderverse-text-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  user-select: none;
+  z-index: 2;
+  will-change: transform;
+}
+
+.spiderverse-line {
+  font-family: var(--font-heading);
+  font-size: clamp(4.5rem, 15.5vw, 13.5rem);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  position: relative;
+  display: block;
+  white-space: nowrap;
+}
+
+.spiderverse-techno {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FFFFFF 0%, #38BDF8 40%, #00F0FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.6));
+}
+
+.spiderverse-spark {
+  color: #A855F7;
+  background: linear-gradient(135deg, #00F0FF 0%, #A855F7 50%, #E02424 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 0 25px rgba(168, 85, 247, 0.7));
+}
+
+.hero-intro-tagline {
+  font-family: var(--font-heading);
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--neon-blue);
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: 0;
+  text-shadow: 0 0 20px var(--cyan-glow);
+}
+
+.hero-intro-skip-hint {
+  margin-top: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 8px 18px;
+  background: rgba(10, 20, 38, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.hero-intro-skip-hint:hover {
+  color: var(--cyber-cyan);
+  border-color: var(--cyber-cyan);
+  box-shadow: 0 0 16px var(--cyan-glow);
+  transform: translateY(-1px);
+}
+
+/* ── Stage 4: Dedicated Space Background Video ──────────────────────────────── */
+.globe-stage-video-wrapper,
+.globe-stage-video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+  contain: strict;
+  transform: translate3d(0, 0, 0);
+  will-change: opacity;
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.globe-stage-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.86;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* ── Stage 4: 3D Globe Scene Mount & Containers ────────────────────────────── */
+.hero-globe-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.hero-globe-wrapper.hero-globe-prominent {
+  width: 100%;
+  max-width: 960px;
+  height: 100%;
+  max-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: visible;
+}
+
+.globe-scene-mount {
+  width: min(88vw, 76vh, 740px);
+  height: min(88vw, 76vh, 740px);
+  max-width: 740px;
+  max-height: 740px;
+  position: relative;
+  cursor: grab;
+  overflow: visible;
+  margin: 0 auto;
+}
+
+.globe-scene-mount canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  overflow: visible;
+  outline: none;
+}
+
+.globe-scene-mount:active {
+  cursor: grabbing;
+}
+
+.globe-webgl-fallback {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 3px dashed var(--cyber-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px auto;
+  box-shadow: 5px 5px 0 #000000;
+}
+
+.globe-fallback-ring {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 2px solid var(--hot-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spinSlow 20s steps(24, end) infinite;
+}
+
+.globe-fallback-core {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  color: var(--cyber-cyan);
+  letter-spacing: 0.1em;
+}
+
+.hero-orbit-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Orbit Navigation Badges & SVG Guides ──────────────────────────────────── */
+.orbit-nav-root {
+  position: relative;
+  width: 100%;
+  max-width: 740px;
+  margin: 0 auto;
+  pointer-events: auto;
+}
+
+.desktop-orbit-container {
+  position: relative;
+  width: 100%;
+  height: min(88vw, 76vh, 740px);
+  max-height: 740px;
+  max-width: 740px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orbit-svg-track {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.orbit-satellite-node.comic-nav-badge {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(-1.5deg);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #020617;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px var(--node-accent, var(--cyber-cyan));
+  border-radius: 4px;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  z-index: 15;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.orbit-satellite-node.comic-nav-badge:nth-child(even) {
+  transform: translate(-50%, -50%) rotate(1.5deg);
+}
+
+.orbit-satellite-node.comic-nav-badge:hover,
+.orbit-satellite-node.comic-nav-badge.active,
+.orbit-satellite-node.comic-nav-badge.node-hovered {
+  background: var(--node-accent, var(--cyber-cyan));
+  color: #020617;
+  border-color: #000000;
+  box-shadow: 4px 4px 0px #000000, 0 0 20px var(--node-accent, rgba(0, 240, 255, 0.8));
+  transform: translate(-50%, -50%) rotate(0deg) scale(1.10);
+  z-index: 30;
+}
+
+.orbit-satellite-node.comic-nav-badge .comic-badge-icon {
+  color: #020617;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.orbit-satellite-node.comic-nav-badge:hover .comic-badge-icon {
+  transform: scale(1.18);
+}
+
+.orbit-satellite-node.comic-nav-badge .comic-badge-label {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.mobile-orbit-deck {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.mobile-orbit-card.comic-nav-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #020617;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px var(--node-accent, var(--cyber-cyan));
+  border-radius: 4px;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.mobile-orbit-card.comic-nav-badge:hover {
+  background: var(--node-accent, var(--cyber-cyan));
+  box-shadow: 4px 4px 0px #000000, 0 0 16px var(--node-accent);
+  transform: translateY(-2px);
+}
+
+.mobile-orbit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(10, 20, 38, 0.9);
+}
+
+.mobile-orbit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mobile-orbit-title {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.mobile-orbit-sub {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 1024px) {
+  .public-home-viewport {
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .home-hero-fullscreen {
+    min-height: 100vh;
+    height: auto;
+    padding: 80px 16px 40px !important;
+    flex-direction: column;
+  }
+
+  .hero-globe-wrapper.hero-globe-prominent {
+    height: auto;
+    min-height: 480px;
+  }
+
+  .desktop-orbit-container {
+    display: none;
+  }
+
+  .mobile-orbit-deck {
+    display: grid;
+  }
+}

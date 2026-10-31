@@ -1,0 +1,370 @@
+/* ============================================================================
+TECHNOSPARK — SPIDER-VERSE CYBER BENTO GALLERY (gallery.css)
+Authentic Inked Panels, Ben-Day Halftones, Cyber Reticles & Neon Glow
+============================================================================ */
+
+.archive-gallery-section {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  overflow: hidden;
+  padding: 0 0 54px;
+}
+
+/* ============================================================================
+
+TOP ARCHIVE COMMAND BAR
+============================================================================ */
+.archive-top-bar {
+  position: relative;
+  z-index: 30;
+  width: 100%;
+  margin-top: 18px;
+  margin-bottom: 24px;
+  padding: 20px 32px 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: rgba(6, 7, 20, 0.94);
+  background-image: var(--halftone-light, radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px));
+  background-size: 12px 12px;
+  border-bottom: 3.5px solid #000000;
+  box-shadow: 0 4px 0px var(--cyber-amber, #00F0FF);
+}
+
+.archive-brand-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.archive-main-title {
+  margin-bottom: 0 !important;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem) !important;
+}
+
+/* ============================================================================
+2. CYBER BENTO IMAGE GALLERY (Spider-Verse Comic Panel Aesthetic)
+============================================================================ */
+.cyber-gallery-wrap {
+  position: relative;
+  width: 100%;
+  max-width: min(1200px, 94vw);
+  margin: 18px auto 0;
+  padding: 0 4px 24px;
+}
+
+.cyber-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.cyber-card {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #0B0E26;
+  border: 3px solid #000000;
+  box-shadow: 6px 6px 0px #000000, 11px 11px 0px var(--card-border, #00F0FF);
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.18s ease;
+  user-select: none;
+}
+
+.cyber-card:hover {
+  background-color: #12163A;
+  transform: translate(-3px, -5px) rotate(-0.5deg);
+  box-shadow: 8px 8px 0px #000000, 14px 14px 0px var(--hot-pink, #F43F5E);
+  z-index: 10;
+}
+
+/* 24-Column Bento Layout */
+.cyber-card--span-0 {
+  grid-column: span 7;
+}
+
+.cyber-card--span-1 {
+  grid-column: span 10;
+}
+
+.cyber-card--span-2 {
+  grid-column: span 7;
+}
+
+.cyber-card--span-3 {
+  grid-column: span 12;
+}
+
+.cyber-card--span-4 {
+  grid-column: span 12;
+}
+
+.cyber-card--row2 {
+  height: 300px;
+}
+
+/* Image Wrap & Card Media */
+.cyber-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+.cyber-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cyber-card:hover .cyber-card-img {
+  transform: scale(1.06);
+}
+
+.cyber-card-halftone {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.16) 1.2px, transparent 1.2px);
+  background-size: 8px 8px;
+  opacity: 0.65;
+}
+
+/* ============================================================================
+3. FULLSCREEN SPIDER-VERSE LIGHTBOX INSPECTOR MODAL
+============================================================================ */
+.retro-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 19, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 20px;
+}
+
+.gallery-lightbox-dialog {
+  width: 100%;
+  max-width: 860px;
+  background: #0C0F29;
+  border: 3.5px solid #000000;
+  box-shadow: 8px 8px 0px #000000, 15px 15px 0px var(--cyber-cyan, #00F0FF);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.gallery-lightbox-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #050714;
+  border-bottom: 3px solid #000000;
+}
+
+.gallery-lightbox-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.retro-black-pill {
+  background: var(--cyber-amber, #F59E0B);
+  color: #000000;
+  border: 1.5px solid #000000;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 3px;
+  box-shadow: 2px 2px 0px #000000;
+}
+
+.gallery-lightbox-close-btn {
+  width: 34px;
+  height: 34px;
+  background: var(--comic-paper, #FAF7F2);
+  color: #000000;
+  border: 2.5px solid #000000;
+  box-shadow: 2.5px 2.5px 0px #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+.gallery-lightbox-close-btn:hover {
+  background: var(--hot-pink, #F43F5E);
+  color: #FFFFFF;
+}
+
+.gallery-lightbox-frame {
+  width: 100%;
+  max-height: 480px;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gallery-lightbox-img {
+  max-width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+}
+
+.gallery-lightbox-info-row {
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  border-top: 3px solid #000000;
+  background: #0C0F29;
+}
+
+.gallery-lightbox-title {
+  font-family: var(--font-heading, 'Orbitron', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin: 0 0 6px 0;
+  color: #FFFFFF;
+}
+
+.gallery-lightbox-caption {
+  font-size: 0.86rem;
+  color: var(--text-secondary, #CBD5E1);
+  margin: 0;
+  max-width: 520px;
+  line-height: 1.5;
+}
+
+.gallery-lightbox-nav-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.retro-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+  font-family: var(--font-heading, 'Orbitron', sans-serif);
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.retro-btn-modal-close {
+  background: var(--comic-paper, #FAF7F2);
+  color: #000000;
+}
+
+.retro-btn-modal-close:hover {
+  background: #E2E8F0;
+}
+
+.retro-btn-modal-action {
+  background: var(--cyber-cyan, #00F0FF);
+  color: #000000;
+}
+
+.retro-btn-modal-action:hover {
+  background: #38BDF8;
+}
+
+/* ============================================================================
+4. RESPONSIVE BREAKPOINTS
+============================================================================ */
+@media (max-width: 1024px) {
+  .cyber-gallery-grid {
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+  }
+
+  .cyber-card--span-0 {
+    grid-column: span 6;
+  }
+
+  .cyber-card--span-1 {
+    grid-column: span 6;
+  }
+
+  .cyber-card--span-2 {
+    grid-column: span 12;
+  }
+
+  .cyber-card--span-3 {
+    grid-column: span 6;
+  }
+
+  .cyber-card--span-4 {
+    grid-column: span 6;
+  }
+
+  .cyber-card,
+  .cyber-card--row2 {
+    height: 240px;
+  }
+}
+
+@media (max-width: 680px) {
+  .cyber-gallery-wrap {
+    padding: 0 10px 16px;
+  }
+
+  .cyber-gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .cyber-card--span-0,
+  .cyber-card--span-1,
+  .cyber-card--span-2,
+  .cyber-card--span-3,
+  .cyber-card--span-4 {
+    grid-column: span 1;
+  }
+
+  .cyber-card,
+  .cyber-card--row2 {
+    height: 220px;
+  }
+
+  .gallery-lightbox-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cyber-card {
+    transition: none !important;
+  }
+
+  .cyber-card-img {
+    transition: none !important;
+  }
+}

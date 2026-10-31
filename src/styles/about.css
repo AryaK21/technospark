@@ -1,0 +1,608 @@
+/* ============================================================================
+   ABOUT PAGE STYLESHEET
+   Spider-Verse Comic Panels, Narrator Quote, Stats, Pillars & Comic Covers Stack
+   ============================================================================ */
+
+.about-section {
+  padding: 50px 0;
+  position: relative;
+  background-color: transparent;
+}
+
+.about-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.about-header-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+  align-items: start;
+}
+
+.about-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: rgba(10, 20, 38, 0.8);
+  border: 1px solid var(--border-spiderverse);
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  margin-top: 16px;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.12);
+}
+
+.about-intro-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-lead-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.about-body-text {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── Spider-Verse Stat Cards ───────────────────────────────────────────────── */
+.about-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin: 50px 0;
+}
+
+.spiderverse-card {
+  position: relative;
+  background-color: #0D102B;
+  border: 3px solid #000000;
+  border-radius: 5px;
+  box-shadow: 6px 6px 0px #000000, 11px 11px 0px var(--cyber-cyan);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.spiderverse-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(0, 240, 255, 0.12) 1.3px, transparent 1.3px);
+  background-size: 10px 10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spiderverse-card:hover {
+  border-color: #000000;
+  box-shadow: 8px 8px 0px #000000, 15px 15px 0px var(--hot-pink);
+  transform: translate(-4px, -6px) rotate(0deg) !important;
+}
+
+.about-stats-grid .stat-card:nth-child(1) {
+  transform: rotate(-1.6deg);
+}
+
+.about-stats-grid .stat-card:nth-child(2) {
+  transform: rotate(1.3deg);
+  box-shadow: 6px 6px 0px #000000, 11px 11px 0px var(--hot-pink);
+}
+
+.about-stats-grid .stat-card:nth-child(3) {
+  transform: rotate(-0.9deg);
+  box-shadow: 6px 6px 0px #000000, 11px 11px 0px var(--cyber-amber);
+}
+
+.about-stats-grid .stat-card:nth-child(4) {
+  transform: rotate(1.5deg);
+  box-shadow: 6px 6px 0px #000000, 11px 11px 0px var(--neon-purple);
+}
+
+.stat-card {
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.stat-number {
+  font-family: var(--font-comic);
+  font-style: italic;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 3px 3px 0px #000000, 0 0 20px var(--cyber-cyan);
+  text-transform: uppercase;
+}
+
+.stat-label {
+  font-family: var(--font-comic);
+  font-style: italic;
+  font-size: 0.98rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+
+/* ── Narrator Caption Quote Box ────────────────────────────────────────────── */
+.about-quote-box {
+  background-color: #0D102B;
+  background-image: var(--halftone-pink);
+  background-size: 12px 12px;
+  border: 3px solid #000000;
+  border-left: 8px solid var(--hot-pink);
+  border-radius: 4px;
+  box-shadow: 6px 6px 0px #000000, 12px 12px 0px var(--hot-pink);
+  padding: 36px 44px;
+  position: relative;
+  overflow: hidden;
+  transform: rotate(-0.8deg);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-quote-box:hover {
+  transform: rotate(0deg) translate(-2px, -2px);
+  box-shadow: 8px 8px 0px #000000, 15px 15px 0px var(--cyber-cyan);
+}
+
+.quote-text {
+  font-family: var(--font-comic);
+  font-style: italic;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.quote-author {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--cyber-cyan);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.comic-red-highlight {
+  color: var(--hot-pink) !important;
+  font-family: var(--font-comic);
+  font-style: italic;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #000000, 0 0 14px rgba(244, 63, 94, 0.9);
+  display: inline;
+}
+
+.comic-cyan-highlight {
+  color: var(--cyber-cyan) !important;
+  font-family: var(--font-comic);
+  font-style: italic;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #000000, 0 0 14px rgba(0, 240, 255, 0.9);
+  display: inline;
+}
+
+/* ── Chromatic Glitch Animation ────────────────────────────────────────────── */
+.glitch-title {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-comic);
+  font-style: italic;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  text-shadow: 3px 3px 0px #000000;
+}
+
+.glitch-title::before,
+.glitch-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
+}
+
+.glitch-title::before {
+  left: -2.5px;
+  text-shadow: 2.5px 0 var(--cyber-cyan);
+  clip: rect(0, 900px, 0, 0);
+  animation: glitchAnimTop 2.2s infinite steps(2, end) alternate-reverse;
+}
+
+.glitch-title::after {
+  left: 2.5px;
+  text-shadow: -2.5px 0 var(--hot-pink);
+  clip: rect(0, 900px, 0, 0);
+  animation: glitchAnimBottom 1.7s infinite steps(2, end) alternate-reverse;
+}
+
+@keyframes glitchAnimTop {
+  0% { clip: rect(0px, 9999px, 35px, 0px); }
+  20% { clip: rect(15px, 9999px, 55px, 0px); transform: skewX(-2deg); }
+  40% { clip: rect(5px, 9999px, 20px, 0px); }
+  60% { clip: rect(40px, 9999px, 80px, 0px); transform: skewX(1deg); }
+  80% { clip: rect(25px, 9999px, 45px, 0px); }
+  100% { clip: rect(0px, 9999px, 90px, 0px); }
+}
+
+@keyframes glitchAnimBottom {
+  0% { clip: rect(20px, 9999px, 70px, 0px); }
+  25% { clip: rect(45px, 9999px, 90px, 0px); transform: skewX(2deg); }
+  50% { clip: rect(10px, 9999px, 30px, 0px); }
+  75% { clip: rect(30px, 9999px, 65px, 0px); transform: skewX(-1deg); }
+  100% { clip: rect(0px, 9999px, 50px, 0px); }
+}
+
+/* ── Comic Book Covers Stack Showcase ──────────────────────────────────────── */
+.comic-stack-container {
+  margin-top: 80px;
+  position: relative;
+  width: 100%;
+  padding: 30px 0 50px;
+}
+
+.comic-stack-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cyber-cyan);
+  letter-spacing: 0.14em;
+  text-align: center;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.comic-stack-grid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+  perspective: 1000px;
+}
+
+.comic-cover-card {
+  width: 220px;
+  height: 315px;
+  border: 3px solid #000000;
+  box-shadow: 6px 6px 0px #000000, 12px 12px 0px var(--cyber-cyan);
+  border-radius: 5px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  overflow: hidden;
+}
+
+.comic-cover-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1.3px, transparent 1.3px);
+  background-size: 10px 10px;
+  pointer-events: none;
+}
+
+.comic-cover-card:hover {
+  transform: rotate(0deg) translateY(-18px) scale(1.07) !important;
+  z-index: 20;
+  box-shadow: 10px 10px 0px #000000, 18px 18px 0px var(--hot-pink);
+}
+
+.comic-cover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid #000000;
+  background: #000000;
+  padding: 4px 8px;
+  border-radius: 3px;
+  position: relative;
+  z-index: 2;
+}
+
+.comic-cover-tag {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.05em;
+}
+
+.comic-cover-price {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--cyber-cyan);
+}
+
+.comic-cover-issue {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  margin-top: 8px;
+  background: #000000;
+  padding: 3px 8px;
+  display: inline-block;
+  border-radius: 3px;
+  align-self: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.comic-cover-title {
+  font-family: var(--font-comic-art);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  text-shadow: 3px 3px 0px #000000, 0 0 15px rgba(255, 255, 255, 0.6);
+  line-height: 0.9;
+  margin-top: 12px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+}
+
+.comic-cover-subtitle {
+  font-family: var(--font-comic);
+  font-style: italic;
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #FCE7F3;
+  text-shadow: 2px 2px 0px #000000;
+  text-transform: uppercase;
+  margin-top: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.comic-cover-footer {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-align: center;
+  border: 1.5px solid #000000;
+  background: #000000;
+  padding: 4px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Centered Header & Pillars Matrix ──────────────────────────────────────── */
+.about-header-centered {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 36px;
+}
+
+.about-motto-text {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--cyber-cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.about-narrative-box {
+  background-color: #0C0F29;
+  background-image: var(--halftone-cyan);
+  background-size: 12px 12px;
+  border: 3px solid #000000;
+  border-left: 7px solid var(--cyber-cyan);
+  border-radius: 5px;
+  padding: 36px;
+  margin-bottom: 48px;
+  box-shadow: 6px 6px 0px #000000, 11px 11px 0px var(--cyber-cyan);
+}
+
+.about-box-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+}
+
+.about-pillars-wrapper {
+  margin-bottom: 52px;
+}
+
+.about-pillars-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.about-pillars-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.about-pillars-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.about-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.about-pillar-card {
+  padding: 28px 24px;
+  background-color: #0C0F29;
+  background-image: var(--halftone-light);
+  background-size: 10px 10px;
+  border: 3px solid #000000;
+  border-radius: 5px;
+  box-shadow: 5px 5px 0px #000000, 10px 10px 0px var(--cyber-cyan);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.about-pillar-card:nth-child(even) {
+  box-shadow: 5px 5px 0px #000000, 10px 10px 0px var(--hot-pink);
+}
+
+.about-pillar-card:hover {
+  transform: translate(-3px, -5px) rotate(-0.6deg);
+  border-color: #000000;
+  box-shadow: 8px 8px 0px #000000, 14px 14px 0px var(--cyber-amber);
+}
+
+.about-pillar-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  background: var(--cyber-cyan);
+  border: 2.5px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  margin-bottom: 16px;
+  transform: rotate(-3deg);
+}
+
+.about-pillar-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.about-pillar-tagline {
+  font-size: 0.75rem;
+  color: var(--neon-blue);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.about-pillar-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.about-affiliation-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding: 32px;
+  background-color: #0C0F29;
+  background-image: var(--halftone-pink);
+  background-size: 12px 12px;
+  border: 3px solid #000000;
+  border-left: 8px solid var(--cyber-amber);
+  border-radius: 5px;
+  box-shadow: 6px 6px 0px #000000, 11px 11px 0px var(--hot-pink);
+  margin-bottom: 40px;
+}
+
+.about-affil-info {
+  flex: 1 1 360px;
+}
+
+.about-affil-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+}
+
+.about-affil-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.about-affil-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.about-affil-tag-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #FFFFFF;
+  font-family: var(--font-body);
+}
+
+@media (max-width: 1024px) {
+  .about-header-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .about-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-quote-box {
+    padding: 24px;
+  }
+}
+

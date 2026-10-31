@@ -1,0 +1,145 @@
+/* ============================================================================
+   NAVBAR & BADGES STYLESHEET
+   Hard-Inked Comic Strip Header with Original Brand Title Format & Badges
+   ============================================================================ */
+
+.navbar-header.modern-glass {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  z-index: 1000;
+  background-color: rgba(6, 7, 20, 0.94);
+  background-image: var(--halftone-light);
+  background-size: 12px 12px;
+  border-bottom: 3px solid #000000;
+  box-shadow: 0 4px 0px var(--cyber-cyan);
+  transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.navbar-header.modern-glass.navbar-scrolled {
+  background-color: #060714;
+  border-bottom: 3px solid #000000;
+  box-shadow: 0 4px 0px var(--hot-pink), 0 8px 0px #000000;
+}
+
+.navbar-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.navbar-logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.7));
+}
+
+.navbar-brand-title {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  line-height: 1;
+  text-shadow: 0 0 14px rgba(0, 240, 255, 0.5);
+}
+
+/* Comic Style Navbar Badges & Spiderweb */
+.navbar-spiderweb-corner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.comic-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.comic-nav-badge {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #020617;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px var(--cyber-cyan);
+  border-radius: 4px;
+  transform: rotate(-1.5deg);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+  text-decoration: none;
+}
+
+.comic-nav-badge:nth-child(even) {
+  transform: rotate(1.2deg);
+}
+
+.comic-nav-badge:hover,
+.comic-nav-badge.active {
+  background: var(--cyber-cyan);
+  color: #020617;
+  border-color: #000000;
+  box-shadow: 4px 4px 0px var(--neon-purple), 0 0 20px rgba(0, 240, 255, 0.8);
+  transform: rotate(0deg) scale(1.06);
+}
+
+.comic-nav-connector {
+  font-family: var(--font-mono);
+  color: var(--cyber-cyan);
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: -1px;
+  opacity: 0.8;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+  user-select: none;
+}
+
+.mobile-menu-btn {
+  display: none;
+  color: #FFFFFF;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mobile-nav-drawer {
+  display: none;
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  right: 0;
+  background-color: #0B0E26;
+  background-image: var(--halftone-cyan);
+  background-size: 12px 12px;
+  border-bottom: 3px solid #000000;
+  box-shadow: 0 6px 0px var(--hot-pink);
+  padding: 24px;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 999;
+}
+
+.mobile-nav-drawer.open {
+  display: flex;
+}
+

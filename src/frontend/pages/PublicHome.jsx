@@ -1,83 +1,51 @@
-import React, { useEffect } from 'react';
-import Lenis from 'lenis';
-import Navbar from '../../components/Navbar';
-import Hero from '../../components/Hero';
-import About from '../../components/About';
-import Events from '../../components/Events';
-import Organizers from '../../components/Organizers';
-import Gallery from '../../components/Gallery';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Hero, { hasSeenHomeIntro } from '../../components/Hero';
 import Footer from '../../components/Footer';
 import CustomCursor from '../../components/CustomCursor';
-import ScrollProgress from '../../components/ScrollProgress';
-import ComicSkylineBg from '../../components/ComicSkylineBg';
+import { clubInfo } from '../../data/clubInfo';
+import '../../styles/home.css';
 
 // ============================================================================
 // PUBLIC WEBSITE HOME PAGE (/)
 // ============================================================================
-// Features top scroll progress bar, glassmorphic navigation header, autoplay video
-// background strictly scoped to the Hero section, and moving Spiderverse comic
-// skyline background across all non-hero sections.
-// Integrated with Lenis for buttery-smooth 60fps inertia scrolling.
+// Exact Sequenced Flow:
+// 1. technospark animation: Background video + center 3D title
+// 2. blank screen: Video & title dissolve -> clean dark blank pause
+// 3. logo and name: Top-left logo + Technospark name slides in
+// 4. globe: 3D Celestial Planet with rings & tightly orbiting options emerges
+// 5. footer: Dedicated footer section with proper spacing & padding below
 // ============================================================================
 
 export default function PublicHome() {
-  useEffect(() => {
-    // Disable smooth scroll if user prefers reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 0.9,
-      touchMultiplier: 1.5,
-      infinite: false
-    });
-
-    let rafId;
-    function raf(time) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
+  // If already played this browser session, show logo immediately on mount
+  const [showLogo, setShowLogo] = useState(() => hasSeenHomeIntro());
 
   return (
-    <div className="app-root public-website-root">
-      {/* Top Scroll Progress Bar */}
-      <ScrollProgress />
-
-      {/* Custom Desktop Cursor */}
+    <div className="app-root public-home-viewport">
+      {/* Custom Desktop Interactive Cursor */}
       <CustomCursor />
 
-      {/* Sticky Glassmorphic Navbar */}
-      <Navbar />
+      {/* Top-Left Brand Identity (Appears at Step 3: after blank screen, before globe) */}
+      {showLogo && (
+        <header className="home-top-brand home-top-brand--visible" aria-label="Technospark Home">
+          <Link to="/" className="home-brand-anchor" aria-label="Technospark Home">
+            <img
+              src={clubInfo.logos.whiteTransparent}
+              alt="Technospark Logo"
+              className="home-brand-logo-img"
+            />
+            <span className="home-brand-title">{clubInfo.name}</span>
+          </Link>
+        </header>
+      )}
 
-      {/* Main Page Sections */}
-      <main id="main-content">
-        <Hero />
-
-        {/* Non-Hero Comic Building Skyline Section Wrapper */}
-        <div className="non-hero-comic-wrapper">
-          <ComicSkylineBg />
-
-          <div className="non-hero-content-layer">
-            <About />
-            <Events />
-            <Organizers />
-            <Gallery />
-          </div>
-        </div>
+      {/* Main Stage */}
+      <main id="main-content" className="home-main-stage">
+        <Hero onShowLogo={() => setShowLogo(true)} />
       </main>
 
-      {/* Footer */}
+      {/* Footer (Preserved with generous breathing room) */}
       <Footer />
     </div>
   );

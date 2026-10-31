@@ -1,0 +1,95 @@
+/* ============================================================================
+   FOOTER SECTION STYLESHEET
+   Inked Comic Issue Colophon with Original Brand Title
+   ============================================================================ */
+
+.footer-section {
+  background-color: #050611;
+  background-image: var(--halftone-light);
+  background-size: 14px 14px;
+  border-top: 4px solid #000000;
+  box-shadow: 0 -4px 0 var(--cyber-cyan);
+  padding: 80px 0 40px;
+  position: relative;
+}
+
+.footer-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.footer-top-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 60px;
+}
+
+.footer-brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+  text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+}
+
+.footer-brand-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  max-width: 450px;
+  margin-bottom: 24px;
+}
+
+.footer-col-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--cyber-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+
+.footer-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-link {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--cyber-cyan);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+.footer-bottom {
+  border-top: 2px dashed rgba(255, 255, 255, 0.2);
+  padding-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .footer-top-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+

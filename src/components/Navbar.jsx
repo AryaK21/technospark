@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { clubInfo } from '../data/clubInfo';
+import '../styles/navbar.css';
 
 // ============================================================================
-// NAVBAR COMPONENT (Modern Subtle Glassmorphism)
+// NAVBAR COMPONENT (Spiderverse Comic Badges & Modern Glassmorphism)
 // ============================================================================
 // Translucent sticky navbar with subtle backdrop blur, official Technospark logo
-// on the left, and smooth section navigation links.
+// on the left, and separate page navigation badges:
+// HOME (/) | ABOUT (/about) | EVENTS (/events) | TEAM (/team) | GALLERY (/gallery) | CONTACT (/contact)
 // ============================================================================
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const location = useLocation();
+
   const navItems = [
-    { label: 'HOME', href: '#hero' },
-    { label: 'ABOUT', href: '#about' },
-    { label: 'EVENTS', href: '#events' },
-    { label: 'TEAM', href: '#organizers' },
-    { label: 'GALLERY', href: '#gallery' }
+    { label: 'HOME', path: '/' },
+    { label: 'ABOUT', path: '/about' },
+    { label: 'EVENTS', path: '/events' },
+    { label: 'TEAM', path: '/team' },
+    { label: 'GALLERY', path: '/gallery' },
+    { label: 'CONTACT', path: '/contact' }
   ];
 
   useEffect(() => {
@@ -27,21 +32,6 @@ export default function Navbar() {
     const checkScroll = () => {
       const scrolled = window.scrollY > 20;
       setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
-
-      const sections = ['hero', 'about', 'events', 'organizers', 'gallery'];
-      const scrollPos = window.scrollY + 180;
-
-      for (const id of sections) {
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPos >= top && scrollPos < top + height) {
-            setActiveSection((prev) => (prev !== id ? id : prev));
-            break;
-          }
-        }
-      }
       ticking = false;
     };
 
@@ -58,6 +48,14 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Check if a nav item is currently active
+  const isItemActive = (itemPath) => {
+    if (itemPath === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(itemPath) || (itemPath === '/team' && location.pathname === '/organizers');
+  };
+
   return (
     <header className={`navbar-header modern-glass comic-navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
       {/* Top Left Spiderweb Corner Accent */}
@@ -71,7 +69,7 @@ export default function Navbar() {
       <div className="navbar-container">
 
         {/* Left Brand Identity: Logo + Title */}
-        <a href="#hero" className="navbar-brand" aria-label="Technospark Home">
+        <Link to="/" className="navbar-brand" aria-label="Technospark Home">
           <img
             src={clubInfo.logos.whiteTransparent}
             alt="Technospark Logo"
@@ -80,22 +78,23 @@ export default function Navbar() {
           <div className="navbar-brand-text">
             <span className="navbar-brand-title">TECHNOSPARK</span>
           </div>
-        </a>
+        </Link>
 
         {/* Center / Right Comic Badge Nav Items */}
         <nav className="navbar-nav comic-nav-list" aria-label="Main Navigation">
           {navItems.map((item, index) => {
-            const sectionId = item.href.replace('#', '');
-            const isActive = activeSection === sectionId;
+            const isActive = isItemActive(item.path);
+
             return (
               <React.Fragment key={item.label}>
                 {index > 0 && <span className="comic-nav-connector">---</span>}
-                <a
-                  href={item.href}
+                <Link
+                  to={item.path}
                   className={`comic-nav-badge ${isActive ? 'active' : ''}`}
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.label}
-                </a>
+                </Link>
               </React.Fragment>
             );
           })}
@@ -121,17 +120,20 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       <div className={`mobile-nav-drawer ${mobileMenuOpen ? 'open' : ''}`}>
-        {navItems.map((item) => (
-          <a
-            key={item.label}
-            href={item.href}
-            className="comic-nav-badge"
-            style={{ fontSize: '1rem', padding: '10px 20px', textAlignment: 'center' }}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            {item.label}
-          </a>
-        ))}
+        {navItems.map((item) => {
+          const isActive = isItemActive(item.path);
+          return (
+            <Link
+              key={item.label}
+              to={item.path}
+              className={`comic-nav-badge ${isActive ? 'active' : ''}`}
+              style={{ fontSize: '1rem', padding: '10px 20px', textAlign: 'center' }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
       </div>
     </header>
   );
