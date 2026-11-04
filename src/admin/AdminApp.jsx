@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 
 // Admin Layout
@@ -82,6 +82,17 @@ export default function AdminApp() {
   const [pendingRequest, setPendingRequest] = useState(null); // Row from requests if not approved
   const [authLoading, setAuthLoading] = useState(() => !getCachedAdminProfile());
 
+  // Always-current snapshots of auth state so callbacks can read them WITHOUT
+  // listing them as dependencies (prevents the resolve→setState→resolve loop).
+  const currentUserRef = useRef(currentUser);
+  const sessionRef = useRef(session);
+  useEffect(() => {
+    currentUserRef.current = currentUser;
+  }, [currentUser]);
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
   // --------------------------------------------------------------------------
   // CONTENT MANAGEMENT STATE
   // --------------------------------------------------------------------------
@@ -129,7 +140,7 @@ export default function AdminApp() {
   // --------------------------------------------------------------------------
   const resolveUserAuth = useCallback(async (existingSession = null, silent = false) => {
     // Only show full-screen blocking loader if user profile is completely unknown
-    if (!silent && !currentUser && !getCachedAdminProfile()) {
+    if (!silent && !currentUserRef.current && !getCachedAdminProfile()) {
       setAuthLoading(true);
     }
 
@@ -178,7 +189,7 @@ export default function AdminApp() {
     } finally {
       setAuthLoading(false);
     }
-  }, [currentUser]);
+  }, []);
 
   // --------------------------------------------------------------------------
   // 2. DATA LOADERS
@@ -377,7 +388,7 @@ export default function AdminApp() {
           (payload) => {
             loadUsersAndRequests(true);
             // Only re-resolve if current user is actively waiting for approval
-            if (!currentUser && session?.user) {
+            if (!currentUserRef.current && sessionRef.current?.user) {
               resolveUserAuth(null, true);
             }
           }
@@ -398,7 +409,7 @@ export default function AdminApp() {
           (payload) => {
             loadUsersAndRequests(true);
             // Only re-resolve if current user is actively waiting for approval
-            if (!currentUser && session?.user) {
+            if (!currentUserRef.current && sessionRef.current?.user) {
               resolveUserAuth(null, true);
             }
           }

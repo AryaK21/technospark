@@ -168,12 +168,16 @@ export async function getAdminProfile(user) {
       }
     }
 
-    // 2. Try matching email directly via ilike
+    // 2. Try matching email directly.
+    // NOTE: use .eq (not .ilike) — in ilike, '_' and '%' are wildcards, so an
+    // address like a_b@x.com would match axb@x.com and let the wrong Google
+    // account resolve to another admin's row. Case quirks are handled by the
+    // in-memory fallback scan below (step 3).
     if (cleanEmail) {
       const { data } = await supabase
         .from('admin_users')
         .select('*')
-        .ilike('email', cleanEmail)
+        .eq('email', cleanEmail)
         .maybeSingle();
 
       if (data) {
@@ -471,11 +475,13 @@ export async function approveAccessRequest(request, assignedRole = 'Editor') {
   if (!email) return { error: new Error('Request has no email') };
 
   try {
-    // 1. Check if user is already in admin_users
+    // 1. Check if user is already in admin_users.
+    // Use .eq (not .ilike) so wildcard characters in the email cannot match a
+    // different admin's row.
     const { data: existingUser } = await supabase
       .from('admin_users')
       .select('*')
-      .ilike('email', email)
+      .eq('email', email)
       .maybeSingle();
 
     let createdAdmin = null;
