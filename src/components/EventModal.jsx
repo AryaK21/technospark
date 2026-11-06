@@ -123,7 +123,7 @@ export default function EventModal({ event, onClose }) {
             </a>
           ) : !isPast && (
             <a
-              href={`mailto:technospark@pccoepune.org?subject=Inquiry regarding ${encodeURIComponent(event.name || event.title || 'Event')}`}
+              href={`mailto:technospark.pccoer.it@gmail.com?subject=Inquiry regarding ${encodeURIComponent(event.name || event.title || 'Event')}`}
               className="retro-btn-modal retro-btn-modal-action"
               style={{ backgroundColor: accentColor, textDecoration: 'none' }}
             >

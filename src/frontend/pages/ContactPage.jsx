@@ -146,7 +146,7 @@ export default function ContactPage() {
                       <div>
                         <div className="contact-item-label font-mono">DIRECT INQUIRIES</div>
                         <a
-                          href="mailto:[technospark.pccoer.it@gmail.com]"
+                          href="mailto:technospark.pccoer.it@gmail.com"
                           className="contact-item-value"
                         >
                           technospark.pccoer.it@gmail.com
@@ -216,7 +216,7 @@ export default function ContactPage() {
                         <span>LinkedIn</span>
                       </a>
                       <a
-                        href="mailto:[technospark.pccoer.it@gmail.com]"
+                        href="mailto:technospark.pccoer.it@gmail.com"
                         className="contact-social-btn"
                         aria-label="Email"
                         title="Email"

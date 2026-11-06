@@ -33,9 +33,9 @@ export const clubInfo = {
 
   // Social Links & Contacts
   socialLinks: [
-    { name: 'Instagram', url: '#', handle: '@technospark_pccoe' },
-    { name: 'LinkedIn', url: '#', handle: 'Technospark ITSA' },
-    { name: 'Email', url: '#', handle: '#' }
+    { name: 'Instagram', url: 'https://www.instagram.com/technospark.pccoer/', handle: '@technospark.pccoer' },
+    { name: 'LinkedIn', url: 'https://www.linkedin.com/company/technospark-pccoe-r/', handle: 'Technospark PCCOER' },
+    { name: 'Email', url: 'mailto:technospark.pccoer.it@gmail.com', handle: 'technospark.pccoer.it@gmail.com' }
   ],
 
   // Club Pillars (Migrated Structure from Prototype)

@@ -60,7 +60,7 @@ export default function Footer() {
                 <LinkedInIcon size={18} />
               </a>
               <a
-                href="technospark.pccoer.it@gmail.com"
+                href="mailto:technospark.pccoer.it@gmail.com"
                 className="footer-social-btn"
                 aria-label="Email"
                 title="Email"
