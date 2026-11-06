@@ -146,10 +146,10 @@ export default function ContactPage() {
                       <div>
                         <div className="contact-item-label font-mono">DIRECT INQUIRIES</div>
                         <a
-                          href="#"
+                          href="mailto:[technospark.pccoer.it@gmail.com]"
                           className="contact-item-value"
                         >
-                          #
+                          technospark.pccoer.it@gmail.com
                         </a>
                       </div>
                     </div>
@@ -183,7 +183,7 @@ export default function ContactPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="contact-item-value"
-                          style={{ color: 'var(--neon-blue)' }}
+                          style={{ color: 'var(--neon-blue)', textDecorationColor: 'none' }}
                         >
                           pccoer.com
                         </a>
@@ -198,7 +198,7 @@ export default function ContactPage() {
                     </div>
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                       <a
-                        href="#"
+                        href="https://www.instagram.com/technospark.pccoer/"
                         className="contact-social-btn"
                         aria-label="Instagram"
                         title="Instagram"
@@ -207,7 +207,7 @@ export default function ContactPage() {
                         <span>Instagram</span>
                       </a>
                       <a
-                        href="#"
+                        href="https://www.linkedin.com/company/technospark-pccoe-r/"
                         className="contact-social-btn"
                         aria-label="LinkedIn"
                         title="LinkedIn"
@@ -216,7 +216,7 @@ export default function ContactPage() {
                         <span>LinkedIn</span>
                       </a>
                       <a
-                        href="#"
+                        href="mailto:[technospark.pccoer.it@gmail.com]"
                         className="contact-social-btn"
                         aria-label="Email"
                         title="Email"

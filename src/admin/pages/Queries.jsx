@@ -98,7 +98,7 @@ Regarding your inquiry:
 Warm regards,
 Technospark Coordination Team
 Department of Information Technology, PCCOER
-technospark@pccoepune.org`;
+technospark.pccoer.it@gmail.com`;
 
     setMailRecipient(to);
     setMailSubject(subject);

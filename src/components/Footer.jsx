@@ -44,7 +44,7 @@ export default function Footer() {
             <div className="footer-col-title">CONNECT</div>
             <div className="footer-social-row" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <a
-                href="#"
+                href="https://www.instagram.com/technospark.pccoer/"
                 className="footer-social-btn"
                 aria-label="Instagram"
                 title="Instagram"
@@ -52,7 +52,7 @@ export default function Footer() {
                 <InstagramIcon size={18} />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/company/technospark-pccoe-r/"
                 className="footer-social-btn"
                 aria-label="LinkedIn"
                 title="LinkedIn"
@@ -60,7 +60,7 @@ export default function Footer() {
                 <LinkedInIcon size={18} />
               </a>
               <a
-                href="#"
+                href="technospark.pccoer.it@gmail.com"
                 className="footer-social-btn"
                 aria-label="Email"
                 title="Email"
